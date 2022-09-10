@@ -3,4 +3,1346 @@
 
 == Explore the default network
 
+[source, bash]
+.*gcloud compute networks list*
+----
+NAME: default
+SUBNET_MODE: AUTO
+BGP_ROUTING_MODE: REGIONAL
+IPV4_RANGE: 
+GATEWAY_IPV4: 
+----
 
+[source, bash]
+.*gcloud compute networks subnets list*
+NAME: default
+REGION: us-central1
+NETWORK: default
+RANGE: 10.128.0.0/20
+STACK_TYPE: IPV4_ONLY
+IPV6_ACCESS_TYPE: 
+INTERNAL_IPV6_PREFIX: 
+EXTERNAL_IPV6_PREFIX: 
+
+NAME: default
+REGION: europe-west1
+NETWORK: default
+RANGE: 10.132.0.0/20
+STACK_TYPE: IPV4_ONLY
+IPV6_ACCESS_TYPE: 
+INTERNAL_IPV6_PREFIX: 
+EXTERNAL_IPV6_PREFIX: 
+
+NAME: default
+REGION: us-west1
+NETWORK: default
+RANGE: 10.138.0.0/20
+STACK_TYPE: IPV4_ONLY
+IPV6_ACCESS_TYPE: 
+INTERNAL_IPV6_PREFIX: 
+EXTERNAL_IPV6_PREFIX: 
+
+NAME: default
+REGION: asia-east1
+NETWORK: default
+RANGE: 10.140.0.0/20
+STACK_TYPE: IPV4_ONLY
+IPV6_ACCESS_TYPE: 
+INTERNAL_IPV6_PREFIX: 
+EXTERNAL_IPV6_PREFIX: 
+
+NAME: default
+REGION: us-east1
+NETWORK: default
+RANGE: 10.142.0.0/20
+STACK_TYPE: IPV4_ONLY
+IPV6_ACCESS_TYPE: 
+INTERNAL_IPV6_PREFIX: 
+EXTERNAL_IPV6_PREFIX: 
+
+NAME: default
+REGION: asia-northeast1
+NETWORK: default
+RANGE: 10.146.0.0/20
+STACK_TYPE: IPV4_ONLY
+IPV6_ACCESS_TYPE: 
+INTERNAL_IPV6_PREFIX: 
+EXTERNAL_IPV6_PREFIX: 
+
+NAME: default
+REGION: asia-southeast1
+NETWORK: default
+RANGE: 10.148.0.0/20
+STACK_TYPE: IPV4_ONLY
+IPV6_ACCESS_TYPE: 
+INTERNAL_IPV6_PREFIX: 
+EXTERNAL_IPV6_PREFIX: 
+
+NAME: default
+REGION: us-east4
+NETWORK: default
+RANGE: 10.150.0.0/20
+STACK_TYPE: IPV4_ONLY
+IPV6_ACCESS_TYPE: 
+INTERNAL_IPV6_PREFIX: 
+EXTERNAL_IPV6_PREFIX: 
+
+NAME: default
+REGION: australia-southeast1
+NETWORK: default
+RANGE: 10.152.0.0/20
+STACK_TYPE: IPV4_ONLY
+IPV6_ACCESS_TYPE: 
+INTERNAL_IPV6_PREFIX: 
+EXTERNAL_IPV6_PREFIX: 
+
+NAME: default
+REGION: europe-west2
+NETWORK: default
+RANGE: 10.154.0.0/20
+STACK_TYPE: IPV4_ONLY
+IPV6_ACCESS_TYPE: 
+INTERNAL_IPV6_PREFIX: 
+EXTERNAL_IPV6_PREFIX: 
+
+NAME: default
+REGION: europe-west3
+NETWORK: default
+RANGE: 10.156.0.0/20
+STACK_TYPE: IPV4_ONLY
+IPV6_ACCESS_TYPE: 
+INTERNAL_IPV6_PREFIX: 
+EXTERNAL_IPV6_PREFIX: 
+
+NAME: default
+REGION: asia-south1
+NETWORK: default
+RANGE: 10.160.0.0/20
+STACK_TYPE: IPV4_ONLY
+IPV6_ACCESS_TYPE: 
+INTERNAL_IPV6_PREFIX: 
+EXTERNAL_IPV6_PREFIX: 
+
+NAME: default
+REGION: europe-west4
+NETWORK: default
+RANGE: 10.164.0.0/20
+STACK_TYPE: IPV4_ONLY
+IPV6_ACCESS_TYPE: 
+INTERNAL_IPV6_PREFIX: 
+EXTERNAL_IPV6_PREFIX: 
+
+NAME: default
+REGION: europe-north1
+NETWORK: default
+RANGE: 10.166.0.0/20
+STACK_TYPE: IPV4_ONLY
+IPV6_ACCESS_TYPE: 
+INTERNAL_IPV6_PREFIX: 
+EXTERNAL_IPV6_PREFIX: 
+
+NAME: default
+REGION: us-west2
+NETWORK: default
+RANGE: 10.168.0.0/20
+STACK_TYPE: IPV4_ONLY
+IPV6_ACCESS_TYPE: 
+INTERNAL_IPV6_PREFIX: 
+EXTERNAL_IPV6_PREFIX: 
+
+NAME: default
+REGION: us-west3
+NETWORK: default
+RANGE: 10.180.0.0/20
+STACK_TYPE: IPV4_ONLY
+IPV6_ACCESS_TYPE: 
+INTERNAL_IPV6_PREFIX: 
+EXTERNAL_IPV6_PREFIX: 
+
+NAME: default
+REGION: us-west4
+NETWORK: default
+RANGE: 10.182.0.0/20
+STACK_TYPE: IPV4_ONLY
+IPV6_ACCESS_TYPE: 
+INTERNAL_IPV6_PREFIX: 
+EXTERNAL_IPV6_PREFIX: 
+
+NAME: default
+REGION: europe-central2
+NETWORK: default
+RANGE: 10.186.0.0/20
+STACK_TYPE: IPV4_ONLY
+IPV6_ACCESS_TYPE: 
+INTERNAL_IPV6_PREFIX: 
+EXTERNAL_IPV6_PREFIX: 
+
+NAME: default
+REGION: southamerica-west1
+NETWORK: default
+RANGE: 10.194.0.0/20
+STACK_TYPE: IPV4_ONLY
+IPV6_ACCESS_TYPE: 
+INTERNAL_IPV6_PREFIX: 
+EXTERNAL_IPV6_PREFIX: 
+
+NAME: default
+REGION: us-east7
+NETWORK: default
+RANGE: 10.196.0.0/20
+STACK_TYPE: IPV4_ONLY
+IPV6_ACCESS_TYPE: 
+INTERNAL_IPV6_PREFIX: 
+EXTERNAL_IPV6_PREFIX: 
+
+NAME: default
+REGION: us-east5
+NETWORK: default
+RANGE: 10.202.0.0/20
+STACK_TYPE: IPV4_ONLY
+IPV6_ACCESS_TYPE: 
+INTERNAL_IPV6_PREFIX: 
+EXTERNAL_IPV6_PREFIX: 
+
+NAME: default
+REGION: us-south1
+NETWORK: default
+RANGE: 10.206.0.0/20
+STACK_TYPE: IPV4_ONLY
+IPV6_ACCESS_TYPE: 
+INTERNAL_IPV6_PREFIX: 
+EXTERNAL_IPV6_PREFIX: 
+
+NAME: default
+REGION: me-west1
+NETWORK: default
+RANGE: 10.208.0.0/20
+STACK_TYPE: IPV4_ONLY
+IPV6_ACCESS_TYPE: 
+INTERNAL_IPV6_PREFIX: 
+EXTERNAL_IPV6_PREFIX: 
+----
+
+[source, bash]
+.*gcloud compute routes list*
+----
+NAME: default-route-0bb26fb8e9bce557
+NETWORK: default
+DEST_RANGE: 10.142.0.0/20
+NEXT_HOP: default
+PRIORITY: 0
+
+NAME: default-route-10f7b9996133c722
+NETWORK: default
+DEST_RANGE: 10.132.0.0/20
+NEXT_HOP: default
+PRIORITY: 0
+
+NAME: default-route-259b2a1c548101ef
+NETWORK: default
+DEST_RANGE: 10.146.0.0/20
+NEXT_HOP: default
+PRIORITY: 0
+
+NAME: default-route-2f7f35b7b2ee65ee
+NETWORK: default
+DEST_RANGE: 10.186.0.0/20
+NEXT_HOP: default
+PRIORITY: 0
+
+NAME: default-route-5235a145d381c389
+NETWORK: default
+DEST_RANGE: 10.206.0.0/20
+NEXT_HOP: default
+PRIORITY: 0
+
+NAME: default-route-70ad0392f6c5e854
+NETWORK: default
+DEST_RANGE: 10.156.0.0/20
+NEXT_HOP: default
+PRIORITY: 0
+
+NAME: default-route-80c3e99f9a7a8403
+NETWORK: default
+DEST_RANGE: 10.194.0.0/20
+NEXT_HOP: default
+PRIORITY: 0
+
+NAME: default-route-918778babe220a7b
+NETWORK: default
+DEST_RANGE: 10.208.0.0/20
+NEXT_HOP: default
+PRIORITY: 0
+
+NAME: default-route-a1f87368cabbad56
+NETWORK: default
+DEST_RANGE: 10.164.0.0/20
+NEXT_HOP: default
+PRIORITY: 0
+
+NAME: default-route-a48c3ed1e1c9023b
+NETWORK: default
+DEST_RANGE: 10.152.0.0/20
+NEXT_HOP: default
+PRIORITY: 0
+
+NAME: default-route-a7f98bfb673925f0
+NETWORK: default
+DEST_RANGE: 10.148.0.0/20
+NEXT_HOP: default
+PRIORITY: 0
+
+NAME: default-route-b32232ff74eb1330
+NETWORK: default
+DEST_RANGE: 0.0.0.0/0
+NEXT_HOP: default-internet-gateway
+PRIORITY: 1000
+
+NAME: default-route-bc20ef7d264e6230
+NETWORK: default
+DEST_RANGE: 10.138.0.0/20
+NEXT_HOP: default
+PRIORITY: 0
+
+NAME: default-route-d6b671fc950485c0
+NETWORK: default
+DEST_RANGE: 10.154.0.0/20
+NEXT_HOP: default
+PRIORITY: 0
+
+NAME: default-route-dae4c5484f7a59cc
+NETWORK: default
+DEST_RANGE: 10.160.0.0/20
+NEXT_HOP: default
+PRIORITY: 0
+
+NAME: default-route-dd5ecd9c2b741ff7
+NETWORK: default
+DEST_RANGE: 10.202.0.0/20
+NEXT_HOP: default
+PRIORITY: 0
+
+NAME: default-route-ea83f8d4bc4a02df
+NETWORK: default
+DEST_RANGE: 10.180.0.0/20
+NEXT_HOP: default
+PRIORITY: 0
+
+NAME: default-route-eb4d72b6e2ab083e
+NETWORK: default
+DEST_RANGE: 10.196.0.0/20
+NEXT_HOP: default
+PRIORITY: 0
+
+NAME: default-route-ebbc06851764473c
+NETWORK: default
+DEST_RANGE: 10.140.0.0/20
+NEXT_HOP: default
+PRIORITY: 0
+
+NAME: default-route-f05215508ce95e4c
+NETWORK: default
+DEST_RANGE: 10.166.0.0/20
+NEXT_HOP: default
+PRIORITY: 0
+
+NAME: default-route-f23b0f4db0fb78ee
+NETWORK: default
+DEST_RANGE: 10.168.0.0/20
+NEXT_HOP: default
+PRIORITY: 0
+
+NAME: default-route-f9855040ee827b11
+NETWORK: default
+DEST_RANGE: 10.128.0.0/20
+NEXT_HOP: default
+PRIORITY: 0
+
+NAME: default-route-fd64c06bd71bcb9e
+NETWORK: default
+DEST_RANGE: 10.182.0.0/20
+NEXT_HOP: default
+PRIORITY: 0
+
+NAME: default-route-ff44ba77346fc451
+NETWORK: default
+DEST_RANGE: 10.150.0.0/20
+NEXT_HOP: default
+PRIORITY: 0
+----
+
+[source, bash]
+.*gcloud compute firewall-rules list*
+----
+NAME: default-allow-icmp
+NETWORK: default
+DIRECTION: INGRESS
+PRIORITY: 65534
+ALLOW: icmp
+DENY: 
+DISABLED: False
+
+NAME: default-allow-internal
+NETWORK: default
+DIRECTION: INGRESS
+PRIORITY: 65534
+ALLOW: tcp:0-65535,udp:0-65535,icmp
+DENY: 
+DISABLED: False
+
+NAME: default-allow-rdp
+NETWORK: default
+DIRECTION: INGRESS
+PRIORITY: 65534
+ALLOW: tcp:3389
+DENY: 
+DISABLED: False
+
+NAME: default-allow-ssh
+NETWORK: default
+DIRECTION: INGRESS
+PRIORITY: 65534
+ALLOW: tcp:22
+DENY: 
+DISABLED: False
+----
+
+== auto mode network
+
+[source. bash]
+.*gcloud compute networks list*
+----
+NAME: mynetwork
+SUBNET_MODE: AUTO
+BGP_ROUTING_MODE: REGIONAL
+IPV4_RANGE: 
+GATEWAY_IPV4: 
+----
+
+[source, bash]
+.*gcloud compute networks subnets list*
+----
+NAME: mynetwork
+REGION: us-central1
+NETWORK: mynetwork
+RANGE: 10.128.0.0/20
+STACK_TYPE: IPV4_ONLY
+IPV6_ACCESS_TYPE: 
+INTERNAL_IPV6_PREFIX: 
+EXTERNAL_IPV6_PREFIX: 
+
+NAME: mynetwork
+REGION: europe-west1
+NETWORK: mynetwork
+RANGE: 10.132.0.0/20
+STACK_TYPE: IPV4_ONLY
+IPV6_ACCESS_TYPE: 
+INTERNAL_IPV6_PREFIX: 
+EXTERNAL_IPV6_PREFIX: 
+
+NAME: mynetwork
+REGION: us-west1
+NETWORK: mynetwork
+RANGE: 10.138.0.0/20
+STACK_TYPE: IPV4_ONLY
+IPV6_ACCESS_TYPE: 
+INTERNAL_IPV6_PREFIX: 
+EXTERNAL_IPV6_PREFIX: 
+
+NAME: mynetwork
+REGION: asia-east1
+NETWORK: mynetwork
+RANGE: 10.140.0.0/20
+STACK_TYPE: IPV4_ONLY
+IPV6_ACCESS_TYPE: 
+INTERNAL_IPV6_PREFIX: 
+EXTERNAL_IPV6_PREFIX: 
+
+NAME: mynetwork
+REGION: us-east1
+NETWORK: mynetwork
+RANGE: 10.142.0.0/20
+STACK_TYPE: IPV4_ONLY
+IPV6_ACCESS_TYPE: 
+INTERNAL_IPV6_PREFIX: 
+EXTERNAL_IPV6_PREFIX: 
+
+NAME: mynetwork
+REGION: asia-northeast1
+NETWORK: mynetwork
+RANGE: 10.146.0.0/20
+STACK_TYPE: IPV4_ONLY
+IPV6_ACCESS_TYPE: 
+INTERNAL_IPV6_PREFIX: 
+EXTERNAL_IPV6_PREFIX: 
+
+NAME: mynetwork
+REGION: asia-southeast1
+NETWORK: mynetwork
+RANGE: 10.148.0.0/20
+STACK_TYPE: IPV4_ONLY
+IPV6_ACCESS_TYPE: 
+INTERNAL_IPV6_PREFIX: 
+EXTERNAL_IPV6_PREFIX: 
+
+NAME: mynetwork
+REGION: us-east4
+NETWORK: mynetwork
+RANGE: 10.150.0.0/20
+STACK_TYPE: IPV4_ONLY
+IPV6_ACCESS_TYPE: 
+INTERNAL_IPV6_PREFIX: 
+EXTERNAL_IPV6_PREFIX: 
+
+NAME: mynetwork
+REGION: australia-southeast1
+NETWORK: mynetwork
+RANGE: 10.152.0.0/20
+STACK_TYPE: IPV4_ONLY
+IPV6_ACCESS_TYPE: 
+INTERNAL_IPV6_PREFIX: 
+EXTERNAL_IPV6_PREFIX: 
+
+NAME: mynetwork
+REGION: europe-west2
+NETWORK: mynetwork
+RANGE: 10.154.0.0/20
+STACK_TYPE: IPV4_ONLY
+IPV6_ACCESS_TYPE: 
+INTERNAL_IPV6_PREFIX: 
+EXTERNAL_IPV6_PREFIX: 
+
+NAME: mynetwork
+REGION: europe-west3
+NETWORK: mynetwork
+RANGE: 10.156.0.0/20
+STACK_TYPE: IPV4_ONLY
+IPV6_ACCESS_TYPE: 
+INTERNAL_IPV6_PREFIX: 
+EXTERNAL_IPV6_PREFIX: 
+
+NAME: mynetwork
+REGION: asia-south1
+NETWORK: mynetwork
+RANGE: 10.160.0.0/20
+STACK_TYPE: IPV4_ONLY
+IPV6_ACCESS_TYPE: 
+INTERNAL_IPV6_PREFIX: 
+EXTERNAL_IPV6_PREFIX: 
+
+NAME: mynetwork
+REGION: europe-west4
+NETWORK: mynetwork
+RANGE: 10.164.0.0/20
+STACK_TYPE: IPV4_ONLY
+IPV6_ACCESS_TYPE: 
+INTERNAL_IPV6_PREFIX: 
+EXTERNAL_IPV6_PREFIX: 
+
+NAME: mynetwork
+REGION: europe-north1
+NETWORK: mynetwork
+RANGE: 10.166.0.0/20
+STACK_TYPE: IPV4_ONLY
+IPV6_ACCESS_TYPE: 
+INTERNAL_IPV6_PREFIX: 
+EXTERNAL_IPV6_PREFIX: 
+
+NAME: mynetwork
+REGION: us-west2
+NETWORK: mynetwork
+RANGE: 10.168.0.0/20
+STACK_TYPE: IPV4_ONLY
+IPV6_ACCESS_TYPE: 
+INTERNAL_IPV6_PREFIX: 
+EXTERNAL_IPV6_PREFIX: 
+
+NAME: mynetwork
+REGION: us-west3
+NETWORK: mynetwork
+RANGE: 10.180.0.0/20
+STACK_TYPE: IPV4_ONLY
+IPV6_ACCESS_TYPE: 
+INTERNAL_IPV6_PREFIX: 
+EXTERNAL_IPV6_PREFIX: 
+
+NAME: mynetwork
+REGION: us-west4
+NETWORK: mynetwork
+RANGE: 10.182.0.0/20
+STACK_TYPE: IPV4_ONLY
+IPV6_ACCESS_TYPE: 
+INTERNAL_IPV6_PREFIX: 
+EXTERNAL_IPV6_PREFIX: 
+
+NAME: mynetwork
+REGION: europe-central2
+NETWORK: mynetwork
+RANGE: 10.186.0.0/20
+STACK_TYPE: IPV4_ONLY
+IPV6_ACCESS_TYPE: 
+INTERNAL_IPV6_PREFIX: 
+EXTERNAL_IPV6_PREFIX: 
+
+NAME: mynetwork
+REGION: southamerica-west1
+NETWORK: mynetwork
+RANGE: 10.194.0.0/20
+STACK_TYPE: IPV4_ONLY
+IPV6_ACCESS_TYPE: 
+INTERNAL_IPV6_PREFIX: 
+EXTERNAL_IPV6_PREFIX: 
+
+NAME: mynetwork
+REGION: us-east5
+NETWORK: mynetwork
+RANGE: 10.202.0.0/20
+STACK_TYPE: IPV4_ONLY
+IPV6_ACCESS_TYPE: 
+INTERNAL_IPV6_PREFIX: 
+EXTERNAL_IPV6_PREFIX: 
+
+NAME: mynetwork
+REGION: us-south1
+NETWORK: mynetwork
+RANGE: 10.206.0.0/20
+STACK_TYPE: IPV4_ONLY
+IPV6_ACCESS_TYPE: 
+INTERNAL_IPV6_PREFIX: 
+EXTERNAL_IPV6_PREFIX: 
+----
+
+[source, bash]
+.*gcloud compute routes list*
+----
+NAME: default-route-10c1f731bb6d705e
+NETWORK: mynetwork
+DEST_RANGE: 10.194.0.0/20
+NEXT_HOP: mynetwork
+PRIORITY: 0
+
+NAME: default-route-13f48ebbe0b6abbf
+NETWORK: mynetwork
+DEST_RANGE: 10.146.0.0/20
+NEXT_HOP: mynetwork
+PRIORITY: 0
+
+NAME: default-route-16d5efdacafedb30
+NETWORK: mynetwork
+DEST_RANGE: 10.206.0.0/20
+NEXT_HOP: mynetwork
+PRIORITY: 0
+
+NAME: default-route-1855dffbaaa4df22
+NETWORK: mynetwork
+DEST_RANGE: 10.180.0.0/20
+NEXT_HOP: mynetwork
+PRIORITY: 0
+
+NAME: default-route-2440d68673968337
+NETWORK: mynetwork
+DEST_RANGE: 10.128.0.0/20
+NEXT_HOP: mynetwork
+PRIORITY: 0
+
+NAME: default-route-2e85b5195efcb011
+NETWORK: mynetwork
+DEST_RANGE: 10.182.0.0/20
+NEXT_HOP: mynetwork
+PRIORITY: 0
+
+NAME: default-route-3bb36e360358c16a
+NETWORK: mynetwork
+DEST_RANGE: 10.132.0.0/20
+NEXT_HOP: mynetwork
+PRIORITY: 0
+
+NAME: default-route-3c2fdaf8708f5f18
+NETWORK: mynetwork
+DEST_RANGE: 10.150.0.0/20
+NEXT_HOP: mynetwork
+PRIORITY: 0
+
+NAME: default-route-4f997153cf1f1753
+NETWORK: mynetwork
+DEST_RANGE: 10.154.0.0/20
+NEXT_HOP: mynetwork
+PRIORITY: 0
+
+NAME: default-route-5a1afad8303687a1
+NETWORK: mynetwork
+DEST_RANGE: 10.186.0.0/20
+NEXT_HOP: mynetwork
+PRIORITY: 0
+
+NAME: default-route-5ae23ee135df3b1d
+NETWORK: mynetwork
+DEST_RANGE: 10.202.0.0/20
+NEXT_HOP: mynetwork
+PRIORITY: 0
+
+NAME: default-route-5ccfceb1be9100c0
+NETWORK: mynetwork
+DEST_RANGE: 10.148.0.0/20
+NEXT_HOP: mynetwork
+PRIORITY: 0
+
+NAME: default-route-98db287c782e8641
+NETWORK: mynetwork
+DEST_RANGE: 0.0.0.0/0
+NEXT_HOP: default-internet-gateway
+PRIORITY: 1000
+
+NAME: default-route-a7269e7697dcca84
+NETWORK: mynetwork
+DEST_RANGE: 10.166.0.0/20
+NEXT_HOP: mynetwork
+PRIORITY: 0
+
+NAME: default-route-abe7d732ecee4b45
+NETWORK: mynetwork
+DEST_RANGE: 10.160.0.0/20
+NEXT_HOP: mynetwork
+PRIORITY: 0
+
+NAME: default-route-bc0ed7f55db50baf
+NETWORK: mynetwork
+DEST_RANGE: 10.140.0.0/20
+NEXT_HOP: mynetwork
+PRIORITY: 0
+
+NAME: default-route-bc929450bdd73daf
+NETWORK: mynetwork
+DEST_RANGE: 10.138.0.0/20
+NEXT_HOP: mynetwork
+PRIORITY: 0
+
+NAME: default-route-ccdd088c0670262b
+NETWORK: mynetwork
+DEST_RANGE: 10.164.0.0/20
+NEXT_HOP: mynetwork
+PRIORITY: 0
+
+NAME: default-route-eba7ffe7daeb934a
+NETWORK: mynetwork
+DEST_RANGE: 10.152.0.0/20
+NEXT_HOP: mynetwork
+PRIORITY: 0
+
+NAME: default-route-ee65722ea7e40ef3
+NETWORK: mynetwork
+DEST_RANGE: 10.156.0.0/20
+NEXT_HOP: mynetwork
+PRIORITY: 0
+
+NAME: default-route-f4ee05ac8700d4c3
+NETWORK: mynetwork
+DEST_RANGE: 10.168.0.0/20
+NEXT_HOP: mynetwork
+PRIORITY: 0
+
+NAME: default-route-f93e5c4095524370
+NETWORK: mynetwork
+DEST_RANGE: 10.142.0.0/20
+NEXT_HOP: mynetwork
+PRIORITY: 0
+----
+
+[source, bash]
+.*gcloud compute firewall-rules list*
+----
+NAME: mynetwork-allow-custom
+NETWORK: mynetwork
+DIRECTION: INGRESS
+PRIORITY: 65534
+ALLOW: all
+DENY: 
+DISABLED: False
+
+NAME: mynetwork-allow-icmp
+NETWORK: mynetwork
+DIRECTION: INGRESS
+PRIORITY: 65534
+ALLOW: icmp
+DENY: 
+DISABLED: False
+
+NAME: mynetwork-allow-rdp
+NETWORK: mynetwork
+DIRECTION: INGRESS
+PRIORITY: 65534
+ALLOW: tcp:3389
+DENY: 
+DISABLED: False
+
+NAME: mynetwork-allow-ssh
+NETWORK: mynetwork
+DIRECTION: INGRESS
+PRIORITY: 65534
+ALLOW: tcp:22
+DENY: 
+DISABLED: False
+----
+
+== custom mode networks
+
+[source, bash]
+.*gcloud compute networks list*
+----
+NAME: managementnet
+SUBNET_MODE: CUSTOM
+BGP_ROUTING_MODE: REGIONAL
+IPV4_RANGE: 
+GATEWAY_IPV4: 
+
+NAME: mynetwork
+SUBNET_MODE: CUSTOM
+BGP_ROUTING_MODE: REGIONAL
+IPV4_RANGE: 
+GATEWAY_IPV4: 
+
+NAME: privatenet
+SUBNET_MODE: CUSTOM
+BGP_ROUTING_MODE: REGIONAL
+IPV4_RANGE: 
+GATEWAY_IPV4: 
+----
+
+[source, bash]
+.*gcloud compute networks subnets list*
+----
+NAME: managementsubnet-us
+REGION: us-central1
+NETWORK: managementnet
+RANGE: 10.130.0.0/20
+STACK_TYPE: IPV4_ONLY
+IPV6_ACCESS_TYPE: 
+INTERNAL_IPV6_PREFIX: 
+EXTERNAL_IPV6_PREFIX: 
+
+NAME: mynetwork
+REGION: us-central1
+NETWORK: mynetwork
+RANGE: 10.128.0.0/20
+STACK_TYPE: IPV4_ONLY
+IPV6_ACCESS_TYPE: 
+INTERNAL_IPV6_PREFIX: 
+EXTERNAL_IPV6_PREFIX: 
+
+NAME: privatesubnet-us
+REGION: us-central1
+NETWORK: privatenet
+RANGE: 172.16.0.0/24
+STACK_TYPE: IPV4_ONLY
+IPV6_ACCESS_TYPE: 
+INTERNAL_IPV6_PREFIX: 
+EXTERNAL_IPV6_PREFIX: 
+
+NAME: mynetwork
+REGION: europe-west1
+NETWORK: mynetwork
+RANGE: 10.132.0.0/20
+STACK_TYPE: IPV4_ONLY
+IPV6_ACCESS_TYPE: 
+INTERNAL_IPV6_PREFIX: 
+EXTERNAL_IPV6_PREFIX: 
+
+NAME: privatesubnet-eu
+REGION: europe-west1
+NETWORK: privatenet
+RANGE: 172.20.0.0/20
+STACK_TYPE: IPV4_ONLY
+IPV6_ACCESS_TYPE: 
+INTERNAL_IPV6_PREFIX: 
+EXTERNAL_IPV6_PREFIX: 
+
+NAME: mynetwork
+REGION: us-west1
+NETWORK: mynetwork
+RANGE: 10.138.0.0/20
+STACK_TYPE: IPV4_ONLY
+IPV6_ACCESS_TYPE: 
+INTERNAL_IPV6_PREFIX: 
+EXTERNAL_IPV6_PREFIX: 
+
+NAME: mynetwork
+REGION: asia-east1
+NETWORK: mynetwork
+RANGE: 10.140.0.0/20
+STACK_TYPE: IPV4_ONLY
+IPV6_ACCESS_TYPE: 
+INTERNAL_IPV6_PREFIX: 
+EXTERNAL_IPV6_PREFIX: 
+
+NAME: mynetwork
+REGION: us-east1
+NETWORK: mynetwork
+RANGE: 10.142.0.0/20
+STACK_TYPE: IPV4_ONLY
+IPV6_ACCESS_TYPE: 
+INTERNAL_IPV6_PREFIX: 
+EXTERNAL_IPV6_PREFIX: 
+
+NAME: mynetwork
+REGION: asia-northeast1
+NETWORK: mynetwork
+RANGE: 10.146.0.0/20
+STACK_TYPE: IPV4_ONLY
+IPV6_ACCESS_TYPE: 
+INTERNAL_IPV6_PREFIX: 
+EXTERNAL_IPV6_PREFIX: 
+
+NAME: mynetwork
+REGION: asia-southeast1
+NETWORK: mynetwork
+RANGE: 10.148.0.0/20
+STACK_TYPE: IPV4_ONLY
+IPV6_ACCESS_TYPE: 
+INTERNAL_IPV6_PREFIX: 
+EXTERNAL_IPV6_PREFIX: 
+
+NAME: mynetwork
+REGION: us-east4
+NETWORK: mynetwork
+RANGE: 10.150.0.0/20
+STACK_TYPE: IPV4_ONLY
+IPV6_ACCESS_TYPE: 
+INTERNAL_IPV6_PREFIX: 
+EXTERNAL_IPV6_PREFIX: 
+
+NAME: mynetwork
+REGION: australia-southeast1
+NETWORK: mynetwork
+RANGE: 10.152.0.0/20
+STACK_TYPE: IPV4_ONLY
+IPV6_ACCESS_TYPE: 
+INTERNAL_IPV6_PREFIX: 
+EXTERNAL_IPV6_PREFIX: 
+
+NAME: mynetwork
+REGION: europe-west2
+NETWORK: mynetwork
+RANGE: 10.154.0.0/20
+STACK_TYPE: IPV4_ONLY
+IPV6_ACCESS_TYPE: 
+INTERNAL_IPV6_PREFIX: 
+EXTERNAL_IPV6_PREFIX: 
+
+NAME: mynetwork
+REGION: europe-west3
+NETWORK: mynetwork
+RANGE: 10.156.0.0/20
+STACK_TYPE: IPV4_ONLY
+IPV6_ACCESS_TYPE: 
+INTERNAL_IPV6_PREFIX: 
+EXTERNAL_IPV6_PREFIX: 
+
+NAME: mynetwork
+REGION: asia-south1
+NETWORK: mynetwork
+RANGE: 10.160.0.0/20
+STACK_TYPE: IPV4_ONLY
+IPV6_ACCESS_TYPE: 
+INTERNAL_IPV6_PREFIX: 
+EXTERNAL_IPV6_PREFIX: 
+
+NAME: mynetwork
+REGION: europe-west4
+NETWORK: mynetwork
+RANGE: 10.164.0.0/20
+STACK_TYPE: IPV4_ONLY
+IPV6_ACCESS_TYPE: 
+INTERNAL_IPV6_PREFIX: 
+EXTERNAL_IPV6_PREFIX: 
+
+NAME: mynetwork
+REGION: europe-north1
+NETWORK: mynetwork
+RANGE: 10.166.0.0/20
+STACK_TYPE: IPV4_ONLY
+IPV6_ACCESS_TYPE: 
+INTERNAL_IPV6_PREFIX: 
+EXTERNAL_IPV6_PREFIX: 
+
+NAME: mynetwork
+REGION: us-west2
+NETWORK: mynetwork
+RANGE: 10.168.0.0/20
+STACK_TYPE: IPV4_ONLY
+IPV6_ACCESS_TYPE: 
+INTERNAL_IPV6_PREFIX: 
+EXTERNAL_IPV6_PREFIX: 
+
+NAME: mynetwork
+REGION: us-west3
+NETWORK: mynetwork
+RANGE: 10.180.0.0/20
+STACK_TYPE: IPV4_ONLY
+IPV6_ACCESS_TYPE: 
+INTERNAL_IPV6_PREFIX: 
+EXTERNAL_IPV6_PREFIX: 
+
+NAME: mynetwork
+REGION: us-west4
+NETWORK: mynetwork
+RANGE: 10.182.0.0/20
+STACK_TYPE: IPV4_ONLY
+IPV6_ACCESS_TYPE: 
+INTERNAL_IPV6_PREFIX: 
+EXTERNAL_IPV6_PREFIX: 
+
+NAME: mynetwork
+REGION: europe-central2
+NETWORK: mynetwork
+RANGE: 10.186.0.0/20
+STACK_TYPE: IPV4_ONLY
+IPV6_ACCESS_TYPE: 
+INTERNAL_IPV6_PREFIX: 
+EXTERNAL_IPV6_PREFIX: 
+
+NAME: mynetwork
+REGION: southamerica-west1
+NETWORK: mynetwork
+RANGE: 10.194.0.0/20
+STACK_TYPE: IPV4_ONLY
+IPV6_ACCESS_TYPE: 
+INTERNAL_IPV6_PREFIX: 
+EXTERNAL_IPV6_PREFIX: 
+
+NAME: mynetwork
+REGION: us-east7
+NETWORK: mynetwork
+RANGE: 10.196.0.0/20
+STACK_TYPE: 
+IPV6_ACCESS_TYPE: 
+INTERNAL_IPV6_PREFIX: 
+EXTERNAL_IPV6_PREFIX: 
+
+NAME: mynetwork
+REGION: us-east5
+NETWORK: mynetwork
+RANGE: 10.202.0.0/20
+STACK_TYPE: IPV4_ONLY
+IPV6_ACCESS_TYPE: 
+INTERNAL_IPV6_PREFIX: 
+EXTERNAL_IPV6_PREFIX: 
+
+NAME: mynetwork
+REGION: us-south1
+NETWORK: mynetwork
+RANGE: 10.206.0.0/20
+STACK_TYPE: IPV4_ONLY
+IPV6_ACCESS_TYPE: 
+INTERNAL_IPV6_PREFIX: 
+EXTERNAL_IPV6_PREFIX: 
+----
+
+[source, bash]
+.*gcloud compute routes list*
+----
+NAME: default-route-10c1f731bb6d705e
+NETWORK: mynetwork
+DEST_RANGE: 10.194.0.0/20
+NEXT_HOP: mynetwork
+PRIORITY: 0
+
+NAME: default-route-13f48ebbe0b6abbf
+NETWORK: mynetwork
+DEST_RANGE: 10.146.0.0/20
+NEXT_HOP: mynetwork
+PRIORITY: 0
+
+NAME: default-route-16d5efdacafedb30
+NETWORK: mynetwork
+DEST_RANGE: 10.206.0.0/20
+NEXT_HOP: mynetwork
+PRIORITY: 0
+
+NAME: default-route-1855dffbaaa4df22
+NETWORK: mynetwork
+DEST_RANGE: 10.180.0.0/20
+NEXT_HOP: mynetwork
+PRIORITY: 0
+
+NAME: default-route-2440d68673968337
+NETWORK: mynetwork
+DEST_RANGE: 10.128.0.0/20
+NEXT_HOP: mynetwork
+PRIORITY: 0
+
+NAME: default-route-2e85b5195efcb011
+NETWORK: mynetwork
+DEST_RANGE: 10.182.0.0/20
+NEXT_HOP: mynetwork
+PRIORITY: 0
+
+NAME: default-route-3bb36e360358c16a
+NETWORK: mynetwork
+DEST_RANGE: 10.132.0.0/20
+NEXT_HOP: mynetwork
+PRIORITY: 0
+
+NAME: default-route-3c2fdaf8708f5f18
+NETWORK: mynetwork
+DEST_RANGE: 10.150.0.0/20
+NEXT_HOP: mynetwork
+PRIORITY: 0
+
+NAME: default-route-4f997153cf1f1753
+NETWORK: mynetwork
+DEST_RANGE: 10.154.0.0/20
+NEXT_HOP: mynetwork
+PRIORITY: 0
+
+NAME: default-route-5a1afad8303687a1
+NETWORK: mynetwork
+DEST_RANGE: 10.186.0.0/20
+NEXT_HOP: mynetwork
+PRIORITY: 0
+
+NAME: default-route-5ae23ee135df3b1d
+NETWORK: mynetwork
+DEST_RANGE: 10.202.0.0/20
+NEXT_HOP: mynetwork
+PRIORITY: 0
+
+NAME: default-route-5ccfceb1be9100c0
+NETWORK: mynetwork
+DEST_RANGE: 10.148.0.0/20
+NEXT_HOP: mynetwork
+PRIORITY: 0
+
+NAME: default-route-64416061722937be
+NETWORK: managementnet
+DEST_RANGE: 10.130.0.0/20
+NEXT_HOP: managementnet
+PRIORITY: 0
+
+NAME: default-route-98db287c782e8641
+NETWORK: mynetwork
+DEST_RANGE: 0.0.0.0/0
+NEXT_HOP: default-internet-gateway
+PRIORITY: 1000
+
+NAME: default-route-9fd7f14f9fbac5d8
+NETWORK: mynetwork
+DEST_RANGE: 10.196.0.0/20
+NEXT_HOP: mynetwork
+PRIORITY: 0
+
+NAME: default-route-a7269e7697dcca84
+NETWORK: mynetwork
+DEST_RANGE: 10.166.0.0/20
+NEXT_HOP: mynetwork
+PRIORITY: 0
+
+NAME: default-route-abe7d732ecee4b45
+NETWORK: mynetwork
+DEST_RANGE: 10.160.0.0/20
+NEXT_HOP: mynetwork
+PRIORITY: 0
+
+NAME: default-route-b363cd475c103392
+NETWORK: privatenet
+DEST_RANGE: 0.0.0.0/0
+NEXT_HOP: default-internet-gateway
+PRIORITY: 1000
+
+NAME: default-route-bc0ed7f55db50baf
+NETWORK: mynetwork
+DEST_RANGE: 10.140.0.0/20
+NEXT_HOP: mynetwork
+PRIORITY: 0
+
+NAME: default-route-bc929450bdd73daf
+NETWORK: mynetwork
+DEST_RANGE: 10.138.0.0/20
+NEXT_HOP: mynetwork
+PRIORITY: 0
+
+NAME: default-route-c30ec08ad33fd9df
+NETWORK: privatenet
+DEST_RANGE: 172.20.0.0/20
+NEXT_HOP: privatenet
+PRIORITY: 0
+
+NAME: default-route-c944b03e57e1449a
+NETWORK: privatenet
+DEST_RANGE: 172.16.0.0/24
+NEXT_HOP: privatenet
+PRIORITY: 0
+
+NAME: default-route-ccdd088c0670262b
+NETWORK: mynetwork
+DEST_RANGE: 10.164.0.0/20
+NEXT_HOP: mynetwork
+PRIORITY: 0
+
+NAME: default-route-d88735bf0ef1e49e
+NETWORK: managementnet
+DEST_RANGE: 0.0.0.0/0
+NEXT_HOP: default-internet-gateway
+PRIORITY: 1000
+
+NAME: default-route-eba7ffe7daeb934a
+NETWORK: mynetwork
+DEST_RANGE: 10.152.0.0/20
+NEXT_HOP: mynetwork
+PRIORITY: 0
+
+NAME: default-route-ee65722ea7e40ef3
+NETWORK: mynetwork
+DEST_RANGE: 10.156.0.0/20
+NEXT_HOP: mynetwork
+PRIORITY: 0
+
+NAME: default-route-f4ee05ac8700d4c3
+NETWORK: mynetwork
+DEST_RANGE: 10.168.0.0/20
+NEXT_HOP: mynetwork
+PRIORITY: 0
+
+NAME: default-route-f93e5c4095524370
+NETWORK: mynetwork
+DEST_RANGE: 10.142.0.0/20
+NEXT_HOP: mynetwork
+PRIORITY: 0
+----
+
+[source, bash]
+.*gcloud compute firewall-rules list*
+----
+NAME: mynetwork-allow-custom
+NETWORK: mynetwork
+DIRECTION: INGRESS
+PRIORITY: 65534
+ALLOW: all
+DENY: 
+DISABLED: False
+
+NAME: mynetwork-allow-icmp
+NETWORK: mynetwork
+DIRECTION: INGRESS
+PRIORITY: 65534
+ALLOW: icmp
+DENY: 
+DISABLED: False
+
+NAME: mynetwork-allow-rdp
+NETWORK: mynetwork
+DIRECTION: INGRESS
+PRIORITY: 65534
+ALLOW: tcp:3389
+DENY: 
+DISABLED: False
+
+NAME: mynetwork-allow-ssh
+NETWORK: mynetwork
+DIRECTION: INGRESS
+PRIORITY: 65534
+ALLOW: tcp:22
+DENY: 
+DISABLED: False
+[source, bash]
+.*gcloud compute networks list*
+----
+NAME: mynetwork
+SUBNET_MODE: AUTO
+BGP_ROUTING_MODE: REGIONAL
+IPV4_RANGE: 
+GATEWAY_IPV4: 
+----
+
+[source, bash]
+.*gcloud compute networks subnets list *
+----
+NAME: mynetwork
+REGION: us-central1
+NETWORK: mynetwork
+RANGE: 10.128.0.0/20
+STACK_TYPE: IPV4_ONLY
+IPV6_ACCESS_TYPE: 
+INTERNAL_IPV6_PREFIX: 
+EXTERNAL_IPV6_PREFIX: 
+
+NAME: mynetwork
+REGION: europe-west1
+NETWORK: mynetwork
+RANGE: 10.132.0.0/20
+STACK_TYPE: IPV4_ONLY
+IPV6_ACCESS_TYPE: 
+INTERNAL_IPV6_PREFIX: 
+EXTERNAL_IPV6_PREFIX: 
+
+NAME: mynetwork
+REGION: us-west1
+NETWORK: mynetwork
+RANGE: 10.138.0.0/20
+STACK_TYPE: IPV4_ONLY
+IPV6_ACCESS_TYPE: 
+INTERNAL_IPV6_PREFIX: 
+EXTERNAL_IPV6_PREFIX: 
+
+NAME: mynetwork
+REGION: asia-east1
+NETWORK: mynetwork
+RANGE: 10.140.0.0/20
+STACK_TYPE: IPV4_ONLY
+IPV6_ACCESS_TYPE: 
+INTERNAL_IPV6_PREFIX: 
+EXTERNAL_IPV6_PREFIX: 
+
+NAME: mynetwork
+----
+
+[source, bash]
+.*gcloud compute firewall-rules list *
+----
+NAME: managementnet-allow-icmp-ssh-rdp
+NETWORK: managementnet
+DIRECTION: INGRESS
+PRIORITY: 1000
+ALLOW: tcp:22,tcp:3389,icmp
+DENY: 
+DISABLED: False
+
+NAME: mynetwork-allow-custom
+NETWORK: mynetwork
+DIRECTION: INGRESS
+PRIORITY: 65534
+ALLOW: all
+DENY: 
+DISABLED: False
+
+NAME: mynetwork-allow-icmp
+NETWORK: mynetwork
+DIRECTION: INGRESS
+PRIORITY: 65534
+ALLOW: icmp
+DENY: 
+DISABLED: False
+
+NAME: mynetwork-allow-rdp
+NETWORK: mynetwork
+DIRECTION: INGRESS
+PRIORITY: 65534
+ALLOW: tcp:3389
+DENY: 
+DISABLED: False
+
+NAME: mynetwork-allow-ssh
+NETWORK: mynetwork
+DIRECTION: INGRESS
+PRIORITY: 65534
+ALLOW: tcp:22
+DENY: 
+DISABLED: False
+
+NAME: privatenet-allow-icmp-ssh-rdp
+NETWORK: privatenet
+DIRECTION: INGRESS
+PRIORITY: 1000
+ALLOW: icmp,tcp:22,tcp:3389
+DENY: 
+DISABLED: False
+----
