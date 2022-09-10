@@ -15,6 +15,7 @@ GATEWAY_IPV4:
 
 [source, bash]
 .*gcloud compute networks subnets list*
+----
 NAME: default
 REGION: us-central1
 NETWORK: default
