@@ -1244,6 +1244,8 @@ PRIORITY: 65534
 ALLOW: tcp:22
 DENY: 
 DISABLED: False
+----
+
 [source, bash]
 .*gcloud compute networks list*
 ----
@@ -1255,7 +1257,7 @@ GATEWAY_IPV4:
 ----
 
 [source, bash]
-.*gcloud compute networks subnets list *
+.*gcloud compute networks subnets list*
 ----
 NAME: mynetwork
 REGION: us-central1
@@ -1292,12 +1294,10 @@ STACK_TYPE: IPV4_ONLY
 IPV6_ACCESS_TYPE: 
 INTERNAL_IPV6_PREFIX: 
 EXTERNAL_IPV6_PREFIX: 
-
-NAME: mynetwork
 ----
 
 [source, bash]
-.*gcloud compute firewall-rules list *
+.*gcloud compute firewall-rules list*
 ----
 NAME: managementnet-allow-icmp-ssh-rdp
 NETWORK: managementnet
