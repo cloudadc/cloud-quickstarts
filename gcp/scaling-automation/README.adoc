@@ -1,0 +1,17 @@
+= Scaling and Automation
+:toc: manual
+
+
+== Terraform
+
+[source, bash]
+----
+cd tfinfra/
+terraform fmt
+terraform init
+terraform plan
+terraform apply
+----
+
+
+
