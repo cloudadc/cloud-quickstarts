@@ -1,0 +1,89 @@
+= GKE
+:toc: manual
+
+== Zonal GKE Cluster
+
+*1. Create Cluster*
+
+Create GKE Cluster can be implement via `gcloud` command, `rest api`, or `Google Cloud Console`, due to the `project id` and `credentials` are necessary are necessary, so in this section use `Google Cloud Console` to create a Zonal GKE Cluster.
+
+Simple navigate to *Kubernetes Engine > Clusters* to start create cluster, name the cluster's name as `test-cluster` and use others as default. 
+
+[source, bash]
+.*2. Generate a kubeconfig on Cloud Shell*
+----
+gcloud container clusters get-credentials test-cluster --zone us-central1-c
+----
+
+[source, bash]
+.*3. Review GKE Cluster via kubectl*
+----
+$ kubectl version --short
+Client Version: v1.25.4
+Kustomize Version: v4.5.7
+Server Version: v1.24.7-gke.900
+
+$ kubectl get nodes -o wide
+NAME                                          STATUS   ROLES    AGE     VERSION           INTERNAL-IP   EXTERNAL-IP    OS-IMAGE                             KERNEL-VERSION   CONTAINER-RUNTIME
+gke-test-cluster-default-pool-297a02ae-332w   Ready    <none>   6m42s   v1.24.7-gke.900   10.128.0.8    34.29.73.234   Container-Optimized OS from Google   5.10.147+        containerd://1.6.6
+gke-test-cluster-default-pool-297a02ae-48lv   Ready    <none>   6m42s   v1.24.7-gke.900   10.128.0.10   34.29.75.13    Container-Optimized OS from Google   5.10.147+        containerd://1.6.6
+gke-test-cluster-default-pool-297a02ae-tts9   Ready    <none>   6m42s   v1.24.7-gke.900   10.128.0.9    34.66.91.221   Container-Optimized OS from Google   5.10.147+        containerd://1.6.6
+
+$ kubectl get pods -A -o wide
+NAMESPACE     NAME                                                     READY   STATUS    RESTARTS   AGE     IP            NODE                                          NOMINATED NODE   READINESS GATES
+kube-system   event-exporter-gke-857959888b-c7vjj                      2/2     Running   0          8m11s   10.68.1.2     gke-test-cluster-default-pool-297a02ae-tts9   <none>           <none>
+kube-system   fluentbit-gke-8ltlj                                      2/2     Running   0          7m14s   10.128.0.8    gke-test-cluster-default-pool-297a02ae-332w   <none>           <none>
+kube-system   fluentbit-gke-mqpv7                                      2/2     Running   0          7m13s   10.128.0.9    gke-test-cluster-default-pool-297a02ae-tts9   <none>           <none>
+kube-system   fluentbit-gke-qxhxc                                      2/2     Running   0          7m12s   10.128.0.10   gke-test-cluster-default-pool-297a02ae-48lv   <none>           <none>
+kube-system   gke-metrics-agent-88ztw                                  1/1     Running   0          7m13s   10.128.0.10   gke-test-cluster-default-pool-297a02ae-48lv   <none>           <none>
+kube-system   gke-metrics-agent-fjl2q                                  1/1     Running   0          7m13s   10.128.0.9    gke-test-cluster-default-pool-297a02ae-tts9   <none>           <none>
+kube-system   gke-metrics-agent-wlg22                                  1/1     Running   0          7m14s   10.128.0.8    gke-test-cluster-default-pool-297a02ae-332w   <none>           <none>
+kube-system   konnectivity-agent-6c79c4fc86-28cll                      1/1     Running   0          7m3s    10.68.0.3     gke-test-cluster-default-pool-297a02ae-332w   <none>           <none>
+kube-system   konnectivity-agent-6c79c4fc86-dlwn4                      1/1     Running   0          8m4s    10.68.1.3     gke-test-cluster-default-pool-297a02ae-tts9   <none>           <none>
+kube-system   konnectivity-agent-6c79c4fc86-n8bls                      1/1     Running   0          7m3s    10.68.2.5     gke-test-cluster-default-pool-297a02ae-48lv   <none>           <none>
+kube-system   konnectivity-agent-autoscaler-566966775b-4t65m           1/1     Running   0          8m3s    10.68.1.4     gke-test-cluster-default-pool-297a02ae-tts9   <none>           <none>
+kube-system   kube-dns-7d5998784c-4rk7w                                4/4     Running   0          7m3s    10.68.2.6     gke-test-cluster-default-pool-297a02ae-48lv   <none>           <none>
+kube-system   kube-dns-7d5998784c-vfpzt                                4/4     Running   0          8m16s   10.68.0.2     gke-test-cluster-default-pool-297a02ae-332w   <none>           <none>
+kube-system   kube-dns-autoscaler-9f89698b6-l2vdf                      1/1     Running   0          8m16s   10.68.2.3     gke-test-cluster-default-pool-297a02ae-48lv   <none>           <none>
+kube-system   kube-proxy-gke-test-cluster-default-pool-297a02ae-332w   1/1     Running   0          5m51s   10.128.0.8    gke-test-cluster-default-pool-297a02ae-332w   <none>           <none>
+kube-system   kube-proxy-gke-test-cluster-default-pool-297a02ae-48lv   1/1     Running   0          6m28s   10.128.0.10   gke-test-cluster-default-pool-297a02ae-48lv   <none>           <none>
+kube-system   kube-proxy-gke-test-cluster-default-pool-297a02ae-tts9   1/1     Running   0          6m56s   10.128.0.9    gke-test-cluster-default-pool-297a02ae-tts9   <none>           <none>
+kube-system   l7-default-backend-6dc845c45d-gcqph                      1/1     Running   0          8m1s    10.68.2.2     gke-test-cluster-default-pool-297a02ae-48lv   <none>           <none>
+kube-system   metrics-server-v0.5.2-6bf845b67f-qddpr                   2/2     Running   0          6m53s   10.68.1.5     gke-test-cluster-default-pool-297a02ae-tts9   <none>           <none>
+kube-system   pdcsi-node-8dz57                                         2/2     Running   0          7m13s   10.128.0.8    gke-test-cluster-default-pool-297a02ae-332w   <none>           <none>
+kube-system   pdcsi-node-f5x2z                                         2/2     Running   0          7m13s   10.128.0.9    gke-test-cluster-default-pool-297a02ae-tts9   <none>           <none>
+kube-system   pdcsi-node-kx9lj                                         2/2     Running   0          7m13s   10.128.0.10   gke-test-cluster-default-pool-297a02ae-48lv   <none>           <none>
+----
+
+[source, bash]
+.*4. Create a workloads*
+----
+kubectl apply -f nginx.yaml
+----
+
+NOTE: the above commands will create 3 K8S Objects, `Namespace`, `Deployment` and `HorizontalPodAutoscaler`, which the `Deployment` will create 3 nginx pods and `HorizontalPodAutoscaler` will make nginx nginx horizontal scale to max 5 nginx pods, the scle crertia via POD CPU Usage, if POD CPU usage exceed 80%, the horizontal scale will start.
+
+* link:nginx.yaml[nginx.yaml]
+
+[source, bash]
+.*5. Review the deployed workload*
+----
+$ kubectl get deploy -n nginx
+NAME      READY   UP-TO-DATE   AVAILABLE   AGE
+nginx-1   3/3     3            3           2m12s
+
+$ kubectl get rs -n nginx
+NAME                 DESIRED   CURRENT   READY   AGE
+nginx-1-5775447459   3         3         3       8m
+
+$ kubectl get hpa -n nginx
+NAME               REFERENCE            TARGETS         MINPODS   MAXPODS   REPLICAS   AGE
+nginx-1-hpa-ekh8   Deployment/nginx-1   <unknown>/80%   1         5         3          2m31s
+
+$ kubectl get pods -n nginx -o wide
+NAME                       READY   STATUS    RESTARTS   AGE   IP          NODE                                          NOMINATED NODE   READINESS GATES
+nginx-1-5775447459-2xgwd   1/1     Running   0          3m    10.68.0.4   gke-test-cluster-default-pool-297a02ae-332w   <none>           <none>
+nginx-1-5775447459-bx6r9   1/1     Running   0          3m    10.68.1.6   gke-test-cluster-default-pool-297a02ae-tts9   <none>           <none>
+nginx-1-5775447459-lqk2j   1/1     Running   0          3m    10.68.2.7   gke-test-cluster-default-pool-297a02ae-48lv   <none>           <none>
+----
+
