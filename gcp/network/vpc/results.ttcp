@@ -1,0 +1,84 @@
+@vm-4 ~]$ ttcp -r
+ttcp-r: buflen=1048576, nbuf=100, align=16384/0, port=5001  tcp
+ttcp-r: socket
+ttcp-r: accept from 10.140.0.3:60794
+ttcp-r: worker 1441 start
+ttcp-r: worker 1441, stats of 10.140.0.3:60794
+        2147483648 bytes in 17.61 real seconds = 116.30 MB/sec +++
+        2147483648 bytes in 2.13 CPU seconds = 960.69 MB/cpu sec
+        51866 I/O calls, msec/call = 0.35, calls/sec = 2945.34
+        0.0user 2.0sys 0:17real 12% 0i+0d 158maxrss 0+49pf 51106+1csw
+        buffer address 0x7f8994af8000
+ttcp-r: worker 1441 terminated
+ttcp-r: accept from 10.140.0.3:60796
+ttcp-r: worker 1444 start
+ttcp-r: worker 1444, stats of 10.140.0.3:60796
+        2147483648 bytes in 17.61 real seconds = 116.30 MB/sec +++
+        2147483648 bytes in 2.09 CPU seconds = 979.39 MB/cpu sec
+        52267 I/O calls, msec/call = 0.35, calls/sec = 2968.10
+        0.0user 2.0sys 0:17real 11% 0i+0d 554maxrss 0+260pf 51577+0csw
+        buffer address 0x7f8994af8000
+ttcp-r: worker 1444 terminated
+ttcp-r: accept from 10.140.0.3:60798
+ttcp-r: worker 1446 start
+ttcp-r: worker 1446, stats of 10.140.0.3:60798
+        2147483648 bytes in 17.62 real seconds = 116.21 MB/sec +++
+        2147483648 bytes in 2.16 CPU seconds = 948.65 MB/cpu sec
+        52287 I/O calls, msec/call = 0.35, calls/sec = 2966.82
+        0.0user 2.0sys 0:17real 12% 0i+0d 158maxrss 0+49pf 51535+1csw
+        buffer address 0x7f8994af8000
+ttcp-r: worker 1446 terminated
+ttcp-r: accept from 10.140.0.4:53094
+ttcp-r: worker 1447 start
+ttcp-r: worker 1447, stats of 10.140.0.4:53094
+        2147483648 bytes in 17.63 real seconds = 116.18 MB/sec +++
+        2147483648 bytes in 2.12 CPU seconds = 964.28 MB/cpu sec
+        51998 I/O calls, msec/call = 0.35, calls/sec = 2949.73
+        0.0user 2.0sys 0:17real 12% 0i+0d 290maxrss 0+107pf 51233+0csw
+        buffer address 0x7f8994af8000
+ttcp-r: worker 1447 terminated
+ttcp-r: accept from 10.140.0.4:53116
+ttcp-r: worker 1449 start
+ttcp-r: worker 1449, stats of 10.140.0.4:53116
+        2147483648 bytes in 17.60 real seconds = 116.37 MB/sec +++
+        2147483648 bytes in 2.13 CPU seconds = 961.29 MB/cpu sec
+        52559 I/O calls, msec/call = 0.34, calls/sec = 2986.40
+        0.0user 2.0sys 0:17real 12% 0i+0d 158maxrss 0+48pf 51820+1csw
+        buffer address 0x7f8994af8000
+ttcp-r: worker 1449 terminated
+ttcp-r: accept from 10.140.0.4:53118
+ttcp-r: worker 1450 start
+ttcp-r: worker 1450, stats of 10.140.0.4:53118
+        2147483648 bytes in 17.52 real seconds = 116.87 MB/sec +++
+        2147483648 bytes in 2.10 CPU seconds = 973.87 MB/cpu sec
+        51935 I/O calls, msec/call = 0.35, calls/sec = 2963.66
+        0.0user 2.0sys 0:17real 11% 0i+0d 158maxrss 0+47pf 51149+0csw
+        buffer address 0x7f8994af8000
+ttcp-r: worker 1450 terminated
+ttcp-r: accept from 10.146.0.2:32890
+ttcp-r: worker 1451 start
+ttcp-r: worker 1451, stats of 10.146.0.2:32890
+        2147483648 bytes in 24.09 real seconds = 85.02 MB/sec +++
+        2147483648 bytes in 1.72 CPU seconds = 1190.31 MB/cpu sec
+        33234 I/O calls, msec/call = 0.74, calls/sec = 1379.71
+        0.0user 1.6sys 0:24real 7% 0i+0d 554maxrss 0+210pf 31937+0csw
+        buffer address 0x7f8994af8000
+ttcp-r: worker 1451 terminated
+ttcp-r: accept from 10.146.0.2:32898
+ttcp-r: worker 1505 start
+ttcp-r: worker 1505, stats of 10.146.0.2:32898
+        2147483648 bytes in 40.48 real seconds = 50.59 MB/sec +++
+        2147483648 bytes in 2.18 CPU seconds = 939.51 MB/cpu sec
+        35295 I/O calls, msec/call = 1.17, calls/sec = 871.91
+        0.0user 2.1sys 0:40real 5% 0i+0d 554maxrss 0+260pf 34053+1csw
+        buffer address 0x7f8994af8000
+ttcp-r: worker 1505 terminated
+ttcp-r: accept from 10.146.0.2:32900
+ttcp-r: worker 1528 start
+ttcp-r: worker 1528, stats of 10.146.0.2:32900
+        2147483648 bytes in 26.88 real seconds = 76.19 MB/sec +++
+        2147483648 bytes in 2.04 CPU seconds = 1002.61 MB/cpu sec
+        32329 I/O calls, msec/call = 0.85, calls/sec = 1202.66
+        0.0user 1.9sys 0:26real 7% 0i+0d 422maxrss 0+183pf 31102+1csw
+        buffer address 0x7f8994af8000
+ttcp-r: worker 1528 terminated

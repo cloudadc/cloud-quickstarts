@@ -448,979 +448,158 @@ link:default-firewall-rules.json[default-firewall-rules.json]
 |===
 
 
-== auto mode network
+== delete default network
 
-[source. bash]
-.*gcloud compute networks list*
-----
-NAME: mynetwork
-SUBNET_MODE: AUTO
-BGP_ROUTING_MODE: REGIONAL
-IPV4_RANGE: 
-GATEWAY_IPV4: 
-----
-
-[source, bash]
-.*gcloud compute networks subnets list*
-----
-NAME: mynetwork
-REGION: us-central1
-NETWORK: mynetwork
-RANGE: 10.128.0.0/20
-STACK_TYPE: IPV4_ONLY
-IPV6_ACCESS_TYPE: 
-INTERNAL_IPV6_PREFIX: 
-EXTERNAL_IPV6_PREFIX: 
-
-NAME: mynetwork
-REGION: europe-west1
-NETWORK: mynetwork
-RANGE: 10.132.0.0/20
-STACK_TYPE: IPV4_ONLY
-IPV6_ACCESS_TYPE: 
-INTERNAL_IPV6_PREFIX: 
-EXTERNAL_IPV6_PREFIX: 
-
-NAME: mynetwork
-REGION: us-west1
-NETWORK: mynetwork
-RANGE: 10.138.0.0/20
-STACK_TYPE: IPV4_ONLY
-IPV6_ACCESS_TYPE: 
-INTERNAL_IPV6_PREFIX: 
-EXTERNAL_IPV6_PREFIX: 
-
-NAME: mynetwork
-REGION: asia-east1
-NETWORK: mynetwork
-RANGE: 10.140.0.0/20
-STACK_TYPE: IPV4_ONLY
-IPV6_ACCESS_TYPE: 
-INTERNAL_IPV6_PREFIX: 
-EXTERNAL_IPV6_PREFIX: 
-
-NAME: mynetwork
-REGION: us-east1
-NETWORK: mynetwork
-RANGE: 10.142.0.0/20
-STACK_TYPE: IPV4_ONLY
-IPV6_ACCESS_TYPE: 
-INTERNAL_IPV6_PREFIX: 
-EXTERNAL_IPV6_PREFIX: 
-
-NAME: mynetwork
-REGION: asia-northeast1
-NETWORK: mynetwork
-RANGE: 10.146.0.0/20
-STACK_TYPE: IPV4_ONLY
-IPV6_ACCESS_TYPE: 
-INTERNAL_IPV6_PREFIX: 
-EXTERNAL_IPV6_PREFIX: 
-
-NAME: mynetwork
-REGION: asia-southeast1
-NETWORK: mynetwork
-RANGE: 10.148.0.0/20
-STACK_TYPE: IPV4_ONLY
-IPV6_ACCESS_TYPE: 
-INTERNAL_IPV6_PREFIX: 
-EXTERNAL_IPV6_PREFIX: 
-
-NAME: mynetwork
-REGION: us-east4
-NETWORK: mynetwork
-RANGE: 10.150.0.0/20
-STACK_TYPE: IPV4_ONLY
-IPV6_ACCESS_TYPE: 
-INTERNAL_IPV6_PREFIX: 
-EXTERNAL_IPV6_PREFIX: 
-
-NAME: mynetwork
-REGION: australia-southeast1
-NETWORK: mynetwork
-RANGE: 10.152.0.0/20
-STACK_TYPE: IPV4_ONLY
-IPV6_ACCESS_TYPE: 
-INTERNAL_IPV6_PREFIX: 
-EXTERNAL_IPV6_PREFIX: 
-
-NAME: mynetwork
-REGION: europe-west2
-NETWORK: mynetwork
-RANGE: 10.154.0.0/20
-STACK_TYPE: IPV4_ONLY
-IPV6_ACCESS_TYPE: 
-INTERNAL_IPV6_PREFIX: 
-EXTERNAL_IPV6_PREFIX: 
-
-NAME: mynetwork
-REGION: europe-west3
-NETWORK: mynetwork
-RANGE: 10.156.0.0/20
-STACK_TYPE: IPV4_ONLY
-IPV6_ACCESS_TYPE: 
-INTERNAL_IPV6_PREFIX: 
-EXTERNAL_IPV6_PREFIX: 
-
-NAME: mynetwork
-REGION: asia-south1
-NETWORK: mynetwork
-RANGE: 10.160.0.0/20
-STACK_TYPE: IPV4_ONLY
-IPV6_ACCESS_TYPE: 
-INTERNAL_IPV6_PREFIX: 
-EXTERNAL_IPV6_PREFIX: 
-
-NAME: mynetwork
-REGION: europe-west4
-NETWORK: mynetwork
-RANGE: 10.164.0.0/20
-STACK_TYPE: IPV4_ONLY
-IPV6_ACCESS_TYPE: 
-INTERNAL_IPV6_PREFIX: 
-EXTERNAL_IPV6_PREFIX: 
-
-NAME: mynetwork
-REGION: europe-north1
-NETWORK: mynetwork
-RANGE: 10.166.0.0/20
-STACK_TYPE: IPV4_ONLY
-IPV6_ACCESS_TYPE: 
-INTERNAL_IPV6_PREFIX: 
-EXTERNAL_IPV6_PREFIX: 
-
-NAME: mynetwork
-REGION: us-west2
-NETWORK: mynetwork
-RANGE: 10.168.0.0/20
-STACK_TYPE: IPV4_ONLY
-IPV6_ACCESS_TYPE: 
-INTERNAL_IPV6_PREFIX: 
-EXTERNAL_IPV6_PREFIX: 
-
-NAME: mynetwork
-REGION: us-west3
-NETWORK: mynetwork
-RANGE: 10.180.0.0/20
-STACK_TYPE: IPV4_ONLY
-IPV6_ACCESS_TYPE: 
-INTERNAL_IPV6_PREFIX: 
-EXTERNAL_IPV6_PREFIX: 
-
-NAME: mynetwork
-REGION: us-west4
-NETWORK: mynetwork
-RANGE: 10.182.0.0/20
-STACK_TYPE: IPV4_ONLY
-IPV6_ACCESS_TYPE: 
-INTERNAL_IPV6_PREFIX: 
-EXTERNAL_IPV6_PREFIX: 
-
-NAME: mynetwork
-REGION: europe-central2
-NETWORK: mynetwork
-RANGE: 10.186.0.0/20
-STACK_TYPE: IPV4_ONLY
-IPV6_ACCESS_TYPE: 
-INTERNAL_IPV6_PREFIX: 
-EXTERNAL_IPV6_PREFIX: 
-
-NAME: mynetwork
-REGION: southamerica-west1
-NETWORK: mynetwork
-RANGE: 10.194.0.0/20
-STACK_TYPE: IPV4_ONLY
-IPV6_ACCESS_TYPE: 
-INTERNAL_IPV6_PREFIX: 
-EXTERNAL_IPV6_PREFIX: 
-
-NAME: mynetwork
-REGION: us-east5
-NETWORK: mynetwork
-RANGE: 10.202.0.0/20
-STACK_TYPE: IPV4_ONLY
-IPV6_ACCESS_TYPE: 
-INTERNAL_IPV6_PREFIX: 
-EXTERNAL_IPV6_PREFIX: 
-
-NAME: mynetwork
-REGION: us-south1
-NETWORK: mynetwork
-RANGE: 10.206.0.0/20
-STACK_TYPE: IPV4_ONLY
-IPV6_ACCESS_TYPE: 
-INTERNAL_IPV6_PREFIX: 
-EXTERNAL_IPV6_PREFIX: 
-----
-
-[source, bash]
-.*gcloud compute routes list*
-----
-NAME: default-route-10c1f731bb6d705e
-NETWORK: mynetwork
-DEST_RANGE: 10.194.0.0/20
-NEXT_HOP: mynetwork
-PRIORITY: 0
-
-NAME: default-route-13f48ebbe0b6abbf
-NETWORK: mynetwork
-DEST_RANGE: 10.146.0.0/20
-NEXT_HOP: mynetwork
-PRIORITY: 0
-
-NAME: default-route-16d5efdacafedb30
-NETWORK: mynetwork
-DEST_RANGE: 10.206.0.0/20
-NEXT_HOP: mynetwork
-PRIORITY: 0
-
-NAME: default-route-1855dffbaaa4df22
-NETWORK: mynetwork
-DEST_RANGE: 10.180.0.0/20
-NEXT_HOP: mynetwork
-PRIORITY: 0
-
-NAME: default-route-2440d68673968337
-NETWORK: mynetwork
-DEST_RANGE: 10.128.0.0/20
-NEXT_HOP: mynetwork
-PRIORITY: 0
-
-NAME: default-route-2e85b5195efcb011
-NETWORK: mynetwork
-DEST_RANGE: 10.182.0.0/20
-NEXT_HOP: mynetwork
-PRIORITY: 0
-
-NAME: default-route-3bb36e360358c16a
-NETWORK: mynetwork
-DEST_RANGE: 10.132.0.0/20
-NEXT_HOP: mynetwork
-PRIORITY: 0
-
-NAME: default-route-3c2fdaf8708f5f18
-NETWORK: mynetwork
-DEST_RANGE: 10.150.0.0/20
-NEXT_HOP: mynetwork
-PRIORITY: 0
-
-NAME: default-route-4f997153cf1f1753
-NETWORK: mynetwork
-DEST_RANGE: 10.154.0.0/20
-NEXT_HOP: mynetwork
-PRIORITY: 0
-
-NAME: default-route-5a1afad8303687a1
-NETWORK: mynetwork
-DEST_RANGE: 10.186.0.0/20
-NEXT_HOP: mynetwork
-PRIORITY: 0
-
-NAME: default-route-5ae23ee135df3b1d
-NETWORK: mynetwork
-DEST_RANGE: 10.202.0.0/20
-NEXT_HOP: mynetwork
-PRIORITY: 0
-
-NAME: default-route-5ccfceb1be9100c0
-NETWORK: mynetwork
-DEST_RANGE: 10.148.0.0/20
-NEXT_HOP: mynetwork
-PRIORITY: 0
-
-NAME: default-route-98db287c782e8641
-NETWORK: mynetwork
-DEST_RANGE: 0.0.0.0/0
-NEXT_HOP: default-internet-gateway
-PRIORITY: 1000
-
-NAME: default-route-a7269e7697dcca84
-NETWORK: mynetwork
-DEST_RANGE: 10.166.0.0/20
-NEXT_HOP: mynetwork
-PRIORITY: 0
-
-NAME: default-route-abe7d732ecee4b45
-NETWORK: mynetwork
-DEST_RANGE: 10.160.0.0/20
-NEXT_HOP: mynetwork
-PRIORITY: 0
-
-NAME: default-route-bc0ed7f55db50baf
-NETWORK: mynetwork
-DEST_RANGE: 10.140.0.0/20
-NEXT_HOP: mynetwork
-PRIORITY: 0
-
-NAME: default-route-bc929450bdd73daf
-NETWORK: mynetwork
-DEST_RANGE: 10.138.0.0/20
-NEXT_HOP: mynetwork
-PRIORITY: 0
-
-NAME: default-route-ccdd088c0670262b
-NETWORK: mynetwork
-DEST_RANGE: 10.164.0.0/20
-NEXT_HOP: mynetwork
-PRIORITY: 0
-
-NAME: default-route-eba7ffe7daeb934a
-NETWORK: mynetwork
-DEST_RANGE: 10.152.0.0/20
-NEXT_HOP: mynetwork
-PRIORITY: 0
-
-NAME: default-route-ee65722ea7e40ef3
-NETWORK: mynetwork
-DEST_RANGE: 10.156.0.0/20
-NEXT_HOP: mynetwork
-PRIORITY: 0
-
-NAME: default-route-f4ee05ac8700d4c3
-NETWORK: mynetwork
-DEST_RANGE: 10.168.0.0/20
-NEXT_HOP: mynetwork
-PRIORITY: 0
-
-NAME: default-route-f93e5c4095524370
-NETWORK: mynetwork
-DEST_RANGE: 10.142.0.0/20
-NEXT_HOP: mynetwork
-PRIORITY: 0
-----
-
-[source, bash]
-.*gcloud compute firewall-rules list*
-----
-NAME: mynetwork-allow-custom
-NETWORK: mynetwork
-DIRECTION: INGRESS
-PRIORITY: 65534
-ALLOW: all
-DENY: 
-DISABLED: False
-
-NAME: mynetwork-allow-icmp
-NETWORK: mynetwork
-DIRECTION: INGRESS
-PRIORITY: 65534
-ALLOW: icmp
-DENY: 
-DISABLED: False
-
-NAME: mynetwork-allow-rdp
-NETWORK: mynetwork
-DIRECTION: INGRESS
-PRIORITY: 65534
-ALLOW: tcp:3389
-DENY: 
-DISABLED: False
-
-NAME: mynetwork-allow-ssh
-NETWORK: mynetwork
-DIRECTION: INGRESS
-PRIORITY: 65534
-ALLOW: tcp:22
-DENY: 
-DISABLED: False
-----
-
-=== Delete VPC network Firewall rules
+=== delete vpc network firewall rules
 
 [source, bash]
 ----
 for i in $(gcloud compute firewall-rules list | grep NAME | awk '{print $2}') ; do gcloud compute firewall-rules delete $i ; done
 ----
 
-=== Delete VPC network
+=== delete default vpc network
 
 [source, bash]
 ----
 gcloud compute networks delete default
 ----
 
-=== Create VPC network
+== custom vpc network
 
-----
-gcloud compute networks create mynetwork --project=qwiklabs-gcp-00-8f96e32795ef --subnet-mode=custom --mtu=1460 --bgp-routing-mode=regional 
-
-gcloud compute networks subnets create vlan-1 --project=qwiklabs-gcp-00-8f96e32795ef --range=10.140.0.0/20 --stack-type=IPV4_ONLY --network=mynetwork --region=asia-east1 --enable-private-ip-google-access
-gcloud compute networks subnets create vlan-2 --project=qwiklabs-gcp-00-8f96e32795ef --range=10.146.0.0/20 --stack-type=IPV4_ONLY --network=mynetwork --region=asia-northeast1 --enable-private-ip-google-access
-
-gcloud compute firewall-rules create mynetwork-allow-custom --project=qwiklabs-gcp-00-8f96e32795ef --network=projects/qwiklabs-gcp-00-8f96e32795ef/global/networks/mynetwork --description=Allows\ connection\ from\ any\ source\ to\ any\ instance\ on\ the\ network\ using\ custom\ protocols. --direction=INGRESS --priority=65534 --source-ranges=10.140.0.0/20,10.146.0.0/20 --action=ALLOW --rules=all 
-gcloud compute firewall-rules create mynetwork-allow-icmp --project=qwiklabs-gcp-00-8f96e32795ef --network=projects/qwiklabs-gcp-00-8f96e32795ef/global/networks/mynetwork --description=Allows\ ICMP\ connections\ from\ any\ source\ to\ any\ instance\ on\ the\ network. --direction=INGRESS --priority=65534 --source-ranges=0.0.0.0/0 --action=ALLOW --rules=icmp
-gcloud compute firewall-rules create mynetwork-allow-rdp --project=qwiklabs-gcp-00-8f96e32795ef --network=projects/qwiklabs-gcp-00-8f96e32795ef/global/networks/mynetwork --description=Allows\ RDP\ connections\ from\ any\ source\ to\ any\ instance\ on\ the\ network\ using\ port\ 3389. --direction=INGRESS --priority=65534 --source-ranges=0.0.0.0/0 --action=ALLOW --rules=tcp:3389 
-gcloud compute firewall-rules create mynetwork-allow-ssh --project=qwiklabs-gcp-00-8f96e32795ef --network=projects/qwiklabs-gcp-00-8f96e32795ef/global/networks/mynetwork --description=Allows\ TCP\ connections\ from\ any\ source\ to\ any\ instance\ on\ the\ network\ using\ port\ 22. --direction=INGRESS --priority=65534 --source-ranges=0.0.0.0/0 --action=ALLOW --rules=tcp:22
-----
-
-=== Create VM instance
-
-
-----
-gcloud compute instances create instance-1 --project=qwiklabs-gcp-00-8f96e32795ef --zone=asia-east1-a --machine-type=e2-micro --network-interface=network-tier=PREMIUM,subnet=vlan-1 --metadata=enable-oslogin=true --maintenance-policy=MIGRATE --provisioning-model=STANDARD --service-account=821998381447-compute@developer.gserviceaccount.com --scopes=https://www.googleapis.com/auth/devstorage.read_only,https://www.googleapis.com/auth/logging.write,https://www.googleapis.com/auth/monitoring.write,https://www.googleapis.com/auth/servicecontrol,https://www.googleapis.com/auth/service.management.readonly,https://www.googleapis.com/auth/trace.append --create-disk=auto-delete=yes,boot=yes,device-name=instance-1,image=projects/debian-cloud/global/images/debian-11-bullseye-v20221206,mode=rw,size=10,type=projects/qwiklabs-gcp-00-8f96e32795ef/zones/us-east5-c/diskTypes/pd-balanced --no-shielded-secure-boot --shielded-vtpm --shielded-integrity-monitoring --reservation-affinity=any
-
-gcloud compute instances create instance-2 --project=qwiklabs-gcp-00-8f96e32795ef --zone=asia-northeast1-c --machine-type=e2-micro --network-interface=network-tier=PREMIUM,subnet=vlan-2 --metadata=enable-oslogin=true --maintenance-policy=MIGRATE --provisioning-model=STANDARD --service-account=821998381447-compute@developer.gserviceaccount.com --scopes=https://www.googleapis.com/auth/devstorage.read_only,https://www.googleapis.com/auth/logging.write,https://www.googleapis.com/auth/monitoring.write,https://www.googleapis.com/auth/servicecontrol,https://www.googleapis.com/auth/service.management.readonly,https://www.googleapis.com/auth/trace.append --create-disk=auto-delete=yes,boot=yes,device-name=instance-2,image=projects/debian-cloud/global/images/debian-11-bullseye-v20221206,mode=rw,size=10,type=projects/qwiklabs-gcp-00-8f96e32795ef/zones/us-east5-c/diskTypes/pd-balanced --no-shielded-secure-boot --shielded-vtpm --shielded-integrity-monitoring --reservation-affinity=any
-----
-
-== custom mode networks
+Use the following steps to create a custom vpc network:
 
 [source, bash]
-.*gcloud compute networks list*
+.*1. set project id as a variable*
 ----
-NAME: managementnet
-SUBNET_MODE: CUSTOM
-BGP_ROUTING_MODE: REGIONAL
-IPV4_RANGE: 
-GATEWAY_IPV4: 
-
-NAME: mynetwork
-SUBNET_MODE: CUSTOM
-BGP_ROUTING_MODE: REGIONAL
-IPV4_RANGE: 
-GATEWAY_IPV4: 
-
-NAME: privatenet
-SUBNET_MODE: CUSTOM
-BGP_ROUTING_MODE: REGIONAL
-IPV4_RANGE: 
-GATEWAY_IPV4: 
+GCP_PROJECT_ID=XXXX
 ----
 
 [source, bash]
-.*gcloud compute networks subnets list*
+.*2. create custom network*
 ----
-NAME: managementsubnet-us
-REGION: us-central1
-NETWORK: managementnet
-RANGE: 10.130.0.0/20
-STACK_TYPE: IPV4_ONLY
-IPV6_ACCESS_TYPE: 
-INTERNAL_IPV6_PREFIX: 
-EXTERNAL_IPV6_PREFIX: 
-
-NAME: mynetwork
-REGION: us-central1
-NETWORK: mynetwork
-RANGE: 10.128.0.0/20
-STACK_TYPE: IPV4_ONLY
-IPV6_ACCESS_TYPE: 
-INTERNAL_IPV6_PREFIX: 
-EXTERNAL_IPV6_PREFIX: 
-
-NAME: privatesubnet-us
-REGION: us-central1
-NETWORK: privatenet
-RANGE: 172.16.0.0/24
-STACK_TYPE: IPV4_ONLY
-IPV6_ACCESS_TYPE: 
-INTERNAL_IPV6_PREFIX: 
-EXTERNAL_IPV6_PREFIX: 
-
-NAME: mynetwork
-REGION: europe-west1
-NETWORK: mynetwork
-RANGE: 10.132.0.0/20
-STACK_TYPE: IPV4_ONLY
-IPV6_ACCESS_TYPE: 
-INTERNAL_IPV6_PREFIX: 
-EXTERNAL_IPV6_PREFIX: 
-
-NAME: privatesubnet-eu
-REGION: europe-west1
-NETWORK: privatenet
-RANGE: 172.20.0.0/20
-STACK_TYPE: IPV4_ONLY
-IPV6_ACCESS_TYPE: 
-INTERNAL_IPV6_PREFIX: 
-EXTERNAL_IPV6_PREFIX: 
-
-NAME: mynetwork
-REGION: us-west1
-NETWORK: mynetwork
-RANGE: 10.138.0.0/20
-STACK_TYPE: IPV4_ONLY
-IPV6_ACCESS_TYPE: 
-INTERNAL_IPV6_PREFIX: 
-EXTERNAL_IPV6_PREFIX: 
-
-NAME: mynetwork
-REGION: asia-east1
-NETWORK: mynetwork
-RANGE: 10.140.0.0/20
-STACK_TYPE: IPV4_ONLY
-IPV6_ACCESS_TYPE: 
-INTERNAL_IPV6_PREFIX: 
-EXTERNAL_IPV6_PREFIX: 
-
-NAME: mynetwork
-REGION: us-east1
-NETWORK: mynetwork
-RANGE: 10.142.0.0/20
-STACK_TYPE: IPV4_ONLY
-IPV6_ACCESS_TYPE: 
-INTERNAL_IPV6_PREFIX: 
-EXTERNAL_IPV6_PREFIX: 
-
-NAME: mynetwork
-REGION: asia-northeast1
-NETWORK: mynetwork
-RANGE: 10.146.0.0/20
-STACK_TYPE: IPV4_ONLY
-IPV6_ACCESS_TYPE: 
-INTERNAL_IPV6_PREFIX: 
-EXTERNAL_IPV6_PREFIX: 
-
-NAME: mynetwork
-REGION: asia-southeast1
-NETWORK: mynetwork
-RANGE: 10.148.0.0/20
-STACK_TYPE: IPV4_ONLY
-IPV6_ACCESS_TYPE: 
-INTERNAL_IPV6_PREFIX: 
-EXTERNAL_IPV6_PREFIX: 
-
-NAME: mynetwork
-REGION: us-east4
-NETWORK: mynetwork
-RANGE: 10.150.0.0/20
-STACK_TYPE: IPV4_ONLY
-IPV6_ACCESS_TYPE: 
-INTERNAL_IPV6_PREFIX: 
-EXTERNAL_IPV6_PREFIX: 
-
-NAME: mynetwork
-REGION: australia-southeast1
-NETWORK: mynetwork
-RANGE: 10.152.0.0/20
-STACK_TYPE: IPV4_ONLY
-IPV6_ACCESS_TYPE: 
-INTERNAL_IPV6_PREFIX: 
-EXTERNAL_IPV6_PREFIX: 
-
-NAME: mynetwork
-REGION: europe-west2
-NETWORK: mynetwork
-RANGE: 10.154.0.0/20
-STACK_TYPE: IPV4_ONLY
-IPV6_ACCESS_TYPE: 
-INTERNAL_IPV6_PREFIX: 
-EXTERNAL_IPV6_PREFIX: 
-
-NAME: mynetwork
-REGION: europe-west3
-NETWORK: mynetwork
-RANGE: 10.156.0.0/20
-STACK_TYPE: IPV4_ONLY
-IPV6_ACCESS_TYPE: 
-INTERNAL_IPV6_PREFIX: 
-EXTERNAL_IPV6_PREFIX: 
-
-NAME: mynetwork
-REGION: asia-south1
-NETWORK: mynetwork
-RANGE: 10.160.0.0/20
-STACK_TYPE: IPV4_ONLY
-IPV6_ACCESS_TYPE: 
-INTERNAL_IPV6_PREFIX: 
-EXTERNAL_IPV6_PREFIX: 
-
-NAME: mynetwork
-REGION: europe-west4
-NETWORK: mynetwork
-RANGE: 10.164.0.0/20
-STACK_TYPE: IPV4_ONLY
-IPV6_ACCESS_TYPE: 
-INTERNAL_IPV6_PREFIX: 
-EXTERNAL_IPV6_PREFIX: 
-
-NAME: mynetwork
-REGION: europe-north1
-NETWORK: mynetwork
-RANGE: 10.166.0.0/20
-STACK_TYPE: IPV4_ONLY
-IPV6_ACCESS_TYPE: 
-INTERNAL_IPV6_PREFIX: 
-EXTERNAL_IPV6_PREFIX: 
-
-NAME: mynetwork
-REGION: us-west2
-NETWORK: mynetwork
-RANGE: 10.168.0.0/20
-STACK_TYPE: IPV4_ONLY
-IPV6_ACCESS_TYPE: 
-INTERNAL_IPV6_PREFIX: 
-EXTERNAL_IPV6_PREFIX: 
-
-NAME: mynetwork
-REGION: us-west3
-NETWORK: mynetwork
-RANGE: 10.180.0.0/20
-STACK_TYPE: IPV4_ONLY
-IPV6_ACCESS_TYPE: 
-INTERNAL_IPV6_PREFIX: 
-EXTERNAL_IPV6_PREFIX: 
-
-NAME: mynetwork
-REGION: us-west4
-NETWORK: mynetwork
-RANGE: 10.182.0.0/20
-STACK_TYPE: IPV4_ONLY
-IPV6_ACCESS_TYPE: 
-INTERNAL_IPV6_PREFIX: 
-EXTERNAL_IPV6_PREFIX: 
-
-NAME: mynetwork
-REGION: europe-central2
-NETWORK: mynetwork
-RANGE: 10.186.0.0/20
-STACK_TYPE: IPV4_ONLY
-IPV6_ACCESS_TYPE: 
-INTERNAL_IPV6_PREFIX: 
-EXTERNAL_IPV6_PREFIX: 
-
-NAME: mynetwork
-REGION: southamerica-west1
-NETWORK: mynetwork
-RANGE: 10.194.0.0/20
-STACK_TYPE: IPV4_ONLY
-IPV6_ACCESS_TYPE: 
-INTERNAL_IPV6_PREFIX: 
-EXTERNAL_IPV6_PREFIX: 
-
-NAME: mynetwork
-REGION: us-east7
-NETWORK: mynetwork
-RANGE: 10.196.0.0/20
-STACK_TYPE: 
-IPV6_ACCESS_TYPE: 
-INTERNAL_IPV6_PREFIX: 
-EXTERNAL_IPV6_PREFIX: 
-
-NAME: mynetwork
-REGION: us-east5
-NETWORK: mynetwork
-RANGE: 10.202.0.0/20
-STACK_TYPE: IPV4_ONLY
-IPV6_ACCESS_TYPE: 
-INTERNAL_IPV6_PREFIX: 
-EXTERNAL_IPV6_PREFIX: 
-
-NAME: mynetwork
-REGION: us-south1
-NETWORK: mynetwork
-RANGE: 10.206.0.0/20
-STACK_TYPE: IPV4_ONLY
-IPV6_ACCESS_TYPE: 
-INTERNAL_IPV6_PREFIX: 
-EXTERNAL_IPV6_PREFIX: 
+gcloud compute networks create mynetwork --project=$GCP_PROJECT_ID --subnet-mode=custom --mtu=1460 --bgp-routing-mode=regional
 ----
 
 [source, bash]
-.*gcloud compute routes list*
+.*3. create subnets*
 ----
-NAME: default-route-10c1f731bb6d705e
-NETWORK: mynetwork
-DEST_RANGE: 10.194.0.0/20
-NEXT_HOP: mynetwork
-PRIORITY: 0
-
-NAME: default-route-13f48ebbe0b6abbf
-NETWORK: mynetwork
-DEST_RANGE: 10.146.0.0/20
-NEXT_HOP: mynetwork
-PRIORITY: 0
-
-NAME: default-route-16d5efdacafedb30
-NETWORK: mynetwork
-DEST_RANGE: 10.206.0.0/20
-NEXT_HOP: mynetwork
-PRIORITY: 0
-
-NAME: default-route-1855dffbaaa4df22
-NETWORK: mynetwork
-DEST_RANGE: 10.180.0.0/20
-NEXT_HOP: mynetwork
-PRIORITY: 0
-
-NAME: default-route-2440d68673968337
-NETWORK: mynetwork
-DEST_RANGE: 10.128.0.0/20
-NEXT_HOP: mynetwork
-PRIORITY: 0
-
-NAME: default-route-2e85b5195efcb011
-NETWORK: mynetwork
-DEST_RANGE: 10.182.0.0/20
-NEXT_HOP: mynetwork
-PRIORITY: 0
-
-NAME: default-route-3bb36e360358c16a
-NETWORK: mynetwork
-DEST_RANGE: 10.132.0.0/20
-NEXT_HOP: mynetwork
-PRIORITY: 0
-
-NAME: default-route-3c2fdaf8708f5f18
-NETWORK: mynetwork
-DEST_RANGE: 10.150.0.0/20
-NEXT_HOP: mynetwork
-PRIORITY: 0
-
-NAME: default-route-4f997153cf1f1753
-NETWORK: mynetwork
-DEST_RANGE: 10.154.0.0/20
-NEXT_HOP: mynetwork
-PRIORITY: 0
-
-NAME: default-route-5a1afad8303687a1
-NETWORK: mynetwork
-DEST_RANGE: 10.186.0.0/20
-NEXT_HOP: mynetwork
-PRIORITY: 0
-
-NAME: default-route-5ae23ee135df3b1d
-NETWORK: mynetwork
-DEST_RANGE: 10.202.0.0/20
-NEXT_HOP: mynetwork
-PRIORITY: 0
-
-NAME: default-route-5ccfceb1be9100c0
-NETWORK: mynetwork
-DEST_RANGE: 10.148.0.0/20
-NEXT_HOP: mynetwork
-PRIORITY: 0
-
-NAME: default-route-64416061722937be
-NETWORK: managementnet
-DEST_RANGE: 10.130.0.0/20
-NEXT_HOP: managementnet
-PRIORITY: 0
-
-NAME: default-route-98db287c782e8641
-NETWORK: mynetwork
-DEST_RANGE: 0.0.0.0/0
-NEXT_HOP: default-internet-gateway
-PRIORITY: 1000
-
-NAME: default-route-9fd7f14f9fbac5d8
-NETWORK: mynetwork
-DEST_RANGE: 10.196.0.0/20
-NEXT_HOP: mynetwork
-PRIORITY: 0
-
-NAME: default-route-a7269e7697dcca84
-NETWORK: mynetwork
-DEST_RANGE: 10.166.0.0/20
-NEXT_HOP: mynetwork
-PRIORITY: 0
-
-NAME: default-route-abe7d732ecee4b45
-NETWORK: mynetwork
-DEST_RANGE: 10.160.0.0/20
-NEXT_HOP: mynetwork
-PRIORITY: 0
-
-NAME: default-route-b363cd475c103392
-NETWORK: privatenet
-DEST_RANGE: 0.0.0.0/0
-NEXT_HOP: default-internet-gateway
-PRIORITY: 1000
-
-NAME: default-route-bc0ed7f55db50baf
-NETWORK: mynetwork
-DEST_RANGE: 10.140.0.0/20
-NEXT_HOP: mynetwork
-PRIORITY: 0
-
-NAME: default-route-bc929450bdd73daf
-NETWORK: mynetwork
-DEST_RANGE: 10.138.0.0/20
-NEXT_HOP: mynetwork
-PRIORITY: 0
-
-NAME: default-route-c30ec08ad33fd9df
-NETWORK: privatenet
-DEST_RANGE: 172.20.0.0/20
-NEXT_HOP: privatenet
-PRIORITY: 0
-
-NAME: default-route-c944b03e57e1449a
-NETWORK: privatenet
-DEST_RANGE: 172.16.0.0/24
-NEXT_HOP: privatenet
-PRIORITY: 0
-
-NAME: default-route-ccdd088c0670262b
-NETWORK: mynetwork
-DEST_RANGE: 10.164.0.0/20
-NEXT_HOP: mynetwork
-PRIORITY: 0
-
-NAME: default-route-d88735bf0ef1e49e
-NETWORK: managementnet
-DEST_RANGE: 0.0.0.0/0
-NEXT_HOP: default-internet-gateway
-PRIORITY: 1000
-
-NAME: default-route-eba7ffe7daeb934a
-NETWORK: mynetwork
-DEST_RANGE: 10.152.0.0/20
-NEXT_HOP: mynetwork
-PRIORITY: 0
-
-NAME: default-route-ee65722ea7e40ef3
-NETWORK: mynetwork
-DEST_RANGE: 10.156.0.0/20
-NEXT_HOP: mynetwork
-PRIORITY: 0
-
-NAME: default-route-f4ee05ac8700d4c3
-NETWORK: mynetwork
-DEST_RANGE: 10.168.0.0/20
-NEXT_HOP: mynetwork
-PRIORITY: 0
-
-NAME: default-route-f93e5c4095524370
-NETWORK: mynetwork
-DEST_RANGE: 10.142.0.0/20
-NEXT_HOP: mynetwork
-PRIORITY: 0
+gcloud compute networks subnets create subnet-1 --project=$GCP_PROJECT_ID --range=10.140.0.0/20 --stack-type=IPV4_ONLY --network=mynetwork --region=asia-east1
+gcloud compute networks subnets create subnet-2 --project=$GCP_PROJECT_ID --range=10.146.0.0/20 --stack-type=IPV4_ONLY --network=mynetwork --region=asia-northeast1
 ----
 
 [source, bash]
-.*gcloud compute firewall-rules list*
+.*4. create firewall rules*
 ----
-NAME: mynetwork-allow-custom
-NETWORK: mynetwork
-DIRECTION: INGRESS
-PRIORITY: 65534
-ALLOW: all
-DENY: 
-DISABLED: False
+gcloud compute firewall-rules create mynetwork-allow-custom --project=$GCP_PROJECT_ID --network=projects/$GCP_PROJECT_ID/global/networks/mynetwork --direction=INGRESS --priority=65534 --source-ranges=10.140.0.0/20,10.146.0.0/20 --action=ALLOW --rules=all
+gcloud compute firewall-rules create mynetwork-allow-icmp --project=$GCP_PROJECT_ID --network=projects/$GCP_PROJECT_ID/global/networks/mynetwork --direction=INGRESS --priority=65534 --source-ranges=0.0.0.0/0 --action=ALLOW --rules=icmp
+gcloud compute firewall-rules create mynetwork-allow-rdp --project=$GCP_PROJECT_ID --network=projects/$GCP_PROJECT_ID/global/networks/mynetwork --direction=INGRESS --priority=65534 --source-ranges=0.0.0.0/0 --action=ALLOW --rules=tcp:3389
+gcloud compute firewall-rules create mynetwork-allow-ssh --project=$GCP_PROJECT_ID --network=projects/$GCP_PROJECT_ID/global/networks/mynetwork --direction=INGRESS --priority=65534 --source-ranges=0.0.0.0/0 --action=ALLOW --rules=tcp:22
+----
 
-NAME: mynetwork-allow-icmp
-NETWORK: mynetwork
-DIRECTION: INGRESS
-PRIORITY: 65534
-ALLOW: icmp
-DENY: 
-DISABLED: False
+== test customized vpc network
 
-NAME: mynetwork-allow-rdp
-NETWORK: mynetwork
-DIRECTION: INGRESS
-PRIORITY: 65534
-ALLOW: tcp:3389
-DENY: 
-DISABLED: False
+In this section, we will test the customized vpc network which created in above step via `ping` and `ttcp` tools. `ttcp` need install on all vms, more about ttcp refer to https://github.com/kylinsoong/ttcp/releases.
 
-NAME: mynetwork-allow-ssh
-NETWORK: mynetwork
-DIRECTION: INGRESS
-PRIORITY: 65534
-ALLOW: tcp:22
-DENY: 
-DISABLED: False
+As below figure, 4 VM instances will created, `vm-1`, `vm-2` and `vm-3` are all on same region, `vm-4` on a different region, `vm-1` and `vm-2` also on same zone, `vm-3` on a different zone, `vm-1`, `vm-2` and `vm-3`.
+
+image:img/gcp-vpc.png[]
+
+[source, bash]
+.*Create 4 vm instances on Cloud Shell*
+----
+gcloud compute instances create vm-1 --project=$GCP_PROJECT_ID --zone=asia-east1-a --machine-type=e2-micro --network-interface=network-tier=PREMIUM,subnet=subnet-1 --metadata=enable-oslogin=true --maintenance-policy=MIGRATE --provisioning-model=STANDARD --service-account=$$GCP_PROJECT_SA --scopes=https://www.googleapis.com/auth/devstorage.read_only,https://www.googleapis.com/auth/logging.write,https://www.googleapis.com/auth/monitoring.write,https://www.googleapis.com/auth/servicecontrol,https://www.googleapis.com/auth/service.management.readonly,https://www.googleapis.com/auth/trace.append --create-disk=auto-delete=yes,boot=yes,device-name=vm-1,image=projects/centos-cloud/global/images/centos-7-v20221206,mode=rw,size=20,type=projects/$GCP_PROJECT_ID/zones/asia-east1-a/diskTypes/pd-balanced --no-shielded-secure-boot --shielded-vtpm --shielded-integrity-monitoring --reservation-affinity=any
+
+gcloud compute instances create vm-2 --project=$GCP_PROJECT_ID --zone=asia-east1-a --machine-type=e2-micro --network-interface=network-tier=PREMIUM,subnet=subnet-1 --metadata=enable-oslogin=true --maintenance-policy=MIGRATE --provisioning-model=STANDARD --service-account=$$GCP_PROJECT_SA --scopes=https://www.googleapis.com/auth/devstorage.read_only,https://www.googleapis.com/auth/logging.write,https://www.googleapis.com/auth/monitoring.write,https://www.googleapis.com/auth/servicecontrol,https://www.googleapis.com/auth/service.management.readonly,https://www.googleapis.com/auth/trace.append --create-disk=auto-delete=yes,boot=yes,device-name=vm-1,image=projects/centos-cloud/global/images/centos-7-v20221206,mode=rw,size=20,type=projects/$GCP_PROJECT_ID/zones/asia-east1-a/diskTypes/pd-balanced --no-shielded-secure-boot --shielded-vtpm --shielded-integrity-monitoring --reservation-affinity=any
+
+gcloud compute instances create vm-3 --project=$GCP_PROJECT_ID --zone=asia-east1-c --machine-type=e2-micro --network-interface=network-tier=PREMIUM,subnet=subnet-1 --metadata=enable-oslogin=true --maintenance-policy=MIGRATE --provisioning-model=STANDARD --service-account=$$GCP_PROJECT_SA --scopes=https://www.googleapis.com/auth/devstorage.read_only,https://www.googleapis.com/auth/logging.write,https://www.googleapis.com/auth/monitoring.write,https://www.googleapis.com/auth/servicecontrol,https://www.googleapis.com/auth/service.management.readonly,https://www.googleapis.com/auth/trace.append --create-disk=auto-delete=yes,boot=yes,device-name=vm-1,image=projects/centos-cloud/global/images/centos-7-v20221206,mode=rw,size=20,type=projects/$GCP_PROJECT_ID/zones/asia-east1-a/diskTypes/pd-balanced --no-shielded-secure-boot --shielded-vtpm --shielded-integrity-monitoring --reservation-affinity=any
+
+gcloud compute instances create vm-4 --project=$GCP_PROJECT_ID --zone=asia-northeast1-b --machine-type=e2-micro --network-interface=network-tier=PREMIUM,subnet=subnet-2 --metadata=enable-oslogin=true --maintenance-policy=MIGRATE --provisioning-model=STANDARD --service-account=$$GCP_PROJECT_SA --scopes=https://www.googleapis.com/auth/devstorage.read_only,https://www.googleapis.com/auth/logging.write,https://www.googleapis.com/auth/monitoring.write,https://www.googleapis.com/auth/servicecontrol,https://www.googleapis.com/auth/service.management.readonly,https://www.googleapis.com/auth/trace.append --create-disk=auto-delete=yes,boot=yes,device-name=vm-1,image=projects/centos-cloud/global/images/centos-7-v20221206,mode=rw,size=20,type=projects/$GCP_PROJECT_ID/zones/asia-east1-a/diskTypes/pd-balanced --no-shielded-secure-boot --shielded-vtpm --shielded-integrity-monitoring --reservation-affinity=any
+----
+
+=== test icmp connectivity
+
+[source, bash]
+.*1. extract the internal ips and external ips*
+----
+INTERNAL_IPS=$(gcloud compute instances list | grep INTERNAL_IP | awk '{print $2}')
+EXTERNAL_IPS=$(gcloud compute instances list | grep EXTERNAL_IP | awk '{print $2}')
+echo $INTERNAL_IPS
+echo $EXTERNAL_IPS
+----
+
+NOTE: Copy the both output, which will used in next step.
+
+[source, bash]
+.*2. set INTERNAL_IPS and EXTERNAL_IPS with value of above outputs, execute the following commands in all vms*
+----
+for i in $INTERNAL_IPS ; do ping $i -c3 ; done
+for i in $EXTERNAL_IPS ; do ping $i -c3 ; done
+----
+
+NOTE: All ping on each vms are success, both internal and external ip can be ping succcess on all vms, no matter vm are on same zone, same region, different region, same subnet, different subnet.
+
+=== vpc network performance
+
+Run ttcp recv on `vm-1`, then run ttcp trans on vm-2`, `vm-3` and `vm-4` accordingly, record the results. Raw results from recv side refer to link:results.ttcp[results.ttcp], which each trans are run 3 times.
+
+image:img/gcp-vpc-network-performa.png[]
+
+* vm in same subnet has similar performance, even they are on same zone, or different zone
+* vm on different subnet(vm are across region) has significant performance downgrade
+* TPS on same subnet are around 116 MB/sec
+* TPS on different subnet are around 70 MB/sec
+
+=== remove allow icmp firewall rule, test icmp/tcp connectivity
+
+[source, bash]
+.*1. remove allow icmp firewall rule*
+----
+gcloud compute firewall-rules delete mynetwork-allow-icmp
 ----
 
 [source, bash]
-.*gcloud compute networks list*
+.*2. test icmp connectivity*
 ----
-NAME: mynetwork
-SUBNET_MODE: AUTO
-BGP_ROUTING_MODE: REGIONAL
-IPV4_RANGE: 
-GATEWAY_IPV4: 
+for i in $INTERNAL_IPS ; do ping $i -c3 ; done
+for i in $EXTERNAL_IPS ; do ping $i -c3 ; done
+----
+
+NOTE: The ping against internal ips are all success, even vm are across different region and different subnets; all ping against external ips all failed, which remove allow icmp firewall rule take effect.
+
+[source, bash]
+.*3. test tcp connectivity*
+----
+@vm-4 ~]$ ttcp -t 10.140.0.2
+@vm-3 ~]$ ttcp -t 10.140.0.2
+@vm-2 ~]$ ttcp -t 10.140.0.2
+----
+
+NOTE: All ttcp trans from `vm-2`, `vm-3`, `vm-4` are transmit data to `vm-1` are success.
+
+=== remove allow internal rule, test icmp/tcp connectivity
+
+[source, bash]
+.*1. remove allow internal firewall rule*
+----
+gcloud compute firewall-rules delete mynetwork-allow-custom
 ----
 
 [source, bash]
-.*gcloud compute networks subnets list*
+.*2. test icmp connectivity*
 ----
-NAME: mynetwork
-REGION: us-central1
-NETWORK: mynetwork
-RANGE: 10.128.0.0/20
-STACK_TYPE: IPV4_ONLY
-IPV6_ACCESS_TYPE: 
-INTERNAL_IPV6_PREFIX: 
-EXTERNAL_IPV6_PREFIX: 
-
-NAME: mynetwork
-REGION: europe-west1
-NETWORK: mynetwork
-RANGE: 10.132.0.0/20
-STACK_TYPE: IPV4_ONLY
-IPV6_ACCESS_TYPE: 
-INTERNAL_IPV6_PREFIX: 
-EXTERNAL_IPV6_PREFIX: 
-
-NAME: mynetwork
-REGION: us-west1
-NETWORK: mynetwork
-RANGE: 10.138.0.0/20
-STACK_TYPE: IPV4_ONLY
-IPV6_ACCESS_TYPE: 
-INTERNAL_IPV6_PREFIX: 
-EXTERNAL_IPV6_PREFIX: 
-
-NAME: mynetwork
-REGION: asia-east1
-NETWORK: mynetwork
-RANGE: 10.140.0.0/20
-STACK_TYPE: IPV4_ONLY
-IPV6_ACCESS_TYPE: 
-INTERNAL_IPV6_PREFIX: 
-EXTERNAL_IPV6_PREFIX: 
+for i in $INTERNAL_IPS ; do ping $i -c3 ; done
 ----
+
+NOTE: Ping internal ips all failed, tcmp were forbidden.
 
 [source, bash]
-.*gcloud compute firewall-rules list*
+.*3. test tcp connectivity*
 ----
-NAME: managementnet-allow-icmp-ssh-rdp
-NETWORK: managementnet
-DIRECTION: INGRESS
-PRIORITY: 1000
-ALLOW: tcp:22,tcp:3389,icmp
-DENY: 
-DISABLED: False
-
-NAME: mynetwork-allow-custom
-NETWORK: mynetwork
-DIRECTION: INGRESS
-PRIORITY: 65534
-ALLOW: all
-DENY: 
-DISABLED: False
-
-NAME: mynetwork-allow-icmp
-NETWORK: mynetwork
-DIRECTION: INGRESS
-PRIORITY: 65534
-ALLOW: icmp
-DENY: 
-DISABLED: False
-
-NAME: mynetwork-allow-rdp
-NETWORK: mynetwork
-DIRECTION: INGRESS
-PRIORITY: 65534
-ALLOW: tcp:3389
-DENY: 
-DISABLED: False
-
-NAME: mynetwork-allow-ssh
-NETWORK: mynetwork
-DIRECTION: INGRESS
-PRIORITY: 65534
-ALLOW: tcp:22
-DENY: 
-DISABLED: False
-
-NAME: privatenet-allow-icmp-ssh-rdp
-NETWORK: privatenet
-DIRECTION: INGRESS
-PRIORITY: 1000
-ALLOW: icmp,tcp:22,tcp:3389
-DENY: 
-DISABLED: False
+@vm-4 ~]$ ttcp -t 10.140.0.2
+@vm-3 ~]$ ttcp -t 10.140.0.2
+@vm-2 ~]$ ttcp -t 10.140.0.2
 ----
+
+NOTE: All ttcp trans execute failed, tcp were forbidden.
+
+
