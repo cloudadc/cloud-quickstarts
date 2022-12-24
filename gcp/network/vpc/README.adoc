@@ -1,219 +1,225 @@
 = VPC
 :toc: manual
 
-== Explore the default network
+== default network
+
+=== network
 
 [source, bash]
-.*gcloud compute networks list*
 ----
-NAME: default
-SUBNET_MODE: AUTO
-BGP_ROUTING_MODE: REGIONAL
-IPV4_RANGE: 
-GATEWAY_IPV4: 
+gcloud compute networks list
 ----
+
+link:default.json[default.json]
+
+[source, json]
+----
+{
+    "autoCreateSubnetworks": true,
+    "kind": "compute#network",
+    "name": "default",
+    "networkFirewallPolicyEnforcementOrder": "AFTER_CLASSIC_FIREWALL",
+    "x_gcloud_bgp_routing_mode": "REGIONAL",
+    "x_gcloud_subnet_mode": "AUTO"
+}
+----
+
+=== subnets
+
+[source, bash]
+----
+gcloud compute networks subnets list
+----
+
+link:default-subnets.json[default-subnets.json]
+
+|===
+|gatewayAddress |ipCidrRange |name |privateIpGoogleAccess |purpose |stackType |network |region
+
+| 10.128.0.1
+| 10.128.0.0/20
+| default
+| false
+| PRIVATE
+| IPV4_ONLY
+| default
+| us-central1
+
+| 10.132.0.1
+| 10.132.0.0/20
+| default
+| false
+| PRIVATE
+| IPV4_ONLY
+| default
+| europe-west1
+
+| 10.138.0.1
+| 10.138.0.0/20
+| default
+| false
+| PRIVATE
+| IPV4_ONLY
+| default
+| us-west1
+
+| 10.140.0.1
+| 10.140.0.0/20
+| default
+| false
+| PRIVATE
+| IPV4_ONLY
+| default
+| asia-east1
+
+| 10.142.0.1
+| 10.142.0.0/20
+| default
+| false
+| PRIVATE
+| IPV4_ONLY
+| default
+| us-east1
+
+| 10.146.0.1
+| 10.146.0.0/20
+| default
+| false
+| PRIVATE
+| IPV4_ONLY
+| default
+| asia-northeast1
+
+| 10.148.0.1
+| 10.148.0.0/20
+| default
+| false
+| PRIVATE
+| IPV4_ONLY
+| default
+| asia-southeast1
+
+| 10.150.0.1
+| 10.150.0.0/20
+| default
+| false
+| PRIVATE
+| IPV4_ONLY
+| default
+| us-east4
+
+| 10.152.0.1
+| 10.152.0.0/20
+| default
+| false
+| PRIVATE
+| IPV4_ONLY
+| default
+| australia-southeast1
+
+| 10.154.0.1
+| 10.154.0.0/20
+| default
+| false
+| PRIVATE
+| IPV4_ONLY
+| default
+| europe-west2
+
+| 10.156.0.1
+| 10.156.0.0/20
+| default
+| false
+| PRIVATE
+| IPV4_ONLY
+| default
+| europe-west3
+
+| 10.160.0.1
+| 10.160.0.0/20
+| default
+| false
+| PRIVATE
+| IPV4_ONLY
+| default
+| asia-south1
+
+| 10.164.0.1
+| 10.164.0.0/20
+| default
+| false
+| PRIVATE
+| IPV4_ONLY
+| default
+| europe-west4
+
+| 10.166.0.1
+| 10.166.0.0/20
+| default
+| false
+| PRIVATE
+| IPV4_ONLY
+| default
+| europe-north1
+
+| 10.168.0.1
+| 10.168.0.0/20
+| default
+| false
+| PRIVATE
+| IPV4_ONLY
+| default
+| us-west2
+
+| 10.180.0.1
+| 10.180.0.0/20
+| default
+| false
+| PRIVATE
+| IPV4_ONLY
+| default
+| us-west3
+
+| 10.182.0.1
+| 10.182.0.0/20
+| default
+| false
+| PRIVATE
+| IPV4_ONLY
+| default
+| us-west4
+
+| 10.186.0.1
+| 10.186.0.0/20
+| default
+| false
+| PRIVATE
+| IPV4_ONLY
+| default
+| europe-central2
+
+| 10.194.0.1
+| 10.194.0.0/20
+| default
+| false
+| PRIVATE
+| IPV4_ONLY
+| default
+| southamerica-west1
+
+| 10.196.0.1
+| 10.196.0.0/20
+| default
+| false
+| PRIVATE
+| IPV4_ONLY
+| default
+| us-east7
+|===
 
 [source, bash]
 .*gcloud compute networks subnets list*
 ----
-NAME: default
-REGION: us-central1
-NETWORK: default
-RANGE: 10.128.0.0/20
-STACK_TYPE: IPV4_ONLY
-IPV6_ACCESS_TYPE: 
-INTERNAL_IPV6_PREFIX: 
-EXTERNAL_IPV6_PREFIX: 
-
-NAME: default
-REGION: europe-west1
-NETWORK: default
-RANGE: 10.132.0.0/20
-STACK_TYPE: IPV4_ONLY
-IPV6_ACCESS_TYPE: 
-INTERNAL_IPV6_PREFIX: 
-EXTERNAL_IPV6_PREFIX: 
-
-NAME: default
-REGION: us-west1
-NETWORK: default
-RANGE: 10.138.0.0/20
-STACK_TYPE: IPV4_ONLY
-IPV6_ACCESS_TYPE: 
-INTERNAL_IPV6_PREFIX: 
-EXTERNAL_IPV6_PREFIX: 
-
-NAME: default
-REGION: asia-east1
-NETWORK: default
-RANGE: 10.140.0.0/20
-STACK_TYPE: IPV4_ONLY
-IPV6_ACCESS_TYPE: 
-INTERNAL_IPV6_PREFIX: 
-EXTERNAL_IPV6_PREFIX: 
-
-NAME: default
-REGION: us-east1
-NETWORK: default
-RANGE: 10.142.0.0/20
-STACK_TYPE: IPV4_ONLY
-IPV6_ACCESS_TYPE: 
-INTERNAL_IPV6_PREFIX: 
-EXTERNAL_IPV6_PREFIX: 
-
-NAME: default
-REGION: asia-northeast1
-NETWORK: default
-RANGE: 10.146.0.0/20
-STACK_TYPE: IPV4_ONLY
-IPV6_ACCESS_TYPE: 
-INTERNAL_IPV6_PREFIX: 
-EXTERNAL_IPV6_PREFIX: 
-
-NAME: default
-REGION: asia-southeast1
-NETWORK: default
-RANGE: 10.148.0.0/20
-STACK_TYPE: IPV4_ONLY
-IPV6_ACCESS_TYPE: 
-INTERNAL_IPV6_PREFIX: 
-EXTERNAL_IPV6_PREFIX: 
-
-NAME: default
-REGION: us-east4
-NETWORK: default
-RANGE: 10.150.0.0/20
-STACK_TYPE: IPV4_ONLY
-IPV6_ACCESS_TYPE: 
-INTERNAL_IPV6_PREFIX: 
-EXTERNAL_IPV6_PREFIX: 
-
-NAME: default
-REGION: australia-southeast1
-NETWORK: default
-RANGE: 10.152.0.0/20
-STACK_TYPE: IPV4_ONLY
-IPV6_ACCESS_TYPE: 
-INTERNAL_IPV6_PREFIX: 
-EXTERNAL_IPV6_PREFIX: 
-
-NAME: default
-REGION: europe-west2
-NETWORK: default
-RANGE: 10.154.0.0/20
-STACK_TYPE: IPV4_ONLY
-IPV6_ACCESS_TYPE: 
-INTERNAL_IPV6_PREFIX: 
-EXTERNAL_IPV6_PREFIX: 
-
-NAME: default
-REGION: europe-west3
-NETWORK: default
-RANGE: 10.156.0.0/20
-STACK_TYPE: IPV4_ONLY
-IPV6_ACCESS_TYPE: 
-INTERNAL_IPV6_PREFIX: 
-EXTERNAL_IPV6_PREFIX: 
-
-NAME: default
-REGION: asia-south1
-NETWORK: default
-RANGE: 10.160.0.0/20
-STACK_TYPE: IPV4_ONLY
-IPV6_ACCESS_TYPE: 
-INTERNAL_IPV6_PREFIX: 
-EXTERNAL_IPV6_PREFIX: 
-
-NAME: default
-REGION: europe-west4
-NETWORK: default
-RANGE: 10.164.0.0/20
-STACK_TYPE: IPV4_ONLY
-IPV6_ACCESS_TYPE: 
-INTERNAL_IPV6_PREFIX: 
-EXTERNAL_IPV6_PREFIX: 
-
-NAME: default
-REGION: europe-north1
-NETWORK: default
-RANGE: 10.166.0.0/20
-STACK_TYPE: IPV4_ONLY
-IPV6_ACCESS_TYPE: 
-INTERNAL_IPV6_PREFIX: 
-EXTERNAL_IPV6_PREFIX: 
-
-NAME: default
-REGION: us-west2
-NETWORK: default
-RANGE: 10.168.0.0/20
-STACK_TYPE: IPV4_ONLY
-IPV6_ACCESS_TYPE: 
-INTERNAL_IPV6_PREFIX: 
-EXTERNAL_IPV6_PREFIX: 
-
-NAME: default
-REGION: us-west3
-NETWORK: default
-RANGE: 10.180.0.0/20
-STACK_TYPE: IPV4_ONLY
-IPV6_ACCESS_TYPE: 
-INTERNAL_IPV6_PREFIX: 
-EXTERNAL_IPV6_PREFIX: 
-
-NAME: default
-REGION: us-west4
-NETWORK: default
-RANGE: 10.182.0.0/20
-STACK_TYPE: IPV4_ONLY
-IPV6_ACCESS_TYPE: 
-INTERNAL_IPV6_PREFIX: 
-EXTERNAL_IPV6_PREFIX: 
-
-NAME: default
-REGION: europe-central2
-NETWORK: default
-RANGE: 10.186.0.0/20
-STACK_TYPE: IPV4_ONLY
-IPV6_ACCESS_TYPE: 
-INTERNAL_IPV6_PREFIX: 
-EXTERNAL_IPV6_PREFIX: 
-
-NAME: default
-REGION: southamerica-west1
-NETWORK: default
-RANGE: 10.194.0.0/20
-STACK_TYPE: IPV4_ONLY
-IPV6_ACCESS_TYPE: 
-INTERNAL_IPV6_PREFIX: 
-EXTERNAL_IPV6_PREFIX: 
-
-NAME: default
-REGION: us-east7
-NETWORK: default
-RANGE: 10.196.0.0/20
-STACK_TYPE: IPV4_ONLY
-IPV6_ACCESS_TYPE: 
-INTERNAL_IPV6_PREFIX: 
-EXTERNAL_IPV6_PREFIX: 
-
-NAME: default
-REGION: us-east5
-NETWORK: default
-RANGE: 10.202.0.0/20
-STACK_TYPE: IPV4_ONLY
-IPV6_ACCESS_TYPE: 
-INTERNAL_IPV6_PREFIX: 
-EXTERNAL_IPV6_PREFIX: 
-
-NAME: default
-REGION: us-south1
-NETWORK: default
-RANGE: 10.206.0.0/20
-STACK_TYPE: IPV4_ONLY
-IPV6_ACCESS_TYPE: 
-INTERNAL_IPV6_PREFIX: 
-EXTERNAL_IPV6_PREFIX: 
-
 NAME: default
 REGION: me-west1
 NETWORK: default
@@ -783,6 +789,43 @@ PRIORITY: 65534
 ALLOW: tcp:22
 DENY: 
 DISABLED: False
+----
+
+=== Delete VPC network Firewall rules
+
+[source, bash]
+----
+for i in $(gcloud compute firewall-rules list | grep NAME | awk '{print $2}') ; do gcloud compute firewall-rules delete $i ; done
+----
+
+=== Delete VPC network
+
+[source, bash]
+----
+gcloud compute networks delete default
+----
+
+=== Create VPC network
+
+----
+gcloud compute networks create mynetwork --project=qwiklabs-gcp-00-8f96e32795ef --subnet-mode=custom --mtu=1460 --bgp-routing-mode=regional 
+
+gcloud compute networks subnets create vlan-1 --project=qwiklabs-gcp-00-8f96e32795ef --range=10.140.0.0/20 --stack-type=IPV4_ONLY --network=mynetwork --region=asia-east1 --enable-private-ip-google-access
+gcloud compute networks subnets create vlan-2 --project=qwiklabs-gcp-00-8f96e32795ef --range=10.146.0.0/20 --stack-type=IPV4_ONLY --network=mynetwork --region=asia-northeast1 --enable-private-ip-google-access
+
+gcloud compute firewall-rules create mynetwork-allow-custom --project=qwiklabs-gcp-00-8f96e32795ef --network=projects/qwiklabs-gcp-00-8f96e32795ef/global/networks/mynetwork --description=Allows\ connection\ from\ any\ source\ to\ any\ instance\ on\ the\ network\ using\ custom\ protocols. --direction=INGRESS --priority=65534 --source-ranges=10.140.0.0/20,10.146.0.0/20 --action=ALLOW --rules=all 
+gcloud compute firewall-rules create mynetwork-allow-icmp --project=qwiklabs-gcp-00-8f96e32795ef --network=projects/qwiklabs-gcp-00-8f96e32795ef/global/networks/mynetwork --description=Allows\ ICMP\ connections\ from\ any\ source\ to\ any\ instance\ on\ the\ network. --direction=INGRESS --priority=65534 --source-ranges=0.0.0.0/0 --action=ALLOW --rules=icmp
+gcloud compute firewall-rules create mynetwork-allow-rdp --project=qwiklabs-gcp-00-8f96e32795ef --network=projects/qwiklabs-gcp-00-8f96e32795ef/global/networks/mynetwork --description=Allows\ RDP\ connections\ from\ any\ source\ to\ any\ instance\ on\ the\ network\ using\ port\ 3389. --direction=INGRESS --priority=65534 --source-ranges=0.0.0.0/0 --action=ALLOW --rules=tcp:3389 
+gcloud compute firewall-rules create mynetwork-allow-ssh --project=qwiklabs-gcp-00-8f96e32795ef --network=projects/qwiklabs-gcp-00-8f96e32795ef/global/networks/mynetwork --description=Allows\ TCP\ connections\ from\ any\ source\ to\ any\ instance\ on\ the\ network\ using\ port\ 22. --direction=INGRESS --priority=65534 --source-ranges=0.0.0.0/0 --action=ALLOW --rules=tcp:22
+----
+
+=== Create VM instance
+
+
+----
+gcloud compute instances create instance-1 --project=qwiklabs-gcp-00-8f96e32795ef --zone=asia-east1-a --machine-type=e2-micro --network-interface=network-tier=PREMIUM,subnet=vlan-1 --metadata=enable-oslogin=true --maintenance-policy=MIGRATE --provisioning-model=STANDARD --service-account=821998381447-compute@developer.gserviceaccount.com --scopes=https://www.googleapis.com/auth/devstorage.read_only,https://www.googleapis.com/auth/logging.write,https://www.googleapis.com/auth/monitoring.write,https://www.googleapis.com/auth/servicecontrol,https://www.googleapis.com/auth/service.management.readonly,https://www.googleapis.com/auth/trace.append --create-disk=auto-delete=yes,boot=yes,device-name=instance-1,image=projects/debian-cloud/global/images/debian-11-bullseye-v20221206,mode=rw,size=10,type=projects/qwiklabs-gcp-00-8f96e32795ef/zones/us-east5-c/diskTypes/pd-balanced --no-shielded-secure-boot --shielded-vtpm --shielded-integrity-monitoring --reservation-affinity=any
+
+gcloud compute instances create instance-2 --project=qwiklabs-gcp-00-8f96e32795ef --zone=asia-northeast1-c --machine-type=e2-micro --network-interface=network-tier=PREMIUM,subnet=vlan-2 --metadata=enable-oslogin=true --maintenance-policy=MIGRATE --provisioning-model=STANDARD --service-account=821998381447-compute@developer.gserviceaccount.com --scopes=https://www.googleapis.com/auth/devstorage.read_only,https://www.googleapis.com/auth/logging.write,https://www.googleapis.com/auth/monitoring.write,https://www.googleapis.com/auth/servicecontrol,https://www.googleapis.com/auth/service.management.readonly,https://www.googleapis.com/auth/trace.append --create-disk=auto-delete=yes,boot=yes,device-name=instance-2,image=projects/debian-cloud/global/images/debian-11-bullseye-v20221206,mode=rw,size=10,type=projects/qwiklabs-gcp-00-8f96e32795ef/zones/us-east5-c/diskTypes/pd-balanced --no-shielded-secure-boot --shielded-vtpm --shielded-integrity-monitoring --reservation-affinity=any
 ----
 
 == custom mode networks
