@@ -215,204 +215,238 @@ link:default-subnets.json[default-subnets.json]
 | IPV4_ONLY
 | default
 | us-east7
+
+|10.202.0.1
+|10.202.0.0/20
+|default
+|false
+|PRIVATE
+|IPV4_ONLY
+|default
+|us-east5
+
+|10.206.0.1
+|10.206.0.0/20
+|default
+|false
+|PRIVATE
+|IPV4_ONLY
+|default
+|us-south1
+
+|10.208.0.1
+|10.208.0.0/20
+|default
+|false
+|PRIVATE
+|IPV4_ONLY
+|default
+|me-west1
 |===
 
-[source, bash]
-.*gcloud compute networks subnets list*
-----
-NAME: default
-REGION: me-west1
-NETWORK: default
-RANGE: 10.208.0.0/20
-STACK_TYPE: IPV4_ONLY
-IPV6_ACCESS_TYPE: 
-INTERNAL_IPV6_PREFIX: 
-EXTERNAL_IPV6_PREFIX: 
-----
+=== routes
 
 [source, bash]
-.*gcloud compute routes list*
 ----
-NAME: default-route-0bb26fb8e9bce557
-NETWORK: default
-DEST_RANGE: 10.142.0.0/20
-NEXT_HOP: default
-PRIORITY: 0
-
-NAME: default-route-10f7b9996133c722
-NETWORK: default
-DEST_RANGE: 10.132.0.0/20
-NEXT_HOP: default
-PRIORITY: 0
-
-NAME: default-route-259b2a1c548101ef
-NETWORK: default
-DEST_RANGE: 10.146.0.0/20
-NEXT_HOP: default
-PRIORITY: 0
-
-NAME: default-route-2f7f35b7b2ee65ee
-NETWORK: default
-DEST_RANGE: 10.186.0.0/20
-NEXT_HOP: default
-PRIORITY: 0
-
-NAME: default-route-5235a145d381c389
-NETWORK: default
-DEST_RANGE: 10.206.0.0/20
-NEXT_HOP: default
-PRIORITY: 0
-
-NAME: default-route-70ad0392f6c5e854
-NETWORK: default
-DEST_RANGE: 10.156.0.0/20
-NEXT_HOP: default
-PRIORITY: 0
-
-NAME: default-route-80c3e99f9a7a8403
-NETWORK: default
-DEST_RANGE: 10.194.0.0/20
-NEXT_HOP: default
-PRIORITY: 0
-
-NAME: default-route-918778babe220a7b
-NETWORK: default
-DEST_RANGE: 10.208.0.0/20
-NEXT_HOP: default
-PRIORITY: 0
-
-NAME: default-route-a1f87368cabbad56
-NETWORK: default
-DEST_RANGE: 10.164.0.0/20
-NEXT_HOP: default
-PRIORITY: 0
-
-NAME: default-route-a48c3ed1e1c9023b
-NETWORK: default
-DEST_RANGE: 10.152.0.0/20
-NEXT_HOP: default
-PRIORITY: 0
-
-NAME: default-route-a7f98bfb673925f0
-NETWORK: default
-DEST_RANGE: 10.148.0.0/20
-NEXT_HOP: default
-PRIORITY: 0
-
-NAME: default-route-b32232ff74eb1330
-NETWORK: default
-DEST_RANGE: 0.0.0.0/0
-NEXT_HOP: default-internet-gateway
-PRIORITY: 1000
-
-NAME: default-route-bc20ef7d264e6230
-NETWORK: default
-DEST_RANGE: 10.138.0.0/20
-NEXT_HOP: default
-PRIORITY: 0
-
-NAME: default-route-d6b671fc950485c0
-NETWORK: default
-DEST_RANGE: 10.154.0.0/20
-NEXT_HOP: default
-PRIORITY: 0
-
-NAME: default-route-dae4c5484f7a59cc
-NETWORK: default
-DEST_RANGE: 10.160.0.0/20
-NEXT_HOP: default
-PRIORITY: 0
-
-NAME: default-route-dd5ecd9c2b741ff7
-NETWORK: default
-DEST_RANGE: 10.202.0.0/20
-NEXT_HOP: default
-PRIORITY: 0
-
-NAME: default-route-ea83f8d4bc4a02df
-NETWORK: default
-DEST_RANGE: 10.180.0.0/20
-NEXT_HOP: default
-PRIORITY: 0
-
-NAME: default-route-eb4d72b6e2ab083e
-NETWORK: default
-DEST_RANGE: 10.196.0.0/20
-NEXT_HOP: default
-PRIORITY: 0
-
-NAME: default-route-ebbc06851764473c
-NETWORK: default
-DEST_RANGE: 10.140.0.0/20
-NEXT_HOP: default
-PRIORITY: 0
-
-NAME: default-route-f05215508ce95e4c
-NETWORK: default
-DEST_RANGE: 10.166.0.0/20
-NEXT_HOP: default
-PRIORITY: 0
-
-NAME: default-route-f23b0f4db0fb78ee
-NETWORK: default
-DEST_RANGE: 10.168.0.0/20
-NEXT_HOP: default
-PRIORITY: 0
-
-NAME: default-route-f9855040ee827b11
-NETWORK: default
-DEST_RANGE: 10.128.0.0/20
-NEXT_HOP: default
-PRIORITY: 0
-
-NAME: default-route-fd64c06bd71bcb9e
-NETWORK: default
-DEST_RANGE: 10.182.0.0/20
-NEXT_HOP: default
-PRIORITY: 0
-
-NAME: default-route-ff44ba77346fc451
-NETWORK: default
-DEST_RANGE: 10.150.0.0/20
-NEXT_HOP: default
-PRIORITY: 0
+gcloud compute routes list
 ----
 
-[source, bash]
-.*gcloud compute firewall-rules list*
+link:default-routes.json[default-routes.json]
+
+|===
+|destRange |name |priority |network |nextHopNetwork
+
+|0.0.0.0/0
+|default-route-a9424e017df6cc72
+|1000
+|default
+|
+
+|10.154.0.0/20
+|default-route-120b0e8e1a1e6600
+|0
+|default
+|default
+
+|10.160.0.0/20
+|default-route-185361fb8189dc54
+|0
+|default
+|default
+
+|10.132.0.0/20
+|default-route-1920fc2005167826
+|0
+|default
+|default
+
+|10.194.0.0/20
+|default-route-263f56c558e23588
+|0
+|default
+|default
+
+|10.202.0.0/20
+|default-route-2ac9262d4c41487b
+|0
+|default
+|default
+
+|10.140.0.0/20
+|default-route-3589d5e6cf6657b9
+|0
+|default
+|default
+
+|10.138.0.0/20
+|default-route-3999302cbd084b50
+|0
+|default
+|default
+
+|10.164.0.0/20
+|default-route-468313b5bf1066c2
+|0
+|default
+|default
+
+|10.150.0.0/20
+|default-route-561bda1e08a32613
+|0
+|default
+|default
+
+|10.128.0.0/20
+|default-route-632dca7cafdb3528
+|0
+|default
+|default
+
+|10.186.0.0/20
+|default-route-7897f5199529c84b
+|0
+|default
+|default
+
+|10.182.0.0/20
+|default-route-817fc4d84c6484bc
+|0
+|default
+|default
+
+|10.146.0.0/20
+|default-route-85e8c45f9ba3ad71
+|0
+|default
+|default
+
+|10.180.0.0/20
+|default-route-8a1b6b72c04e1c19
+|0
+|default
+|default
+
+|10.142.0.0/20
+|default-route-b9ecc55c1f8a18e0
+|0
+|default
+|default
+
+|10.148.0.0/20
+|default-route-c0920f75992bc86b
+|0
+|default
+|default
+
+|10.152.0.0/20
+|default-route-c316d6acc7332b4b
+|0
+|default
+|default
+
+|10.166.0.0/20
+|default-route-d431f58d6523f27a
+|0
+|default
+|default
+
+|10.206.0.0/20
+|default-route-d62ba1b5651c11e7
+|0
+|default
+|default
+
+
+|10.208.0.0/20
+|default-route-d66d5f3c08efee80
+|0
+|default
+|default
+
+
+|10.168.0.0/20
+|default-route-e7174b8619696a58
+|0
+|default
+|default
+
+|10.156.0.0/20
+|default-route-eccb105ce62524b8
+|0
+|default
+|default
+
+|10.196.0.0/20
+|default-route-eebfbfdb149fa172
+|0
+|default
+|default
+|===
+
+=== firewall rules
+
+[source, bash] 
 ----
-NAME: default-allow-icmp
-NETWORK: default
-DIRECTION: INGRESS
-PRIORITY: 65534
-ALLOW: icmp
-DENY: 
-DISABLED: False
-
-NAME: default-allow-internal
-NETWORK: default
-DIRECTION: INGRESS
-PRIORITY: 65534
-ALLOW: tcp:0-65535,udp:0-65535,icmp
-DENY: 
-DISABLED: False
-
-NAME: default-allow-rdp
-NETWORK: default
-DIRECTION: INGRESS
-PRIORITY: 65534
-ALLOW: tcp:3389
-DENY: 
-DISABLED: False
-
-NAME: default-allow-ssh
-NETWORK: default
-DIRECTION: INGRESS
-PRIORITY: 65534
-ALLOW: tcp:22
-DENY: 
-DISABLED: False
+gcloud compute firewall-rules list
 ----
+
+link:default-firewall-rules.json[default-firewall-rules.json]
+
+|===
+|name |direction |network |priority |sourceRanges |allowedProtocolPort |logConfigEnable
+|default-allow-icmp
+|INGRESS
+|default
+|65534
+|0.0.0.0/0
+|icmp
+|false
+
+|default-allow-internal
+|INGRESS
+|default
+|65534
+|10.128.0.0/9
+|tcp/(0-65535)
+|false
+
+|default-allow-rdp
+|INGRESS
+|default
+|65534
+|0.0.0.0/0
+|tcp/3389
+|false
+
+|default-allow-ssh
+|INGRESS
+|default
+|65534
+|0.0.0.0/0
+|tcp/22
+|false
+|===
+
 
 == auto mode network
 
