@@ -3,32 +3,23 @@
 
 A Springboot fruits microservice that can used to add, update, read, delete fruits from repository.
 
-== Build and run on local
+== Run on local
 
 [source, bash]
-.*build runnable fat jar*
+.*build runnable*
 ----
 mvn clean install
-----
-
-[source, bash]
-.*build docker image*
-----
 docker build -t cloudadc/fruits:0.0.1 .
 docker push cloudadc/fruits:0.0.1
 ----
 
 [source, bash]
-.*run runnable fat jar*
-----
-java -jar target/fruits-0.0.1.jar
-----
-
-[source, bash]
-.*run docker*
+.*run on local*
 ----
 docker run -it --rm -p 8080:8080 cloudadc/fruits:0.0.1 
 ----
+
+*Test service*
 
 The Swagger doc can be accessed via http://localhost:8080/swagger-ui.html
 
@@ -164,4 +155,5 @@ $ gcloud compute instances create-with-container fruits --project=$GOOGLE_CLOUD_
 ----
 $ IP=$(gcloud compute instances list | grep EXTERNAL_IP | awk '{print $2}')
 $ curl http://$IP:8080/fruits/
+[{"id":1000001,"name":"Cherry","color":"purple","weight":1.1},{"id":1000002,"name":"Apple","color":"red","weight":2.2},{"id":1000003,"name":"Banana","color":"yellow","weight":3.3}]
 ----
