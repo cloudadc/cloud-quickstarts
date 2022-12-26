@@ -1,0 +1,151 @@
+= Cloud Storage
+:toc: manual
+
+== Cloud Storage bucket
+
+[source, bash]
+.*1. Set a unique bucket name*
+----
+echo "export BUCKET_NAME_1=test-2022091201" >> ~/.bashrc
+source ~/.bashrc
+echo $BUCKET_NAME_1
+----
+
+*2. Create the bucket on Cloud Console*
+
+* Name - Step 1 seted
+* Location type - Multi-region
+* Enforce public access prevention on this bucket - unchecked
+* Access control - Fine-grained 
+
+[source, bash]
+.*3. Prepare 3 files*
+----
+curl -k https://hadoop.apache.org/docs/current/hadoop-project-dist/hadoop-common/ClusterSetup.html > setup.html
+cp setup.html setup2.html
+cp setup.html setup3.html
+----
+
+== Access control lists (ACLs)
+
+[source, bash]
+.*1. Copy the first file to the bucket*
+----
+gsutil cp setup.html gs://$BUCKET_NAME_1/
+----
+
+[source, bash]
+.*2. Get the default access list that's been assigned to setup.html,*
+----
+$ gsutil acl get gs://$BUCKET_NAME_1/setup.html  > acl.txt && cat acl.txt
+[
+  {
+    "entity": "project-owners-493839134414",
+    "projectTeam": {
+      "projectNumber": "493839134414",
+      "team": "owners"
+    },
+    "role": "OWNER"
+  },
+  {
+    "entity": "project-editors-493839134414",
+    "projectTeam": {
+      "projectNumber": "493839134414",
+      "team": "editors"
+    },
+    "role": "OWNER"
+  },
+  {
+    "entity": "project-viewers-493839134414",
+    "projectTeam": {
+      "projectNumber": "493839134414",
+      "team": "viewers"
+    },
+    "role": "READER"
+  },
+  {
+    "email": "student-01-87aed0b8300c@qwiklabs.net",
+    "entity": "user-student-01-87aed0b8300c@qwiklabs.net",
+    "role": "OWNER"
+  }
+]
+----
+
+[source, bash]
+.*3. Set the access list to private and verify the results*
+----
+$ gsutil acl set private gs://$BUCKET_NAME_1/setup.html && gsutil acl get gs://$BUCKET_NAME_1/setup.html  > acl2.txt && cat acl2.txt
+[
+  {
+    "email": "student-01-87aed0b8300c@qwiklabs.net",
+    "entity": "user-student-01-87aed0b8300c@qwiklabs.net",
+    "role": "OWNER"
+  }
+]
+----
+
+[source, bash]
+.*4. Update the access list to make the file publicly readable and check ACLs*
+----
+$ gsutil acl ch -u AllUsers:R gs://$BUCKET_NAME_1/setup.html && gsutil acl get gs://$BUCKET_NAME_1/setup.html  > acl3.txt && cat acl3.txt
+[
+  {
+    "email": "student-01-87aed0b8300c@qwiklabs.net",
+    "entity": "user-student-01-87aed0b8300c@qwiklabs.net",
+    "role": "OWNER"
+  },
+  {
+    "entity": "allUsers",
+    "role": "READER"
+  }
+]
+----
+
+[source, bash]
+.*5. gsutil download 2 load*
+----
+rm setup.html && gsutil cp gs://$BUCKET_NAME_1/setup.html setup.html && ls -l setup.html
+----
+
+== Customer-supplied encryption keys (CSEK)
+
+[source, bash]
+.*1. Create a CSEK key*
+----
+$ python3 -c 'import base64; import os; print(base64.encodebytes(os.urandom(32)))'
+b'cn2C0sNhWyt4fPCw5PoFaI/HNAoHeXJ6vLKePAkNHpU=\n'
+----
+
+NOTE: Excluding b' and \n', so the key is `cn2C0sNhWyt4fPCw5PoFaI/HNAoHeXJ6vLKePAkNHpU=`
+
+[source, bash]
+.*2. Add the key to gsutil config file .boto*
+----
+$ gsutil config -n
+$ cat .boto | grep encryption_key
+# 'encryption_key' specifies a single customer-supplied encryption key that
+encryption_key=cn2C0sNhWyt4fPCw5PoFaI/HNAoHeXJ6vLKePAkNHpU=
+----
+
+[source, bash]
+.*3. Update files to bucket*
+----
+gsutil cp setup2.html gs://$BUCKET_NAME_1/
+gsutil cp setup3.html gs://$BUCKET_NAME_1/
+----
+
+[source, bash]
+.*4. List all files in bucket*
+----
+$ gsutil ls gs://$BUCKET_NAME_1/
+gs://test-2022091201/setup.html
+gs://test-2022091201/setup2.html
+gs://test-2022091201/setup3.html
+----
+
+[source, bash]
+.*5. Download and view the encryption*
+----
+rm setup* && gsutil cp gs://$BUCKET_NAME_1/setup* ./ 
+----
+
