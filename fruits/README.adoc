@@ -89,7 +89,7 @@ fruits   LoadBalancer   10.104.13.78   104.199.132.29   8080:32705/TCP   61s
 [source, bash]
 .*Test service*
 ----
-$ curl -s http://104.199.132.29:8080/fruits/ -H 'accept: application/json'
+$ curl -s http://104.199.132.29:8080/fruits/
 [{"id":1000001,"name":"Cherry","color":"purple","weight":1.1},{"id":1000002,"name":"Apple","color":"red","weight":2.2},{"id":1000003,"name":"Banana","color":"yellow","weight":3.3}]
 ----
 
