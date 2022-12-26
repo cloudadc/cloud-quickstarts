@@ -1,0 +1,94 @@
+= fruits microservice
+:toc: manual
+
+A Springboot fruits microservice that can used to add, update, read, delete fruits from repository.
+
+== Build and run on local
+
+[source, bash]
+.*build runnable fat jar*
+----
+mvn clean install
+----
+
+[source, bash]
+.*build docker image*
+----
+docker build -t cloudadc/fruits:0.0.1 .
+docker push cloudadc/fruits:0.0.1
+----
+
+[source, bash]
+.*run runnable fat jar*
+----
+java -jar target/fruits-0.0.1.jar
+----
+
+[source, bash]
+.*run docker*
+----
+docker run -it --rm -p 8080:8080 cloudadc/fruits:0.0.1 
+----
+
+The Swagger doc can be accessed via http://localhost:8080/swagger-ui.html
+
+Add a fruit:
+
+[source, bash]
+----
+curl -X 'POST' 'http://localhost:8080/fruits/' -H 'accept: */*' -H 'Content-Type: application/json' -d '{"id": 1000004, "name": "pear", "color": "yellow", "weight": 2.1}'
+----
+
+Update a fruit:
+
+[source, bash]
+----
+curl -X 'PATCH' 'http://localhost:8080/fruits/' -H 'accept: */*' -H 'Content-Type: application/json' -d '{"id": 1000004, "name": "pear", "color": "yellow", "weight": 2.2}'
+----
+
+Query fruit by id:
+
+[source, bash]
+----
+$ curl -X 'GET' 'http://localhost:8080/fruits/1000004' -H 'accept: application/json'
+{"id":1000004,"name":"pear","color":"yellow","weight":2.2}
+----
+
+Delete fruit by id:
+
+[source, bash]
+----
+curl -X 'DELETE' 'http://localhost:8080/fruits/1000004' -H 'accept: application/json'
+----
+
+== Run on Google Kubernetes Engine
+
+[source, bash]
+.*Create a single zone cluster*
+----
+export MY_ZONE=asia-east1-a
+gcloud container clusters create mycluster --zone $MY_ZONE --num-nodes 2
+----
+
+[source, bash]
+.*Deploy fruits app*
+----
+kubectl create deploy fruits --image=cloudadc/fruits:0.0.1 --replicas=3
+----
+
+[source, bash]
+.*Create LoadBalancer Service*
+----
+$ kubectl expose deployment fruits --port 8080 --type LoadBalancer
+
+$ kubectl get svc fruits
+NAME     TYPE           CLUSTER-IP     EXTERNAL-IP      PORT(S)          AGE
+fruits   LoadBalancer   10.104.13.78   104.199.132.29   8080:32705/TCP   61s
+----
+
+[source, bash]
+.*Test service*
+----
+$ curl -s http://104.199.132.29:8080/fruits/ -H 'accept: application/json'
+[{"id":1000001,"name":"Cherry","color":"purple","weight":1.1},{"id":1000002,"name":"Apple","color":"red","weight":2.2},{"id":1000003,"name":"Banana","color":"yellow","weight":3.3}]
+----
