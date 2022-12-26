@@ -14,10 +14,10 @@
 	<name>fruits</name>
 	<description>Demo project for Spring Boot</description>
 
-	<properties>
-	    <springdoc-openapi-ui.version>1.6.9</springdoc-openapi-ui.version>
-		<java.version>17</java.version>
-	</properties>
+    <properties>
+        <springdoc-openapi-ui.version>1.6.9</springdoc-openapi-ui.version>
+        <java.version>11</java.version>
+    </properties>
 	
 	
 
@@ -44,6 +44,10 @@
                <groupId>com.google.cloud.tools</groupId>
                <artifactId>appengine-maven-plugin</artifactId>
                <version>2.4.4</version>
+               <configuration>
+                   <version>1</version>
+                   <projectId>GCLOUD_CONFIG</projectId>
+                </configuration>
             </plugin>
             <plugin>
                 <groupId>org.springframework.boot</groupId>

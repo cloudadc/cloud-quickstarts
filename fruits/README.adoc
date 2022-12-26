@@ -95,7 +95,35 @@ $ curl -s http://104.199.132.29:8080/fruits/
 
 == Run on Google App Engine
 
-TODO
+[source, bash]
+.*Create App Engine*
+----
+gcloud app create --region asia-east1
+----
+
+[source, bash]
+.*Deploying fruits to App Engine*
+----
+$ mvn package appengine:deploy
+...
+[INFO] GCLOUD: Deployed service [default] to [https://qwiklabs-gcp-01-6be7da4de51d.de.r.appspot.com]
+[INFO] GCLOUD:
+[INFO] GCLOUD: You can stream logs from the command line by running:
+[INFO] GCLOUD:   $ gcloud app logs tail -s default
+[INFO] GCLOUD:
+[INFO] GCLOUD: To view your application in the web browser run:
+[INFO] GCLOUD:   $ gcloud app browse
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD SUCCESS
+[INFO] ------------------------------------------------------------------------
+----
+
+[source, bash]
+.*Test service*
+----
+$ curl -k -s https://qwiklabs-gcp-01-6be7da4de51d.de.r.appspot.com/fruits/
+[{"id":1000001,"name":"Cherry","color":"purple","weight":1.1},{"id":1000002,"name":"Apple","color":"red","weight":2.2},{"id":1000003,"name":"Banana","color":"yellow","weight":3.3}]
+----
 
 == Run on Google Cloud Run
 
@@ -123,3 +151,17 @@ $ curl -k -s  https://fruits-ue5j36phfa-de.a.run.app/fruits/
 [{"id":1000001,"name":"Cherry","color":"purple","weight":1.1},{"id":1000002,"name":"Apple","color":"red","weight":2.2},{"id":1000003,"name":"Banana","color":"yellow","weight":3.3}]
 ----
 
+== Run on Google Compute Engine
+
+[source, bash]
+.*Deploying fruits to Cloud Engine*
+----
+$ gcloud compute instances create-with-container fruits --project=$GOOGLE_CLOUD_PROJECT --zone=asia-east1-b --machine-type=e2-small --network-interface=network-tier=PREMIUM,subnet=default --maintenance-policy=MIGRATE --provisioning-model=STANDARD --service-account=$GOOGLE_CLOUD_SA --scopes=https://www.googleapis.com/auth/devstorage.read_only,https://www.googleapis.com/auth/logging.write,https://www.googleapis.com/auth/monitoring.write,https://www.googleapis.com/auth/servicecontrol,https://www.googleapis.com/auth/service.management.readonly,https://www.googleapis.com/auth/trace.append --image=projects/cos-cloud/global/images/cos-stable-101-17162-40-42 --boot-disk-size=10GB --boot-disk-type=pd-balanced --boot-disk-device-name=fruits --container-image=cloudadc/fruits:0.0.1 --container-restart-policy=always --no-shielded-secure-boot --shielded-vtpm --shielded-integrity-monitoring --labels=container-vm=cos-stable-101-17162-40-42
+----
+
+[source, bash]
+.*Test service*
+----
+$ IP=$(gcloud compute instances list | grep EXTERNAL_IP | awk '{print $2}')
+$ curl http://$IP:8080/fruits/
+----
