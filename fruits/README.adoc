@@ -3,7 +3,7 @@
 
 A Springboot fruits microservice that can used to add, update, read, delete fruits from repository.
 
-== Run on local
+== Run on Local
 
 [source, bash]
 .*build runnable*
