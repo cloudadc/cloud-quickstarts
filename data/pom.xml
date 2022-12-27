@@ -18,21 +18,27 @@
         <springdoc-openapi-ui.version>1.6.9</springdoc-openapi-ui.version>
         <libraries-bom.version>26.2.0</libraries-bom.version>
         <java.version>17</java.version>
+        <clickhouse.version>0.3.2-patch11</clickhouse.version>
     </properties>
 	
     <dependencyManagement>
         <dependencies>
             <dependency>
                 <groupId>com.google.cloud</groupId>
-	        <artifactId>libraries-bom</artifactId>
-	        <version>${libraries-bom.version}</version>
-	        <type>pom</type>
-	        <scope>import</scope>
+                <artifactId>libraries-bom</artifactId>
+                <version>${libraries-bom.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
             </dependency>
             <dependency>
                 <groupId>org.springdoc</groupId>
                 <artifactId>springdoc-openapi-ui</artifactId>
                 <version>${springdoc-openapi-ui.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.clickhouse</groupId>
+                <artifactId>clickhouse-jdbc</artifactId>
+                <version>${clickhouse.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
@@ -54,6 +60,10 @@
         <dependency>
             <groupId>com.google.cloud</groupId>
             <artifactId>google-cloud-storage</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.clickhouse</groupId>
+            <artifactId>clickhouse-jdbc</artifactId>
         </dependency>
     </dependencies>
 

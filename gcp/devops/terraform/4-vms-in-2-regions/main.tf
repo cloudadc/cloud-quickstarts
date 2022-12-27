@@ -94,5 +94,5 @@ module "vm-4" {
   source           = "./instance"
   instance_name    = "vm-4"
   instance_zone    = "asia-northeast1-b"
-  instance_subnetwork = google_compute_subnetwork.subnet-1.id
+  instance_subnetwork = google_compute_subnetwork.subnet-2.id
 }

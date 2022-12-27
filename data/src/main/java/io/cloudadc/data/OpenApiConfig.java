@@ -1,4 +1,4 @@
-package io.cloudadc.cloud.frontend;
+package io.cloudadc.data;
 
 import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;

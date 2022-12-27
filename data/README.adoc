@@ -3,3 +3,18 @@
 
 A REST Service used to munipulate or retrive data from Public Cloud Storage and Data.
 
+== ClickHouse on Local
+
+[source, json]
+----
+$ curl -s -X 'POST' 'http://localhost:8080/local/clickhouse/' -H 'accept: application/json' -H 'Content-Type: application/json' -d '{"url": "jdbc:ch://localhost:8123", "username": "default", "password": ""}'
+{
+  "driver": "ClickHouse JDBC Driver",
+  "implementation": "drop db[DROP DATABASE IF EXISTS helloworld], create db[CREATE DATABASE IF NOT EXISTS helloworld], create table[CREATE TABLE IF NOT EXISTS helloworld.my_first_table(user_id UInt32, message String, timestamp DateTime, metric Float32) ENGINE = MergeTree() PRIMARY KEY (user_id, timestamp)], indert table[INSERT INTO helloworld.my_first_table (user_id, message, timestamp, metric) VALUES (1001, 'Hello World', now(), 2.7185)], query table[SELECT * FROM helloworld.my_first_table], query results: 1001, Hello World, 2022-12-27T19:13:16, 2.7185001 ",
+  "name": "ClickHouse",
+  "driverversion": "clickhouse-jdbc 0.3.2-patch11 (revision: 27f8951)",
+  "version": "clickhouse-jdbc 0.3.2-patch11 (revision: 27f8951)",
+  "url": "jdbc:clickhouse:http://localhost:8123",
+  "username": "default"
+}
+----
