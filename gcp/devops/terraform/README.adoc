@@ -24,4 +24,17 @@ terraform apply
 terraform destroy
 ----
 
+== Exists Configuration
 
+|===
+|ITEM |NOTES
+
+|link:1-vm-in-1-zone/README.adoc[1-vm-in-1-zone]
+|one vm in one zone, custom mode network, subnet, firewall rules
+
+|link:2-vms-in-2-regions/README.adoc[2-vms-in-2-regions]
+|two vms in two regions, auto mode network, firewall rules
+
+|link:4-vms-in-2-regions/README.adoc[4-vms-in-2-regions]
+|four vms in two regions 3 zones, custom mode network, subnet, firewall rules
+|===

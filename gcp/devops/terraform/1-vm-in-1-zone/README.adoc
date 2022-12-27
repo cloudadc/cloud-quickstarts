@@ -1,0 +1,23 @@
+= One vm on one zone
+:toc: manual
+
+* Create 1 vm on one zone
+* Create network in custom mode
+* Create subnet
+* Create firewall rules
+
+image:tf-1net-1vm-2rules.png[]
+
+[source, bash]
+.*Deploy*
+----
+terraform init
+terraform plan
+terraform apply
+----
+
+[source, bash]
+.*Clean*
+----
+terraform destroy
+----

@@ -1,0 +1,24 @@
+= Four VMs in 2 region
+:toc: manual
+
+* Deploy 4 vms in 2 regions and 3 zones
+* Create network in custom mode
+* Create 2 subnet
+* Create 4 firewall rules
+* Install TTCP on 4 VMs
+
+image:../../../network/vpc/img/gcp-vpc.png[]
+
+[source, bash]
+.*Deploy*
+----
+terraform init
+terraform plan
+terraform apply
+----
+
+[source, bash]
+.*Clean*
+----
+terraform destroy
+----
