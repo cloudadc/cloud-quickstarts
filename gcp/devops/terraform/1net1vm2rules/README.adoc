@@ -1,0 +1,4 @@
+= 1 network / 1 vm /2 firewall rules
+:toc: manual
+
+image:img/tf-1net-1vm-2rules.png[]

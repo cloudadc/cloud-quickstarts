@@ -1,17 +1,27 @@
-= Scaling and Automation
+= Terraform
 :toc: manual
 
 
-== Terraform
+== Useful Commands
 
 [source, bash]
+.*reformat configuration to standard style*
 ----
-cd tfinfra/
 terraform fmt
+----
+
+[source, bash]
+.*deploy all resources*
+----
 terraform init
 terraform plan
 terraform apply
 ----
 
+[source, bash]
+.*remove all resources*
+----
+terraform destroy
+----
 
 
