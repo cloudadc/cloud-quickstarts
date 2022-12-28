@@ -18,6 +18,35 @@ terraform apply
 ----
 
 [source, bash]
+.*ttcp recv*
+----
+$ ttcp -r
+ttcp-r: buflen=1048576, nbuf=100, align=16384/0, port=5001  tcp
+ttcp-r: socket
+ttcp-r: accept from 10.146.0.2:55216
+ttcp-r: worker 1398 start
+ttcp-r: worker 1398, stats of 10.146.0.2:55216
+        104857600 bytes in 6.36 real seconds = 15.72 MB/sec +++
+        104857600 bytes in 0.67 CPU seconds = 148.72 MB/cpu sec
+        10979 I/O calls, msec/call = 0.59, calls/sec = 1726.07
+        0.0user 0.6sys 0:06real 10% 0i+0d 554maxrss 0+260pf 10986+0csw
+        buffer address 0x7fb607390000
+----
+
+[source, bash]
+.*ttcp trans*
+----
+$ ttcp -t 10.140.0.2
+ttcp-t: buflen=1048576, nbuf=100, align=16384/0, port=5001  tcp  -> 10.140.0.2
+ttcp-t: socket
+ttcp-t: connect
+ttcp-t: 104857600 bytes in 6.18 real seconds = 16.17 MB/sec +++
+ttcp-t: 104857600 bytes in 0.04 CPU seconds = 2748.99 MB/cpu sec
+ttcp-t: 100 I/O calls, msec/call = 63.32, calls/sec = 16.17
+ttcp-t: 0.0user 0.0sys 0:06real 0% 0i+0d 704maxrss 0+256pf 90+1csw
+----
+
+[source, bash]
 .*Clean*
 ----
 terraform destroy

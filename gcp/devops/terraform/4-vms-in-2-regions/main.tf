@@ -28,7 +28,6 @@ resource "google_compute_firewall" "mynetwork-allow-ssh" {
   network       = google_compute_network.mynetwork.id
   priority      = 65534
   source_ranges = ["0.0.0.0/0"]
-  target_tags   = ["ssh"]
 }
 
 resource "google_compute_firewall" "mynetwork-allow-rdp" {
@@ -41,7 +40,6 @@ resource "google_compute_firewall" "mynetwork-allow-rdp" {
   network       = google_compute_network.mynetwork.id
   priority      = 65534
   source_ranges = ["0.0.0.0/0"]
-  target_tags   = ["rdp"]
 }
 
 resource "google_compute_firewall" "mynetwork-allow-icmp" {
@@ -53,7 +51,6 @@ resource "google_compute_firewall" "mynetwork-allow-icmp" {
   network       = google_compute_network.mynetwork.id
   priority      = 65534
   source_ranges = ["0.0.0.0/0"]
-  target_tags   = ["icmp"]
 }
 
 resource "google_compute_firewall" "mynetwork-allow-ttcp" {
@@ -66,7 +63,6 @@ resource "google_compute_firewall" "mynetwork-allow-ttcp" {
   network       = google_compute_network.mynetwork.id
   priority      = 65534
   source_ranges = ["10.140.0.0/20", "10.146.0.0/20"]
-  target_tags   = ["custom"]
 }
 
 module "vm-1" {
