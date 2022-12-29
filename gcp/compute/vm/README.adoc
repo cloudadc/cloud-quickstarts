@@ -5,6 +5,28 @@
 
 link:machine-types.json[machine-types.json] downloaded by `gcloud` commands, and be loaded into mongodb, they use mongodb SQL to analysis this data.
 
+[source, bash]
+.*Create View*
+----
+var pipeline = [
+  {
+    $project: {
+      _id: 0,
+      name: 1,
+      type: {$substr: ["$name", 0, {$indexOfCP: ["$name", "-"]}]},
+      guestCpus: 1,
+      isSharedCpu: 1,
+      memoryMb: 1,
+      maximumPersistentDisks: 1,
+      maximumPersistentDisksSizeGb: 1,
+      zone: 1
+    }
+  }
+]
+
+db.createView("machinetypes", "allmachinetypes", pipeline)
+----
+
 === How many types?
 
 [source, bash]
@@ -13,17 +35,104 @@ gcp> db.machinetypes.countDocuments()
 12221
 ----
 
-[source, bash]
-----
-
-----
+=== How many categories?
 
 [source, bash]
 ----
-
+gcp> db.machinetypes.aggregate([{$group: {_id: "$type", count: {$count: {}}}}, {$sort: {count: -1}}])
+[
+  { _id: 'n2', count: 2962 },
+  { _id: 'n2d', count: 2635 },
+  { _id: 'n1', count: 2443 },
+  { _id: 'e2', count: 1904 },
+  { _id: 'c2d', count: 714 },
+  { _id: 'c2', count: 400 },
+  { _id: 't2d', count: 336 },
+  { _id: 'm1', count: 263 },
+  { _id: 'm2', count: 172 },
+  { _id: 'f1', count: 98 },
+  { _id: 'g1', count: 98 },
+  { _id: 'a2', count: 88 },
+  { _id: 't2a', count: 63 },
+  { _id: 'm3', count: 45 }
+]
 ----
+
+=== What's hotest 30 categories by CPU and Memory?
 
 [source, bash]
 ----
-
+gcp> db.machinetypes.aggregate([{$group: {_id: {cpu: "$guestCpus", memory: "$memoryMb"}, count: {$count: {}}}}, {$sort: {count: -1}}])
+[
+  { _id: { cpu: 4, memory: 16384 }, count: 473 },
+  { _id: { cpu: 8, memory: 32768 }, count: 473 },
+  { _id: { cpu: 16, memory: 65536 }, count: 473 },
+  { _id: { cpu: 2, memory: 2048 }, count: 420 },
+  { _id: { cpu: 2, memory: 8192 }, count: 393 },
+  { _id: { cpu: 32, memory: 131072 }, count: 393 },
+  { _id: { cpu: 4, memory: 32768 }, count: 342 },
+  { _id: { cpu: 8, memory: 65536 }, count: 342 },
+  { _id: { cpu: 16, memory: 131072 }, count: 342 },
+  { _id: { cpu: 2, memory: 16384 }, count: 342 },
+  { _id: { cpu: 4, memory: 4096 }, count: 308 },
+  { _id: { cpu: 8, memory: 8192 }, count: 308 },
+  { _id: { cpu: 32, memory: 32768 }, count: 308 },
+  { _id: { cpu: 16, memory: 16384 }, count: 308 },
+  { _id: { cpu: 48, memory: 196608 }, count: 247 },
+  { _id: { cpu: 32, memory: 262144 }, count: 230 },
+  { _id: { cpu: 48, memory: 49152 }, count: 196 },
+  { _id: { cpu: 64, memory: 65536 }, count: 196 },
+  { _id: { cpu: 80, memory: 327680 }, count: 196 },
+  { _id: { cpu: 64, memory: 262144 }, count: 196 },
+  { _id: { cpu: 80, memory: 81920 }, count: 196 },
+  { _id: { cpu: 48, memory: 393216 }, count: 196 },
+  { _id: { cpu: 64, memory: 524288 }, count: 196 },
+  { _id: { cpu: 80, memory: 655360 }, count: 196 },
+  { _id: { cpu: 96, memory: 98304 }, count: 151 },
+  { _id: { cpu: 128, memory: 524288 }, count: 151 },
+  { _id: { cpu: 96, memory: 393216 }, count: 151 },
+  { _id: { cpu: 40, memory: 984064 }, count: 146 },
+  { _id: { cpu: 160, memory: 3936256 }, count: 146 },
+  { _id: { cpu: 2, memory: 4096 }, count: 146 }
+]
 ----
+
+=== What's hotest 30 categories by CPU, Memory and Disk?
+
+[source, bash]
+----
+gcp> db.machinetypes.aggregate([{$group: {_id: {cpu: "$guestCpus", memory: "$memoryMb", disk: "$maximumPersistentDisksSizeGb"}, count: {$count: {}}}}, {$sort: {count: -1}}, {$limit: 30}])
+[
+  { _id: { cpu: 4, memory: 16384, disk: '263168' }, count: 473 },
+  { _id: { cpu: 16, memory: 65536, disk: '263168' }, count: 473 },
+  { _id: { cpu: 8, memory: 32768, disk: '263168' }, count: 473 },
+  { _id: { cpu: 32, memory: 131072, disk: '263168' }, count: 393 },
+  { _id: { cpu: 2, memory: 8192, disk: '263168' }, count: 393 },
+  { _id: { cpu: 4, memory: 32768, disk: '263168' }, count: 342 },
+  { _id: { cpu: 8, memory: 65536, disk: '263168' }, count: 342 },
+  { _id: { cpu: 2, memory: 16384, disk: '263168' }, count: 342 },
+  { _id: { cpu: 16, memory: 131072, disk: '263168' }, count: 342 },
+  { _id: { cpu: 2, memory: 2048, disk: '263168' }, count: 308 },
+  { _id: { cpu: 8, memory: 8192, disk: '263168' }, count: 308 },
+  { _id: { cpu: 32, memory: 32768, disk: '263168' }, count: 308 },
+  { _id: { cpu: 4, memory: 4096, disk: '263168' }, count: 308 },
+  { _id: { cpu: 16, memory: 16384, disk: '263168' }, count: 308 },
+  { _id: { cpu: 48, memory: 196608, disk: '263168' }, count: 247 },
+  { _id: { cpu: 32, memory: 262144, disk: '263168' }, count: 230 },
+  { _id: { cpu: 80, memory: 655360, disk: '263168' }, count: 196 },
+  { _id: { cpu: 80, memory: 327680, disk: '263168' }, count: 196 },
+  { _id: { cpu: 64, memory: 524288, disk: '263168' }, count: 196 },
+  { _id: { cpu: 64, memory: 262144, disk: '263168' }, count: 196 },
+  { _id: { cpu: 48, memory: 393216, disk: '263168' }, count: 196 },
+  { _id: { cpu: 64, memory: 65536, disk: '263168' }, count: 196 },
+  { _id: { cpu: 80, memory: 81920, disk: '263168' }, count: 196 },
+  { _id: { cpu: 48, memory: 49152, disk: '263168' }, count: 196 },
+  { _id: { cpu: 128, memory: 524288, disk: '263168' }, count: 151 },
+  { _id: { cpu: 96, memory: 393216, disk: '263168' }, count: 151 },
+  { _id: { cpu: 96, memory: 98304, disk: '263168' }, count: 151 },
+  { _id: { cpu: 2, memory: 4096, disk: '263168' }, count: 146 },
+  { _id: { cpu: 160, memory: 3936256, disk: '263168' }, count: 146 },
+  { _id: { cpu: 80, memory: 1968128, disk: '263168' }, count: 146 }
+]
+----
+
