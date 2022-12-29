@@ -1,3 +1,29 @@
 = Virtual Machines
 :toc: manual
 
+== Overview Machines Type via MongoDB
+
+link:machine-types.json[machine-types.json] downloaded by `gcloud` commands, and be loaded into mongodb, they use mongodb SQL to analysis this data.
+
+=== How many types?
+
+[source, bash]
+----
+gcp> db.machinetypes.countDocuments()
+12221
+----
+
+[source, bash]
+----
+
+----
+
+[source, bash]
+----
+
+----
+
+[source, bash]
+----
+
+----
