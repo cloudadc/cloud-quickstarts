@@ -501,6 +501,8 @@ gcloud compute networks delete default
 
 |===
 
+* link:instances.json[instances.json]
+
 === Create Networks
 
 [source, bash]
