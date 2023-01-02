@@ -464,6 +464,221 @@ for i in $(gcloud compute firewall-rules list | grep NAME | awk '{print $2}') ; 
 gcloud compute networks delete default
 ----
 
+== One VPC, Three Netowrks, Two Regions, Five VMs
+
+|===
+|NAME |Region| ZONE |Network| Internal IP
+
+|mynetwork-us-vm
+|us-central1
+|us-central1-b
+|mynetwork
+|10.128.0.2
+
+|mynetwork-eu-vm
+|europe-west1
+|europe-west1-c
+|mynetwork
+|10.132.0.2
+
+|managementnet-us-vm
+|us-central1
+|us-central1-b
+|managementnet
+|10.240.0.2
+
+|privatenet-us-vm
+|us-central1
+|us-central1-b
+|privatenet
+|172.16.0.2
+
+|privatenet-eu-vm
+|europe-west1
+|europe-west1-c
+|privatenet
+|172.20.0.2
+
+|===
+
+=== Create Networks
+
+[source, bash]
+.*delete default network*
+----
+for i in $(gcloud compute firewall-rules list | grep NAME | awk '{print $2}') ; do gcloud compute firewall-rules delete $i ; done
+gcloud compute networks delete default
+----
+
+[source, bash]
+.*Create networks*
+----
+gcloud compute networks create mynetwork --subnet-mode=auto
+gcloud compute networks create managementnet --subnet-mode=custom
+gcloud compute networks create privatenet --subnet-mode=custom
+----
+
+[source, bash]
+.*Create subnets*
+----
+gcloud compute networks subnets create managementsubnet-us --network=managementnet --region=us-central1 --range=10.240.0.0/20
+gcloud compute networks subnets create privatesubnet-us --network=privatenet --region=us-central1 --range=172.16.0.0/24
+gcloud compute networks subnets create privatesubnet-eu --network=privatenet --region=europe-west1 --range=172.20.0.0/20
+----
+
+=== Create Firewall Rules
+
+[source, bash]
+.*mynetwork*
+----
+gcloud compute firewall-rules create mynetwork-allow-custom --network=mynetwork --direction=INGRESS --priority=65534 --source-ranges=10.128.0.0/9 --action=ALLOW --rules=all
+gcloud compute firewall-rules create mynetwork-allow-icmp --network=mynetwork --direction=INGRESS --priority=65534 --source-ranges=0.0.0.0/0 --action=ALLOW --rules=icmp
+gcloud compute firewall-rules create mynetwork-allow-rdp --network=mynetwork --direction=INGRESS --priority=65534 --source-ranges=0.0.0.0/0 --action=ALLOW --rules=tcp:3389
+gcloud compute firewall-rules create mynetwork-allow-ssh --network=mynetwork --direction=INGRESS --priority=65534 --source-ranges=0.0.0.0/0 --action=ALLOW --rules=tcp:22
+----
+
+[source, bash]
+.*managementnet*
+----
+gcloud compute firewall-rules create managementnet-allow-icmp-ssh-rdp --direction=INGRESS --priority=1000 --network=managementnet --action=ALLOW --rules=icmp,tcp:22,tcp:3389 --source-ranges=0.0.0.0/0
+----
+
+[source, bash]
+.*privatenet*
+----
+gcloud compute firewall-rules create privatenet-allow-icmp-ssh-rdp --direction=INGRESS --priority=1000 --network=privatenet --action=ALLOW --rules=icmp,tcp:22,tcp:3389 --source-ranges=0.0.0.0/0
+----
+
+=== Create VMs
+
+[source, bash]
+.*mynetwork*
+----
+gcloud compute instances create mynetwork-us-vm --zone=us-central1-b --machine-type=e2-micro --subnet=mynetwork --image-family=debian-11 --image-project=debian-cloud --boot-disk-size=10GB --boot-disk-type=pd-standard --boot-disk-device-name=mynetwork-us-vm
+gcloud compute instances create mynetwork-eu-vm --zone=europe-west1-c --machine-type=e2-micro --subnet=mynetwork --image-family=debian-11 --image-project=debian-cloud --boot-disk-size=10GB --boot-disk-type=pd-standard --boot-disk-device-name=mynetwork-eu-vm
+----
+
+[source, bash]
+.*managementnet*
+----
+gcloud compute instances create managementnet-us-vm --zone=us-central1-b --machine-type=e2-micro --subnet=managementsubnet-us --image-family=debian-11 --image-project=debian-cloud --boot-disk-size=10GB --boot-disk-type=pd-standard --boot-disk-device-name=managementnet-us-vm
+----
+
+[source, bash]
+.*privatesubnet*
+----
+gcloud compute instances create privatenet-us-vm --zone=us-central1-b --machine-type=e2-micro --subnet=privatesubnet-us --image-family=debian-11 --image-project=debian-cloud --boot-disk-size=10GB --boot-disk-type=pd-standard --boot-disk-device-name=privatenet-us-vm
+gcloud compute instances create privatenet-eu-vm --zone=europe-west1-c --machine-type=e2-micro --subnet=privatesubnet-eu --image-family=debian-11 --image-project=debian-cloud --boot-disk-size=10GB --boot-disk-type=pd-standard --boot-disk-device-name=privatenet-us-vm
+----
+
+=== Test Connectivity
+
+[source, bash]
+.*Extract Internal and External IPs*
+----
+INTERNAL_IPS=$(gcloud compute instances list | grep INTERNAL_IP | awk '{print $2}')
+EXTERNAL_IPS=$(gcloud compute instances list | grep EXTERNAL_IP | awk '{print $2}')
+echo $INTERNAL_IPS
+echo $EXTERNAL_IPS
+----
+
+[source, bash]
+.*SSH to mynetwork-us-vm, and ping all external ips*
+----
+mynetwork-us-vm:~$ for i in $EXTERNAL_IPS ; do ping $i -c3 ; done
+PING 34.28.96.75 (34.28.96.75) 56(84) bytes of data.
+64 bytes from 34.28.96.75: icmp_seq=1 ttl=61 time=2.26 ms
+64 bytes from 34.28.96.75: icmp_seq=2 ttl=61 time=0.701 ms
+64 bytes from 34.28.96.75: icmp_seq=3 ttl=61 time=0.810 ms
+
+--- 34.28.96.75 ping statistics ---
+3 packets transmitted, 3 received, 0% packet loss, time 2011ms
+rtt min/avg/max/mdev = 0.701/1.257/2.260/0.710 ms
+PING 34.122.119.170 (34.122.119.170) 56(84) bytes of data.
+64 bytes from 34.122.119.170: icmp_seq=1 ttl=61 time=1.67 ms
+64 bytes from 34.122.119.170: icmp_seq=2 ttl=61 time=0.557 ms
+64 bytes from 34.122.119.170: icmp_seq=3 ttl=61 time=0.499 ms
+
+--- 34.122.119.170 ping statistics ---
+3 packets transmitted, 3 received, 0% packet loss, time 2012ms
+rtt min/avg/max/mdev = 0.499/0.908/1.668/0.537 ms
+PING 34.67.22.140 (34.67.22.140) 56(84) bytes of data.
+64 bytes from 34.67.22.140: icmp_seq=1 ttl=61 time=2.75 ms
+64 bytes from 34.67.22.140: icmp_seq=2 ttl=61 time=0.657 ms
+64 bytes from 34.67.22.140: icmp_seq=3 ttl=61 time=0.653 ms
+
+--- 34.67.22.140 ping statistics ---
+3 packets transmitted, 3 received, 0% packet loss, time 2012ms
+rtt min/avg/max/mdev = 0.653/1.352/2.746/0.985 ms
+PING 34.77.219.183 (34.77.219.183) 56(84) bytes of data.
+64 bytes from 34.77.219.183: icmp_seq=1 ttl=53 time=104 ms
+64 bytes from 34.77.219.183: icmp_seq=2 ttl=53 time=103 ms
+64 bytes from 34.77.219.183: icmp_seq=3 ttl=53 time=103 ms
+
+--- 34.77.219.183 ping statistics ---
+3 packets transmitted, 3 received, 0% packet loss, time 2003ms
+rtt min/avg/max/mdev = 103.082/103.552/104.420/0.614 ms
+PING 35.233.109.131 (35.233.109.131) 56(84) bytes of data.
+64 bytes from 35.233.109.131: icmp_seq=1 ttl=53 time=105 ms
+64 bytes from 35.233.109.131: icmp_seq=2 ttl=53 time=103 ms
+64 bytes from 35.233.109.131: icmp_seq=3 ttl=53 time=103 ms
+
+--- 35.233.109.131 ping statistics ---
+3 packets transmitted, 3 received, 0% packet loss, time 2003ms
+rtt min/avg/max/mdev = 103.280/103.802/104.813/0.714 ms
+----
+
+[source, bash]
+.*SSH to mynetwork-us-vm, and ping all external ips*
+----
+$ for i in $INTERNAL_IPS ; do ping $i -c3 ; done
+PING 10.240.0.2 (10.240.0.2) 56(84) bytes of data.
+
+--- 10.240.0.2 ping statistics ---
+3 packets transmitted, 0 received, 100% packet loss, time 2049ms
+
+PING 10.128.0.2 (10.128.0.2) 56(84) bytes of data.
+64 bytes from 10.128.0.2: icmp_seq=1 ttl=64 time=0.027 ms
+64 bytes from 10.128.0.2: icmp_seq=2 ttl=64 time=0.051 ms
+64 bytes from 10.128.0.2: icmp_seq=3 ttl=64 time=0.050 ms
+
+--- 10.128.0.2 ping statistics ---
+3 packets transmitted, 3 received, 0% packet loss, time 2029ms
+rtt min/avg/max/mdev = 0.027/0.042/0.051/0.011 ms
+PING 172.16.0.2 (172.16.0.2) 56(84) bytes of data.
+
+--- 172.16.0.2 ping statistics ---
+3 packets transmitted, 0 received, 100% packet loss, time 2044ms
+
+PING 10.132.0.2 (10.132.0.2) 56(84) bytes of data.
+64 bytes from 10.132.0.2: icmp_seq=1 ttl=64 time=104 ms
+64 bytes from 10.132.0.2: icmp_seq=2 ttl=64 time=109 ms
+64 bytes from 10.132.0.2: icmp_seq=3 ttl=64 time=109 ms
+
+--- 10.132.0.2 ping statistics ---
+3 packets transmitted, 3 received, 0% packet loss, time 2003ms
+rtt min/avg/max/mdev = 104.079/107.486/109.197/2.409 ms
+PING 172.20.0.2 (172.20.0.2) 56(84) bytes of data.
+
+--- 172.20.0.2 ping statistics ---
+3 packets transmitted, 0 received, 100% packet loss, time 2024ms
+----
+
+NOTE: only VM in mynetwork can be ping successfully.
+
+
+=== Delete VMs, Firewall rules, Networks
+
+[source, bash]
+.*Delete VM, Firewall rules, networks*
+----
+for i in $(gcloud compute instances list | grep NAME | awk '{print $2}'); do gcloud compute instances delete $i --zone=$(gcloud compute instances list $i | grep ZONE | awk '{print $2}'); done
+
+for i in $(gcloud compute firewall-rules list | grep NAME | awk '{print $2}') ; do gcloud compute firewall-rules delete $i ; done
+
+for i in $(gcloud compute networks list | grep NAME | awk '{print $2}'); do gcloud compute networks delete $i ; done
+----
+
 == custom vpc network
 
 Use the following steps to create a custom vpc network:
