@@ -681,56 +681,57 @@ for i in $(gcloud compute firewall-rules list | grep NAME | awk '{print $2}') ; 
 for i in $(gcloud compute networks list | grep NAME | awk '{print $2}'); do gcloud compute networks delete $i ; done
 ----
 
-== custom vpc network
-
-Use the following steps to create a custom vpc network:
-
-[source, bash]
-.*1. set project id as a variable*
-----
-GCP_PROJECT_ID=XXXX
-----
-
-[source, bash]
-.*2. create custom network*
-----
-gcloud compute networks create mynetwork --project=$GCP_PROJECT_ID --subnet-mode=custom --mtu=1460 --bgp-routing-mode=regional
-----
-
-[source, bash]
-.*3. create subnets*
-----
-gcloud compute networks subnets create subnet-1 --project=$GCP_PROJECT_ID --range=10.140.0.0/20 --stack-type=IPV4_ONLY --network=mynetwork --region=asia-east1
-gcloud compute networks subnets create subnet-2 --project=$GCP_PROJECT_ID --range=10.146.0.0/20 --stack-type=IPV4_ONLY --network=mynetwork --region=asia-northeast1
-----
-
-[source, bash]
-.*4. create firewall rules*
-----
-gcloud compute firewall-rules create mynetwork-allow-custom --project=$GCP_PROJECT_ID --network=projects/$GCP_PROJECT_ID/global/networks/mynetwork --direction=INGRESS --priority=65534 --source-ranges=10.140.0.0/20,10.146.0.0/20 --action=ALLOW --rules=all
-gcloud compute firewall-rules create mynetwork-allow-icmp --project=$GCP_PROJECT_ID --network=projects/$GCP_PROJECT_ID/global/networks/mynetwork --direction=INGRESS --priority=65534 --source-ranges=0.0.0.0/0 --action=ALLOW --rules=icmp
-gcloud compute firewall-rules create mynetwork-allow-rdp --project=$GCP_PROJECT_ID --network=projects/$GCP_PROJECT_ID/global/networks/mynetwork --direction=INGRESS --priority=65534 --source-ranges=0.0.0.0/0 --action=ALLOW --rules=tcp:3389
-gcloud compute firewall-rules create mynetwork-allow-ssh --project=$GCP_PROJECT_ID --network=projects/$GCP_PROJECT_ID/global/networks/mynetwork --direction=INGRESS --priority=65534 --source-ranges=0.0.0.0/0 --action=ALLOW --rules=tcp:22
-----
-
-== test customized vpc network
-
-In this section, we will test the customized vpc network which created in above step via `ping` and `ttcp` tools. `ttcp` need install on all vms, more about ttcp refer to https://github.com/kylinsoong/ttcp/releases.
+== One VPC, One Netowrks, Two Regions, Four VMs 
 
 As below figure, 4 VM instances will created, `vm-1`, `vm-2` and `vm-3` are all on same region, `vm-4` on a different region, `vm-1` and `vm-2` also on same zone, `vm-3` on a different zone, `vm-1`, `vm-2` and `vm-3`.
 
 image:img/gcp-vpc.png[]
 
+=== Create custom Network
+
+Use the following steps to create a custom vpc network:
+
+[source, bash]
+.*1. delete default network*
+----
+for i in $(gcloud compute firewall-rules list | grep NAME | awk '{print $2}') ; do gcloud compute firewall-rules delete $i ; done
+gcloud compute networks delete default
+----
+
+[source, bash]
+.*2. create custom network*
+----
+gcloud compute networks create mynetwork --subnet-mode=custom --mtu=1460 --bgp-routing-mode=regional
+----
+
+[source, bash]
+.*3. create subnets*
+----
+gcloud compute networks subnets create subnet-1 --range=10.140.0.0/20 --stack-type=IPV4_ONLY --network=mynetwork --region=asia-east1
+gcloud compute networks subnets create subnet-2 --range=10.146.0.0/20 --stack-type=IPV4_ONLY --network=mynetwork --region=asia-northeast1
+----
+
+[source, bash]
+.*4. create firewall rules*
+----
+gcloud compute firewall-rules create mynetwork-allow-custom --network=mynetwork --direction=INGRESS --priority=65534 --source-ranges=10.140.0.0/20,10.146.0.0/20 --action=ALLOW --rules=all
+gcloud compute firewall-rules create mynetwork-allow-icmp --network=mynetwork --direction=INGRESS --priority=65534 --source-ranges=0.0.0.0/0 --action=ALLOW --rules=icmp
+gcloud compute firewall-rules create mynetwork-allow-rdp --network=mynetwork --direction=INGRESS --priority=65534 --source-ranges=0.0.0.0/0 --action=ALLOW --rules=tcp:3389
+gcloud compute firewall-rules create mynetwork-allow-ssh --network=mynetwork --direction=INGRESS --priority=65534 --source-ranges=0.0.0.0/0 --action=ALLOW --rules=tcp:22
+----
+
+== Create VMs
+
 [source, bash]
 .*Create 4 vm instances on Cloud Shell*
 ----
-gcloud compute instances create vm-1 --project=$GCP_PROJECT_ID --zone=asia-east1-a --machine-type=e2-micro --network-interface=network-tier=PREMIUM,subnet=subnet-1 --metadata=enable-oslogin=true --maintenance-policy=MIGRATE --provisioning-model=STANDARD --service-account=$$GCP_PROJECT_SA --scopes=https://www.googleapis.com/auth/devstorage.read_only,https://www.googleapis.com/auth/logging.write,https://www.googleapis.com/auth/monitoring.write,https://www.googleapis.com/auth/servicecontrol,https://www.googleapis.com/auth/service.management.readonly,https://www.googleapis.com/auth/trace.append --create-disk=auto-delete=yes,boot=yes,device-name=vm-1,image=projects/centos-cloud/global/images/centos-7-v20221206,mode=rw,size=20,type=projects/$GCP_PROJECT_ID/zones/asia-east1-a/diskTypes/pd-balanced --no-shielded-secure-boot --shielded-vtpm --shielded-integrity-monitoring --reservation-affinity=any
+gcloud compute instances create vm-1  --zone=asia-east1-a --machine-type=e2-micro --network-interface=network-tier=PREMIUM,subnet=subnet-1 --metadata=enable-oslogin=true --maintenance-policy=MIGRATE --provisioning-model=STANDARD --create-disk=auto-delete=yes,boot=yes,device-name=vm-1,image=centos-7-v20221206,mode=rw,size=20,type=pd-balanced --no-shielded-secure-boot --shielded-vtpm --shielded-integrity-monitoring --reservation-affinity=any
 
-gcloud compute instances create vm-2 --project=$GCP_PROJECT_ID --zone=asia-east1-a --machine-type=e2-micro --network-interface=network-tier=PREMIUM,subnet=subnet-1 --metadata=enable-oslogin=true --maintenance-policy=MIGRATE --provisioning-model=STANDARD --service-account=$$GCP_PROJECT_SA --scopes=https://www.googleapis.com/auth/devstorage.read_only,https://www.googleapis.com/auth/logging.write,https://www.googleapis.com/auth/monitoring.write,https://www.googleapis.com/auth/servicecontrol,https://www.googleapis.com/auth/service.management.readonly,https://www.googleapis.com/auth/trace.append --create-disk=auto-delete=yes,boot=yes,device-name=vm-1,image=projects/centos-cloud/global/images/centos-7-v20221206,mode=rw,size=20,type=projects/$GCP_PROJECT_ID/zones/asia-east1-a/diskTypes/pd-balanced --no-shielded-secure-boot --shielded-vtpm --shielded-integrity-monitoring --reservation-affinity=any
+gcloud compute instances create vm-2  --zone=asia-east1-a --machine-type=e2-micro --network-interface=network-tier=PREMIUM,subnet=subnet-1 --metadata=enable-oslogin=true --maintenance-policy=MIGRATE --provisioning-model=STANDARD --create-disk=auto-delete=yes,boot=yes,device-name=vm-1,image=centos-7-v20221206,mode=rw,size=20,type=pd-balanced --no-shielded-secure-boot --shielded-vtpm --shielded-integrity-monitoring --reservation-affinity=any
 
-gcloud compute instances create vm-3 --project=$GCP_PROJECT_ID --zone=asia-east1-c --machine-type=e2-micro --network-interface=network-tier=PREMIUM,subnet=subnet-1 --metadata=enable-oslogin=true --maintenance-policy=MIGRATE --provisioning-model=STANDARD --service-account=$$GCP_PROJECT_SA --scopes=https://www.googleapis.com/auth/devstorage.read_only,https://www.googleapis.com/auth/logging.write,https://www.googleapis.com/auth/monitoring.write,https://www.googleapis.com/auth/servicecontrol,https://www.googleapis.com/auth/service.management.readonly,https://www.googleapis.com/auth/trace.append --create-disk=auto-delete=yes,boot=yes,device-name=vm-1,image=projects/centos-cloud/global/images/centos-7-v20221206,mode=rw,size=20,type=projects/$GCP_PROJECT_ID/zones/asia-east1-a/diskTypes/pd-balanced --no-shielded-secure-boot --shielded-vtpm --shielded-integrity-monitoring --reservation-affinity=any
+gcloud compute instances create vm-3  --zone=asia-east1-c --machine-type=e2-micro --network-interface=network-tier=PREMIUM,subnet=subnet-1 --metadata=enable-oslogin=true --maintenance-policy=MIGRATE --provisioning-model=STANDARD --create-disk=auto-delete=yes,boot=yes,device-name=vm-1,image=centos-7-v20221206,mode=rw,size=20,type=pd-balanced --no-shielded-secure-boot --shielded-vtpm --shielded-integrity-monitoring --reservation-affinity=any
 
-gcloud compute instances create vm-4 --project=$GCP_PROJECT_ID --zone=asia-northeast1-b --machine-type=e2-micro --network-interface=network-tier=PREMIUM,subnet=subnet-2 --metadata=enable-oslogin=true --maintenance-policy=MIGRATE --provisioning-model=STANDARD --service-account=$$GCP_PROJECT_SA --scopes=https://www.googleapis.com/auth/devstorage.read_only,https://www.googleapis.com/auth/logging.write,https://www.googleapis.com/auth/monitoring.write,https://www.googleapis.com/auth/servicecontrol,https://www.googleapis.com/auth/service.management.readonly,https://www.googleapis.com/auth/trace.append --create-disk=auto-delete=yes,boot=yes,device-name=vm-1,image=projects/centos-cloud/global/images/centos-7-v20221206,mode=rw,size=20,type=projects/$GCP_PROJECT_ID/zones/asia-east1-a/diskTypes/pd-balanced --no-shielded-secure-boot --shielded-vtpm --shielded-integrity-monitoring --reservation-affinity=any
+gcloud compute instances create vm-4  --zone=asia-northeast1-b --machine-type=e2-micro --network-interface=network-tier=PREMIUM,subnet=subnet-2 --metadata=enable-oslogin=true --maintenance-policy=MIGRATE --provisioning-model=STANDARD --create-disk=auto-delete=yes,boot=yes,device-name=vm-1,image=centos-7-v20221206,mode=rw,size=20,type=pd-balanced --no-shielded-secure-boot --shielded-vtpm --shielded-integrity-monitoring --reservation-affinity=any
 ----
 
 === test icmp connectivity
@@ -756,6 +757,8 @@ for i in $EXTERNAL_IPS ; do ping $i -c3 ; done
 NOTE: All ping on each vms are success, both internal and external ip can be ping succcess on all vms, no matter vm are on same zone, same region, different region, same subnet, different subnet.
 
 === vpc network performance
+
+In this section, we will test the customized vpc network which created in above step via `ping` and `ttcp` tools. `ttcp` need install on all vms, more about ttcp refer to https://github.com/kylinsoong/ttcp/releases.
 
 Run ttcp recv on `vm-1`, then run ttcp trans on vm-2`, `vm-3` and `vm-4` accordingly, record the results. Raw results from recv side refer to link:results.ttcp[results.ttcp], which each trans are run 3 times.
 
