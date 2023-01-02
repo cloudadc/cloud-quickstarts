@@ -822,4 +822,181 @@ NOTE: Ping internal ips all failed, tcmp were forbidden.
 
 NOTE: All ttcp trans execute failed, tcp were forbidden.
 
+== VM Connectivity
+
+=== Create Custom Network
+
+[source, bash]
+----
+gcloud compute networks create privatenet --subnet-mode=custom
+
+gcloud compute networks subnets create privatenet-us --network=privatenet --region=us-central1 --range=10.130.0.0/20
+
+gcloud compute firewall-rules create privatenet-allow-ssh --network=privatenet --direction=INGRESS --priority=65534 --source-ranges=0.0.0.0/0 --action=ALLOW --rules=tcp:22
+----
+
+=== Create VM instance with no public IP address
+
+[source, bash]
+.*Create VM instance*
+----
+gcloud compute instances create vm-internal --zone=us-central1-c --machine-type=n1-standard-1 --network-interface=subnet=privatenet-us,no-address --image-family=debian-11 --image-project=debian-cloud --boot-disk-size=10GB --boot-disk-type=pd-standard --boot-disk-device-name=vm-internal
+----
+
+.*Client the SSH to connecto with SSH on GCP Console VM instances list*
+
+The SSH to vm-internal is success, which hints the VM instance with no public IP address can be accessed via SSH in GCP Console VM instances list
+
+[source, bash]
+.*Show assigned internal IP address of vm-internal*
+----
+$ ip addr show ens4:
+2: ens4: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1460 qdisc pfifo_fast state UP group default qlen 1000
+    link/ether 42:01:0a:82:00:02 brd ff:ff:ff:ff:ff:ff
+    altname enp0s4
+    inet 10.130.0.2/32 brd 10.130.0.2 scope global dynamic ens4
+       valid_lft 3179sec preferred_lft 3179sec
+    inet6 fe80::4001:aff:fe82:2/64 scope link 
+       valid_lft forever preferred_lft forever
+----
+
+* Detailed about vm-internal: link:vm-internal-no-public-ip.json[vm-internal-no-public-ip.json]
+
+=== `gcloud compute ssh` to connect to vm-internal using an Identity-Aware Proxy (IAP) tunnel
+
+[source, bash]
+----
+gcloud compute ssh vm-internal --zone us-central1-c --tunnel-through-iap
+----
+
+NOTE: `gcloud compute ssh` will generate certificates to enable no password input ssh.
+
+=== Download Cloud Storage figure in vm-internal
+
+[source, bash]
+.*Create a bucket, copy a figure to bucket*
+----
+gsutil mb gs://kylintest
+gsutil cp gs://cloud-training/gcpnet/private/access.svg gs://kylintest
+----
+
+[source, bash]
+.*SSH to vm-internal, try to download figure to local*
+----
+$ gcloud compute ssh vm-internal --zone us-central1-c --tunnel-through-iap
+...
+@vm-internal:~$ gsutil cp gs://kylintest/*.svg .
+INFO 0102 15:37:15.013244 retry_util.py] Retrying request, attempt #1...
+----
+
+NOTE: The vm-internal can not download the figure from bucket to local without public IP address assigned.
+
+=== Enable Private Google Access on subnet
+
+[source, bash]
+.*Enable Private Google Access*
+----
+gcloud compute networks subnets update privatenet-us --region=us-central1 --enable-private-ip-google-access
+----
+
+[source, bash]
+.*SSH to vm-internal, try to download figure to local*
+----
+vm-internal:~$ gsutil cp gs://kylintest/*.svg .
+Copying gs://kylintest/access.svg...
+/ [1 files][ 24.8 KiB/ 24.8 KiB]
+Operation completed over 1 objects/24.8 KiB.
+
+vm-internal:~$ ls -l *.svg
+-rw-r--r-- 1 student-01-0b2ebb62bede google-sudoers 25350 Jan  2 15:47 access.svg
+----
+
+NOTE: The `gsutil cp` execute successful, can download the figure from Google Cloud Storage.
+
+=== Configure a Cloud NAT gateway
+
+[source, bash]
+.*SSH to vm-internal, install dnsutils package*
+----
+vm-internal:~$ sudo apt install dnsutils
+...
+0% [Connecting to deb.debian.org (146.75.78.132)] [Connecting to security.debian.org (151.101.66.132)]   
+----
+
+NOTE: The package install stuck in connecting to internet repository, and finally failed, because vm-internal only has access to Google APIs and services.
+
+*Create Cloud NAT gateway from Network services > Cloud NAT*
+
+NOTE: The Cloud NAT should reference a Cloud Router and a VPC Network.
+
+[source, bash]
+.*SSH to vm-internal, install dnsutils package*
+----
+vm-internal:~$ sudo apt install dnsutils
+...
+Progress: [ 98%] [########################################################################################################################################################################################.....]
+----
+
+NOTE: The package installed successfully due to the Cloud NAT gateway be set up.
+
+=== VM instace DNS Mapping
+
+SSH to vm-internal to implement DNS Lookup
+
+[source, bash]
+.*A*
+----
+$ nslookup -type=A vm-internal
+Server:         169.254.169.254
+Address:        169.254.169.254#53
+
+Non-authoritative answer:
+Name:   vm-internal.us-central1-c.c.qwiklabs-gcp-00-107214e97e2f.internal
+Address: 10.130.0.2
+----
+
+[source, bash]
+.*A*
+----
+$ nslookup -type=A  vm-internal.us-central1-c.c.qwiklabs-gcp-00-107214e97e2f.internal
+Server:         169.254.169.254
+Address:        169.254.169.254#53
+
+Non-authoritative answer:
+Name:   vm-internal.us-central1-c.c.qwiklabs-gcp-00-107214e97e2f.internal
+Address: 10.130.0.2
+----
+
+[source, bash]
+.*PTR*
+----
+$ nslookup -type=PTR 10.130.0.2
+Server:         169.254.169.254
+Address:        169.254.169.254#53
+
+Non-authoritative answer:
+2.0.130.10.in-addr.arpa name = vm-internal.us-central1-c.c.qwiklabs-gcp-00-107214e97e2f.internal.
+----
+
+[source, bash]
+.*SOA*
+----
+$ nslookup -type=SOA vm-internal.us-central1-c.c.qwiklabs-gcp-00-107214e97e2f.internal
+Server:         169.254.169.254
+Address:        169.254.169.254#53
+
+Non-authoritative answer:
+*** Can't find vm-internal.us-central1-c.c.qwiklabs-gcp-00-107214e97e2f.internal: No answer
+
+Authoritative answers can be found from:
+internal
+        origin = ns.us-central1.gcedns-prod.internal
+        mail addr = cloud-dns-hostmaster.google.com
+        serial = 2015030600
+        refresh = 7200
+        retry = 3600
+        expire = 24796800
+        minimum = 5
+----
+
 
