@@ -720,7 +720,7 @@ gcloud compute firewall-rules create mynetwork-allow-rdp --network=mynetwork --d
 gcloud compute firewall-rules create mynetwork-allow-ssh --network=mynetwork --direction=INGRESS --priority=65534 --source-ranges=0.0.0.0/0 --action=ALLOW --rules=tcp:22
 ----
 
-== Create VMs
+=== Create VMs
 
 [source, bash]
 .*Create 4 vm instances on Cloud Shell*
