@@ -843,7 +843,9 @@ gcloud compute firewall-rules create privatenet-allow-ssh --network=privatenet -
 gcloud compute instances create vm-internal --zone=us-central1-c --machine-type=n1-standard-1 --network-interface=subnet=privatenet-us,no-address --image-family=debian-11 --image-project=debian-cloud --boot-disk-size=10GB --boot-disk-type=pd-standard --boot-disk-device-name=vm-internal
 ----
 
-.*Client the SSH to connecto with SSH on GCP Console VM instances list*
+=== `ssh` to connect to vm-internal in GCP Console
+
+.*Client the SSH to connect with SSH on GCP Console VM instances list*
 
 The SSH to vm-internal is success, which hints the VM instance with no public IP address can be accessed via SSH in GCP Console VM instances list
 
@@ -939,7 +941,7 @@ Progress: [ 98%] [##############################################################
 
 NOTE: The package installed successfully due to the Cloud NAT gateway be set up.
 
-=== VM instace DNS Mapping
+=== VM instance DNS Mapping
 
 SSH to vm-internal to implement DNS Lookup
 
