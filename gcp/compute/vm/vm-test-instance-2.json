@@ -1,0 +1,127 @@
+[
+  {
+    "canIpForward": false,
+    "cpuPlatform": "Intel Haswell",
+    "creationTimestamp": "2023-01-03T07:46:26.918-08:00",
+    "deletionProtection": false,
+    "disks": [
+      {
+        "architecture": "X86_64",
+        "autoDelete": true,
+        "boot": true,
+        "deviceName": "test-instance-2",
+        "diskSizeGb": "100",
+        "guestOsFeatures": [
+          {
+            "type": "MULTI_IP_SUBNET"
+          },
+          {
+            "type": "UEFI_COMPATIBLE"
+          },
+          {
+            "type": "VIRTIO_SCSI_MULTIQUEUE"
+          },
+          {
+            "type": "GVNIC"
+          },
+          {
+            "type": "WINDOWS"
+          }
+        ],
+        "index": 0,
+        "interface": "SCSI",
+        "kind": "compute#attachedDisk",
+        "licenses": [
+          "https://www.googleapis.com/compute/v1/projects/windows-cloud/global/licenses/windows-server-2016-dc",
+          "https://www.googleapis.com/compute/v1/projects/windows-cloud/global/licenses/windows-server-core"
+        ],
+        "mode": "READ_WRITE",
+        "source": "https://www.googleapis.com/compute/v1/projects/qwiklabs-gcp-04-8f1eeffdb556/zones/europe-west1-c/disks/test-instance-2",
+        "type": "PERSISTENT"
+      }
+    ],
+    "fingerprint": "MvXTkRKnAR4=",
+    "id": "7205943386184479550",
+    "kind": "compute#instance",
+    "labelFingerprint": "42WmSpB8rSM=",
+    "lastStartTimestamp": "2023-01-03T07:46:32.086-08:00",
+    "machineType": "https://www.googleapis.com/compute/v1/projects/qwiklabs-gcp-04-8f1eeffdb556/zones/europe-west1-c/machineTypes/n1-standard-2",
+    "metadata": {
+      "fingerprint": "rufPSNjcOGk=",
+      "items": [
+        {
+          "key": "enable-oslogin",
+          "value": "true"
+        },
+        {
+          "key": "windows-keys",
+          "value": "{\"expireOn\":\"2023-01-03T15:52:34.389805Z\",\"userName\":\"student_01_c09e99821\",\"email\":\"student-01-c09e998213dc@qwiklabs.net\",\"modulus\":\"nGE2iyvwy6qAohjfiWWhym6nlvcOcfro4nbvi4kiXIz9ycNCStVksqGG4zKo/J9u1y6sLgrwim8ja6Hmi4ixFSN2E61BupxyjziB6ZJMhbMs6KaTYBeTFVKFE1iPWgs1Xx0/MAfYCkh+Bg+NgwWj0exNsU3YQRzmc1+T0bH//GfbhGuG5CwCeNCXPWPHw/I09ikuCZ7+kfH3svEWZkcQMA7n9LU5DcZUrqX6LcZU9bztQMbZXmcRr7FrpcmJi2BR8LUZS/IZ51Q3cBYTFWHb32JjLPG3AnPsGQicJ4A4bpULtDjpUr4czRPxWStXZZj6+0wxURURXQNnp1THlJqFPQ==\",\"exponent\":\"AQAB\"}"
+        }
+      ],
+      "kind": "compute#metadata"
+    },
+    "name": "test-instance-2",
+    "networkInterfaces": [
+      {
+        "accessConfigs": [
+          {
+            "kind": "compute#accessConfig",
+            "name": "external-nat",
+            "natIP": "34.76.22.158",
+            "networkTier": "PREMIUM",
+            "type": "ONE_TO_ONE_NAT"
+          }
+        ],
+        "fingerprint": "MAzfi6b5PY8=",
+        "kind": "compute#networkInterface",
+        "name": "nic0",
+        "network": "https://www.googleapis.com/compute/v1/projects/qwiklabs-gcp-04-8f1eeffdb556/global/networks/default",
+        "networkIP": "10.132.0.2",
+        "stackType": "IPV4_ONLY",
+        "subnetwork": "https://www.googleapis.com/compute/v1/projects/qwiklabs-gcp-04-8f1eeffdb556/regions/europe-west1/subnetworks/default"
+      }
+    ],
+    "reservationAffinity": {
+      "consumeReservationType": "ANY_RESERVATION"
+    },
+    "scheduling": {
+      "automaticRestart": true,
+      "onHostMaintenance": "MIGRATE",
+      "preemptible": false,
+      "provisioningModel": "STANDARD"
+    },
+    "selfLink": "https://www.googleapis.com/compute/v1/projects/qwiklabs-gcp-04-8f1eeffdb556/zones/europe-west1-c/instances/test-instance-2",
+    "serviceAccounts": [
+      {
+        "email": "731257043476-compute@developer.gserviceaccount.com",
+        "scopes": [
+          "https://www.googleapis.com/auth/devstorage.read_only",
+          "https://www.googleapis.com/auth/logging.write",
+          "https://www.googleapis.com/auth/monitoring.write",
+          "https://www.googleapis.com/auth/pubsub",
+          "https://www.googleapis.com/auth/service.management.readonly",
+          "https://www.googleapis.com/auth/servicecontrol",
+          "https://www.googleapis.com/auth/trace.append"
+        ]
+      }
+    ],
+    "shieldedInstanceConfig": {
+      "enableIntegrityMonitoring": true,
+      "enableSecureBoot": false,
+      "enableVtpm": true
+    },
+    "shieldedInstanceIntegrityPolicy": {
+      "updateAutoLearnPolicy": true
+    },
+    "startRestricted": false,
+    "status": "RUNNING",
+    "tags": {
+      "fingerprint": "6smc4R4d39I=",
+      "items": [
+        "http-server",
+        "https-server"
+      ]
+    },
+    "zone": "https://www.googleapis.com/compute/v1/projects/qwiklabs-gcp-04-8f1eeffdb556/zones/europe-west1-c"
+  }
+]

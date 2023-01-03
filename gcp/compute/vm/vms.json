@@ -1,0 +1,1040 @@
+[{
+  "_id": {
+    "$oid": "63b451763f3b14f100acba1b"
+  },
+  "canIpForward": false,
+  "cpuPlatform": "Intel Broadwell",
+  "creationTimestamp": "2023-01-03T07:53:58.642-08:00",
+  "deletionProtection": false,
+  "disks": [
+    {
+      "architecture": "X86_64",
+      "autoDelete": true,
+      "boot": true,
+      "deviceName": "test-instance-3",
+      "diskSizeGb": "10",
+      "guestOsFeatures": [
+        {
+          "type": "UEFI_COMPATIBLE"
+        },
+        {
+          "type": "VIRTIO_SCSI_MULTIQUEUE"
+        }
+      ],
+      "index": 0,
+      "interface": "SCSI",
+      "kind": "compute#attachedDisk",
+      "licenses": [
+        "https://www.googleapis.com/compute/v1/projects/debian-cloud/global/licenses/debian-10-buster"
+      ],
+      "mode": "READ_WRITE",
+      "source": "https://www.googleapis.com/compute/v1/projects/qwiklabs-gcp-04-8f1eeffdb556/zones/us-central1-a/disks/test-instance-3",
+      "type": "PERSISTENT"
+    }
+  ],
+  "fingerprint": "Pea0UniGh9c=",
+  "id": "4769391744625799546",
+  "kind": "compute#instance",
+  "labelFingerprint": "42WmSpB8rSM=",
+  "lastStartTimestamp": "2023-01-03T07:54:05.045-08:00",
+  "machineType": "https://www.googleapis.com/compute/v1/projects/qwiklabs-gcp-04-8f1eeffdb556/zones/us-central1-a/machineTypes/e2-custom-2-4096",
+  "metadata": {
+    "fingerprint": "VV9BkH49PMU=",
+    "items": [
+      {
+        "key": "enable-oslogin",
+        "value": "true"
+      }
+    ],
+    "kind": "compute#metadata"
+  },
+  "name": "test-instance-3",
+  "networkInterfaces": [
+    {
+      "accessConfigs": [
+        {
+          "kind": "compute#accessConfig",
+          "name": "external-nat",
+          "natIP": "35.224.252.172",
+          "networkTier": "PREMIUM",
+          "type": "ONE_TO_ONE_NAT"
+        }
+      ],
+      "fingerprint": "OJ4AOgPFPpw=",
+      "kind": "compute#networkInterface",
+      "name": "nic0",
+      "network": "https://www.googleapis.com/compute/v1/projects/qwiklabs-gcp-04-8f1eeffdb556/global/networks/default",
+      "networkIP": "10.128.0.3",
+      "stackType": "IPV4_ONLY",
+      "subnetwork": "https://www.googleapis.com/compute/v1/projects/qwiklabs-gcp-04-8f1eeffdb556/regions/us-central1/subnetworks/default"
+    }
+  ],
+  "reservationAffinity": {
+    "consumeReservationType": "ANY_RESERVATION"
+  },
+  "scheduling": {
+    "automaticRestart": true,
+    "onHostMaintenance": "MIGRATE",
+    "preemptible": false,
+    "provisioningModel": "STANDARD"
+  },
+  "selfLink": "https://www.googleapis.com/compute/v1/projects/qwiklabs-gcp-04-8f1eeffdb556/zones/us-central1-a/instances/test-instance-3",
+  "serviceAccounts": [
+    {
+      "email": "731257043476-compute@developer.gserviceaccount.com",
+      "scopes": [
+        "https://www.googleapis.com/auth/devstorage.read_only",
+        "https://www.googleapis.com/auth/logging.write",
+        "https://www.googleapis.com/auth/monitoring.write",
+        "https://www.googleapis.com/auth/pubsub",
+        "https://www.googleapis.com/auth/service.management.readonly",
+        "https://www.googleapis.com/auth/servicecontrol",
+        "https://www.googleapis.com/auth/trace.append"
+      ]
+    }
+  ],
+  "shieldedInstanceConfig": {
+    "enableIntegrityMonitoring": true,
+    "enableSecureBoot": false,
+    "enableVtpm": true
+  },
+  "shieldedInstanceIntegrityPolicy": {
+    "updateAutoLearnPolicy": true
+  },
+  "startRestricted": false,
+  "status": "RUNNING",
+  "tags": {
+    "fingerprint": "42WmSpB8rSM="
+  },
+  "zone": "https://www.googleapis.com/compute/v1/projects/qwiklabs-gcp-04-8f1eeffdb556/zones/us-central1-a"
+},{
+  "_id": {
+    "$oid": "63b451763f3b14f100acba1c"
+  },
+  "canIpForward": false,
+  "cpuPlatform": "Intel Haswell",
+  "creationTimestamp": "2023-01-03T07:30:43.352-08:00",
+  "deletionProtection": false,
+  "disks": [
+    {
+      "architecture": "X86_64",
+      "autoDelete": true,
+      "boot": true,
+      "deviceName": "test-instance-1",
+      "diskSizeGb": "10",
+      "guestOsFeatures": [
+        {
+          "type": "UEFI_COMPATIBLE"
+        },
+        {
+          "type": "VIRTIO_SCSI_MULTIQUEUE"
+        }
+      ],
+      "index": 0,
+      "interface": "SCSI",
+      "kind": "compute#attachedDisk",
+      "licenses": [
+        "https://www.googleapis.com/compute/v1/projects/debian-cloud/global/licenses/debian-10-buster"
+      ],
+      "mode": "READ_WRITE",
+      "source": "https://www.googleapis.com/compute/v1/projects/qwiklabs-gcp-04-8f1eeffdb556/zones/us-central1-c/disks/test-instance-1",
+      "type": "PERSISTENT"
+    }
+  ],
+  "fingerprint": "zkrOZ9qmKkQ=",
+  "id": "5111640740503090381",
+  "kind": "compute#instance",
+  "labelFingerprint": "42WmSpB8rSM=",
+  "lastStartTimestamp": "2023-01-03T07:30:54.649-08:00",
+  "machineType": "https://www.googleapis.com/compute/v1/projects/qwiklabs-gcp-04-8f1eeffdb556/zones/us-central1-c/machineTypes/n1-standard-1",
+  "metadata": {
+    "fingerprint": "VV9BkH49PMU=",
+    "items": [
+      {
+        "key": "enable-oslogin",
+        "value": "true"
+      }
+    ],
+    "kind": "compute#metadata"
+  },
+  "name": "test-instance-1",
+  "networkInterfaces": [
+    {
+      "fingerprint": "Iiqcwr9411A=",
+      "kind": "compute#networkInterface",
+      "name": "nic0",
+      "network": "https://www.googleapis.com/compute/v1/projects/qwiklabs-gcp-04-8f1eeffdb556/global/networks/default",
+      "networkIP": "10.128.0.2",
+      "stackType": "IPV4_ONLY",
+      "subnetwork": "https://www.googleapis.com/compute/v1/projects/qwiklabs-gcp-04-8f1eeffdb556/regions/us-central1/subnetworks/default"
+    }
+  ],
+  "reservationAffinity": {
+    "consumeReservationType": "ANY_RESERVATION"
+  },
+  "scheduling": {
+    "automaticRestart": true,
+    "onHostMaintenance": "MIGRATE",
+    "preemptible": false,
+    "provisioningModel": "STANDARD"
+  },
+  "selfLink": "https://www.googleapis.com/compute/v1/projects/qwiklabs-gcp-04-8f1eeffdb556/zones/us-central1-c/instances/test-instance-1",
+  "serviceAccounts": [
+    {
+      "email": "731257043476-compute@developer.gserviceaccount.com",
+      "scopes": [
+        "https://www.googleapis.com/auth/devstorage.read_only",
+        "https://www.googleapis.com/auth/logging.write",
+        "https://www.googleapis.com/auth/monitoring.write",
+        "https://www.googleapis.com/auth/pubsub",
+        "https://www.googleapis.com/auth/service.management.readonly",
+        "https://www.googleapis.com/auth/servicecontrol",
+        "https://www.googleapis.com/auth/trace.append"
+      ]
+    }
+  ],
+  "shieldedInstanceConfig": {
+    "enableIntegrityMonitoring": true,
+    "enableSecureBoot": false,
+    "enableVtpm": true
+  },
+  "shieldedInstanceIntegrityPolicy": {
+    "updateAutoLearnPolicy": true
+  },
+  "startRestricted": false,
+  "status": "RUNNING",
+  "tags": {
+    "fingerprint": "42WmSpB8rSM="
+  },
+  "zone": "https://www.googleapis.com/compute/v1/projects/qwiklabs-gcp-04-8f1eeffdb556/zones/us-central1-c"
+},{
+  "_id": {
+    "$oid": "63b451763f3b14f100acba1d"
+  },
+  "canIpForward": false,
+  "cpuPlatform": "Intel Haswell",
+  "creationTimestamp": "2023-01-03T07:46:26.918-08:00",
+  "deletionProtection": false,
+  "disks": [
+    {
+      "architecture": "X86_64",
+      "autoDelete": true,
+      "boot": true,
+      "deviceName": "test-instance-2",
+      "diskSizeGb": "100",
+      "guestOsFeatures": [
+        {
+          "type": "MULTI_IP_SUBNET"
+        },
+        {
+          "type": "UEFI_COMPATIBLE"
+        },
+        {
+          "type": "VIRTIO_SCSI_MULTIQUEUE"
+        },
+        {
+          "type": "GVNIC"
+        },
+        {
+          "type": "WINDOWS"
+        }
+      ],
+      "index": 0,
+      "interface": "SCSI",
+      "kind": "compute#attachedDisk",
+      "licenses": [
+        "https://www.googleapis.com/compute/v1/projects/windows-cloud/global/licenses/windows-server-2016-dc",
+        "https://www.googleapis.com/compute/v1/projects/windows-cloud/global/licenses/windows-server-core"
+      ],
+      "mode": "READ_WRITE",
+      "source": "https://www.googleapis.com/compute/v1/projects/qwiklabs-gcp-04-8f1eeffdb556/zones/europe-west1-c/disks/test-instance-2",
+      "type": "PERSISTENT"
+    }
+  ],
+  "fingerprint": "MvXTkRKnAR4=",
+  "id": "7205943386184479550",
+  "kind": "compute#instance",
+  "labelFingerprint": "42WmSpB8rSM=",
+  "lastStartTimestamp": "2023-01-03T07:46:32.086-08:00",
+  "machineType": "https://www.googleapis.com/compute/v1/projects/qwiklabs-gcp-04-8f1eeffdb556/zones/europe-west1-c/machineTypes/n1-standard-2",
+  "metadata": {
+    "fingerprint": "rufPSNjcOGk=",
+    "items": [
+      {
+        "key": "enable-oslogin",
+        "value": "true"
+      },
+      {
+        "key": "windows-keys",
+        "value": "{\"expireOn\":\"2023-01-03T15:52:34.389805Z\",\"userName\":\"student_01_c09e99821\",\"email\":\"student-01-c09e998213dc@qwiklabs.net\",\"modulus\":\"nGE2iyvwy6qAohjfiWWhym6nlvcOcfro4nbvi4kiXIz9ycNCStVksqGG4zKo/J9u1y6sLgrwim8ja6Hmi4ixFSN2E61BupxyjziB6ZJMhbMs6KaTYBeTFVKFE1iPWgs1Xx0/MAfYCkh+Bg+NgwWj0exNsU3YQRzmc1+T0bH//GfbhGuG5CwCeNCXPWPHw/I09ikuCZ7+kfH3svEWZkcQMA7n9LU5DcZUrqX6LcZU9bztQMbZXmcRr7FrpcmJi2BR8LUZS/IZ51Q3cBYTFWHb32JjLPG3AnPsGQicJ4A4bpULtDjpUr4czRPxWStXZZj6+0wxURURXQNnp1THlJqFPQ==\",\"exponent\":\"AQAB\"}"
+      }
+    ],
+    "kind": "compute#metadata"
+  },
+  "name": "test-instance-2",
+  "networkInterfaces": [
+    {
+      "accessConfigs": [
+        {
+          "kind": "compute#accessConfig",
+          "name": "external-nat",
+          "natIP": "34.76.22.158",
+          "networkTier": "PREMIUM",
+          "type": "ONE_TO_ONE_NAT"
+        }
+      ],
+      "fingerprint": "MAzfi6b5PY8=",
+      "kind": "compute#networkInterface",
+      "name": "nic0",
+      "network": "https://www.googleapis.com/compute/v1/projects/qwiklabs-gcp-04-8f1eeffdb556/global/networks/default",
+      "networkIP": "10.132.0.2",
+      "stackType": "IPV4_ONLY",
+      "subnetwork": "https://www.googleapis.com/compute/v1/projects/qwiklabs-gcp-04-8f1eeffdb556/regions/europe-west1/subnetworks/default"
+    }
+  ],
+  "reservationAffinity": {
+    "consumeReservationType": "ANY_RESERVATION"
+  },
+  "scheduling": {
+    "automaticRestart": true,
+    "onHostMaintenance": "MIGRATE",
+    "preemptible": false,
+    "provisioningModel": "STANDARD"
+  },
+  "selfLink": "https://www.googleapis.com/compute/v1/projects/qwiklabs-gcp-04-8f1eeffdb556/zones/europe-west1-c/instances/test-instance-2",
+  "serviceAccounts": [
+    {
+      "email": "731257043476-compute@developer.gserviceaccount.com",
+      "scopes": [
+        "https://www.googleapis.com/auth/devstorage.read_only",
+        "https://www.googleapis.com/auth/logging.write",
+        "https://www.googleapis.com/auth/monitoring.write",
+        "https://www.googleapis.com/auth/pubsub",
+        "https://www.googleapis.com/auth/service.management.readonly",
+        "https://www.googleapis.com/auth/servicecontrol",
+        "https://www.googleapis.com/auth/trace.append"
+      ]
+    }
+  ],
+  "shieldedInstanceConfig": {
+    "enableIntegrityMonitoring": true,
+    "enableSecureBoot": false,
+    "enableVtpm": true
+  },
+  "shieldedInstanceIntegrityPolicy": {
+    "updateAutoLearnPolicy": true
+  },
+  "startRestricted": false,
+  "status": "RUNNING",
+  "tags": {
+    "fingerprint": "6smc4R4d39I=",
+    "items": [
+      "http-server",
+      "https-server"
+    ]
+  },
+  "zone": "https://www.googleapis.com/compute/v1/projects/qwiklabs-gcp-04-8f1eeffdb556/zones/europe-west1-c"
+},{
+  "_id": {
+    "$oid": "63b451a03f3b14f100acba1e"
+  },
+  "canIpForward": false,
+  "cpuPlatform": "Intel Broadwell",
+  "creationTimestamp": "2023-01-02T00:59:24.541-08:00",
+  "deletionProtection": false,
+  "disks": [
+    {
+      "architecture": "X86_64",
+      "autoDelete": true,
+      "boot": true,
+      "deviceName": "managementnet-us-vm",
+      "diskSizeGb": "10",
+      "guestOsFeatures": [
+        {
+          "type": "UEFI_COMPATIBLE"
+        },
+        {
+          "type": "VIRTIO_SCSI_MULTIQUEUE"
+        },
+        {
+          "type": "GVNIC"
+        }
+      ],
+      "index": 0,
+      "interface": "SCSI",
+      "kind": "compute#attachedDisk",
+      "licenses": [
+        "https://www.googleapis.com/compute/v1/projects/debian-cloud/global/licenses/debian-11-bullseye"
+      ],
+      "mode": "READ_WRITE",
+      "source": "https://www.googleapis.com/compute/v1/projects/qwiklabs-gcp-02-41a8d8ae2aba/zones/us-central1-b/disks/managementnet-us-vm",
+      "type": "PERSISTENT"
+    }
+  ],
+  "fingerprint": "s-lcrFsh6c4=",
+  "id": "5722283874795332099",
+  "kind": "compute#instance",
+  "labelFingerprint": "42WmSpB8rSM=",
+  "lastStartTimestamp": "2023-01-02T00:59:41.108-08:00",
+  "machineType": "https://www.googleapis.com/compute/v1/projects/qwiklabs-gcp-02-41a8d8ae2aba/zones/us-central1-b/machineTypes/e2-micro",
+  "metadata": {
+    "fingerprint": "2UJPMt6DsaA=",
+    "kind": "compute#metadata"
+  },
+  "name": "managementnet-us-vm",
+  "networkInterfaces": [
+    {
+      "accessConfigs": [
+        {
+          "kind": "compute#accessConfig",
+          "name": "external-nat",
+          "natIP": "34.28.96.75",
+          "networkTier": "PREMIUM",
+          "type": "ONE_TO_ONE_NAT"
+        }
+      ],
+      "fingerprint": "KtcebweCou8=",
+      "kind": "compute#networkInterface",
+      "name": "nic0",
+      "network": "https://www.googleapis.com/compute/v1/projects/qwiklabs-gcp-02-41a8d8ae2aba/global/networks/managementnet",
+      "networkIP": "10.240.0.2",
+      "stackType": "IPV4_ONLY",
+      "subnetwork": "https://www.googleapis.com/compute/v1/projects/qwiklabs-gcp-02-41a8d8ae2aba/regions/us-central1/subnetworks/managementsubnet-us"
+    }
+  ],
+  "scheduling": {
+    "automaticRestart": true,
+    "onHostMaintenance": "MIGRATE",
+    "preemptible": false,
+    "provisioningModel": "STANDARD"
+  },
+  "selfLink": "https://www.googleapis.com/compute/v1/projects/qwiklabs-gcp-02-41a8d8ae2aba/zones/us-central1-b/instances/managementnet-us-vm",
+  "serviceAccounts": [
+    {
+      "email": "952203523749-compute@developer.gserviceaccount.com",
+      "scopes": [
+        "https://www.googleapis.com/auth/devstorage.read_only",
+        "https://www.googleapis.com/auth/logging.write",
+        "https://www.googleapis.com/auth/monitoring.write",
+        "https://www.googleapis.com/auth/pubsub",
+        "https://www.googleapis.com/auth/service.management.readonly",
+        "https://www.googleapis.com/auth/servicecontrol",
+        "https://www.googleapis.com/auth/trace.append"
+      ]
+    }
+  ],
+  "shieldedInstanceConfig": {
+    "enableIntegrityMonitoring": true,
+    "enableSecureBoot": false,
+    "enableVtpm": true
+  },
+  "shieldedInstanceIntegrityPolicy": {
+    "updateAutoLearnPolicy": true
+  },
+  "startRestricted": false,
+  "status": "RUNNING",
+  "tags": {
+    "fingerprint": "42WmSpB8rSM="
+  },
+  "zone": "https://www.googleapis.com/compute/v1/projects/qwiklabs-gcp-02-41a8d8ae2aba/zones/us-central1-b"
+},{
+  "_id": {
+    "$oid": "63b451a03f3b14f100acba1f"
+  },
+  "canIpForward": false,
+  "cpuPlatform": "Intel Broadwell",
+  "creationTimestamp": "2023-01-02T00:58:33.884-08:00",
+  "deletionProtection": false,
+  "disks": [
+    {
+      "architecture": "X86_64",
+      "autoDelete": true,
+      "boot": true,
+      "deviceName": "mynetwork-us-vm",
+      "diskSizeGb": "10",
+      "guestOsFeatures": [
+        {
+          "type": "UEFI_COMPATIBLE"
+        },
+        {
+          "type": "VIRTIO_SCSI_MULTIQUEUE"
+        },
+        {
+          "type": "GVNIC"
+        }
+      ],
+      "index": 0,
+      "interface": "SCSI",
+      "kind": "compute#attachedDisk",
+      "licenses": [
+        "https://www.googleapis.com/compute/v1/projects/debian-cloud/global/licenses/debian-11-bullseye"
+      ],
+      "mode": "READ_WRITE",
+      "source": "https://www.googleapis.com/compute/v1/projects/qwiklabs-gcp-02-41a8d8ae2aba/zones/us-central1-b/disks/mynetwork-us-vm",
+      "type": "PERSISTENT"
+    }
+  ],
+  "fingerprint": "Cy5iC_zXiJY=",
+  "id": "1865489932607234646",
+  "kind": "compute#instance",
+  "labelFingerprint": "42WmSpB8rSM=",
+  "lastStartTimestamp": "2023-01-02T00:58:40.790-08:00",
+  "machineType": "https://www.googleapis.com/compute/v1/projects/qwiklabs-gcp-02-41a8d8ae2aba/zones/us-central1-b/machineTypes/e2-micro",
+  "metadata": {
+    "fingerprint": "2UJPMt6DsaA=",
+    "kind": "compute#metadata"
+  },
+  "name": "mynetwork-us-vm",
+  "networkInterfaces": [
+    {
+      "accessConfigs": [
+        {
+          "kind": "compute#accessConfig",
+          "name": "external-nat",
+          "natIP": "34.122.119.170",
+          "networkTier": "PREMIUM",
+          "type": "ONE_TO_ONE_NAT"
+        }
+      ],
+      "fingerprint": "ZaSsAjQPSVI=",
+      "kind": "compute#networkInterface",
+      "name": "nic0",
+      "network": "https://www.googleapis.com/compute/v1/projects/qwiklabs-gcp-02-41a8d8ae2aba/global/networks/mynetwork",
+      "networkIP": "10.128.0.2",
+      "stackType": "IPV4_ONLY",
+      "subnetwork": "https://www.googleapis.com/compute/v1/projects/qwiklabs-gcp-02-41a8d8ae2aba/regions/us-central1/subnetworks/mynetwork"
+    }
+  ],
+  "scheduling": {
+    "automaticRestart": true,
+    "onHostMaintenance": "MIGRATE",
+    "preemptible": false,
+    "provisioningModel": "STANDARD"
+  },
+  "selfLink": "https://www.googleapis.com/compute/v1/projects/qwiklabs-gcp-02-41a8d8ae2aba/zones/us-central1-b/instances/mynetwork-us-vm",
+  "serviceAccounts": [
+    {
+      "email": "952203523749-compute@developer.gserviceaccount.com",
+      "scopes": [
+        "https://www.googleapis.com/auth/devstorage.read_only",
+        "https://www.googleapis.com/auth/logging.write",
+        "https://www.googleapis.com/auth/monitoring.write",
+        "https://www.googleapis.com/auth/pubsub",
+        "https://www.googleapis.com/auth/service.management.readonly",
+        "https://www.googleapis.com/auth/servicecontrol",
+        "https://www.googleapis.com/auth/trace.append"
+      ]
+    }
+  ],
+  "shieldedInstanceConfig": {
+    "enableIntegrityMonitoring": true,
+    "enableSecureBoot": false,
+    "enableVtpm": true
+  },
+  "shieldedInstanceIntegrityPolicy": {
+    "updateAutoLearnPolicy": true
+  },
+  "startRestricted": false,
+  "status": "RUNNING",
+  "tags": {
+    "fingerprint": "42WmSpB8rSM="
+  },
+  "zone": "https://www.googleapis.com/compute/v1/projects/qwiklabs-gcp-02-41a8d8ae2aba/zones/us-central1-b"
+},{
+  "_id": {
+    "$oid": "63b451a03f3b14f100acba20"
+  },
+  "canIpForward": false,
+  "cpuPlatform": "Intel Broadwell",
+  "creationTimestamp": "2023-01-02T00:59:48.744-08:00",
+  "deletionProtection": false,
+  "disks": [
+    {
+      "architecture": "X86_64",
+      "autoDelete": true,
+      "boot": true,
+      "deviceName": "privatenet-us-vm",
+      "diskSizeGb": "10",
+      "guestOsFeatures": [
+        {
+          "type": "UEFI_COMPATIBLE"
+        },
+        {
+          "type": "VIRTIO_SCSI_MULTIQUEUE"
+        },
+        {
+          "type": "GVNIC"
+        }
+      ],
+      "index": 0,
+      "interface": "SCSI",
+      "kind": "compute#attachedDisk",
+      "licenses": [
+        "https://www.googleapis.com/compute/v1/projects/debian-cloud/global/licenses/debian-11-bullseye"
+      ],
+      "mode": "READ_WRITE",
+      "source": "https://www.googleapis.com/compute/v1/projects/qwiklabs-gcp-02-41a8d8ae2aba/zones/us-central1-b/disks/privatenet-us-vm",
+      "type": "PERSISTENT"
+    }
+  ],
+  "fingerprint": "GdGaciILeRw=",
+  "id": "3941009019855905771",
+  "kind": "compute#instance",
+  "labelFingerprint": "42WmSpB8rSM=",
+  "lastStartTimestamp": "2023-01-02T00:59:55.407-08:00",
+  "machineType": "https://www.googleapis.com/compute/v1/projects/qwiklabs-gcp-02-41a8d8ae2aba/zones/us-central1-b/machineTypes/e2-micro",
+  "metadata": {
+    "fingerprint": "2UJPMt6DsaA=",
+    "kind": "compute#metadata"
+  },
+  "name": "privatenet-us-vm",
+  "networkInterfaces": [
+    {
+      "accessConfigs": [
+        {
+          "kind": "compute#accessConfig",
+          "name": "external-nat",
+          "natIP": "34.67.22.140",
+          "networkTier": "PREMIUM",
+          "type": "ONE_TO_ONE_NAT"
+        }
+      ],
+      "fingerprint": "fLLRVCxc0Uw=",
+      "kind": "compute#networkInterface",
+      "name": "nic0",
+      "network": "https://www.googleapis.com/compute/v1/projects/qwiklabs-gcp-02-41a8d8ae2aba/global/networks/privatenet",
+      "networkIP": "172.16.0.2",
+      "stackType": "IPV4_ONLY",
+      "subnetwork": "https://www.googleapis.com/compute/v1/projects/qwiklabs-gcp-02-41a8d8ae2aba/regions/us-central1/subnetworks/privatesubnet-us"
+    }
+  ],
+  "scheduling": {
+    "automaticRestart": true,
+    "onHostMaintenance": "MIGRATE",
+    "preemptible": false,
+    "provisioningModel": "STANDARD"
+  },
+  "selfLink": "https://www.googleapis.com/compute/v1/projects/qwiklabs-gcp-02-41a8d8ae2aba/zones/us-central1-b/instances/privatenet-us-vm",
+  "serviceAccounts": [
+    {
+      "email": "952203523749-compute@developer.gserviceaccount.com",
+      "scopes": [
+        "https://www.googleapis.com/auth/devstorage.read_only",
+        "https://www.googleapis.com/auth/logging.write",
+        "https://www.googleapis.com/auth/monitoring.write",
+        "https://www.googleapis.com/auth/pubsub",
+        "https://www.googleapis.com/auth/service.management.readonly",
+        "https://www.googleapis.com/auth/servicecontrol",
+        "https://www.googleapis.com/auth/trace.append"
+      ]
+    }
+  ],
+  "shieldedInstanceConfig": {
+    "enableIntegrityMonitoring": true,
+    "enableSecureBoot": false,
+    "enableVtpm": true
+  },
+  "shieldedInstanceIntegrityPolicy": {
+    "updateAutoLearnPolicy": true
+  },
+  "startRestricted": false,
+  "status": "RUNNING",
+  "tags": {
+    "fingerprint": "42WmSpB8rSM="
+  },
+  "zone": "https://www.googleapis.com/compute/v1/projects/qwiklabs-gcp-02-41a8d8ae2aba/zones/us-central1-b"
+},{
+  "_id": {
+    "$oid": "63b451a03f3b14f100acba21"
+  },
+  "canIpForward": false,
+  "cpuPlatform": "Intel Broadwell",
+  "creationTimestamp": "2023-01-02T00:59:07.272-08:00",
+  "deletionProtection": false,
+  "disks": [
+    {
+      "architecture": "X86_64",
+      "autoDelete": true,
+      "boot": true,
+      "deviceName": "mynetwork-eu-vm",
+      "diskSizeGb": "10",
+      "guestOsFeatures": [
+        {
+          "type": "UEFI_COMPATIBLE"
+        },
+        {
+          "type": "VIRTIO_SCSI_MULTIQUEUE"
+        },
+        {
+          "type": "GVNIC"
+        }
+      ],
+      "index": 0,
+      "interface": "SCSI",
+      "kind": "compute#attachedDisk",
+      "licenses": [
+        "https://www.googleapis.com/compute/v1/projects/debian-cloud/global/licenses/debian-11-bullseye"
+      ],
+      "mode": "READ_WRITE",
+      "source": "https://www.googleapis.com/compute/v1/projects/qwiklabs-gcp-02-41a8d8ae2aba/zones/europe-west1-c/disks/mynetwork-eu-vm",
+      "type": "PERSISTENT"
+    }
+  ],
+  "fingerprint": "V4wgEaY37as=",
+  "id": "4430618021536408117",
+  "kind": "compute#instance",
+  "labelFingerprint": "42WmSpB8rSM=",
+  "lastStartTimestamp": "2023-01-02T00:59:13.729-08:00",
+  "machineType": "https://www.googleapis.com/compute/v1/projects/qwiklabs-gcp-02-41a8d8ae2aba/zones/europe-west1-c/machineTypes/e2-micro",
+  "metadata": {
+    "fingerprint": "2UJPMt6DsaA=",
+    "kind": "compute#metadata"
+  },
+  "name": "mynetwork-eu-vm",
+  "networkInterfaces": [
+    {
+      "accessConfigs": [
+        {
+          "kind": "compute#accessConfig",
+          "name": "external-nat",
+          "natIP": "34.77.219.183",
+          "networkTier": "PREMIUM",
+          "type": "ONE_TO_ONE_NAT"
+        }
+      ],
+      "fingerprint": "k3nyHutEIyA=",
+      "kind": "compute#networkInterface",
+      "name": "nic0",
+      "network": "https://www.googleapis.com/compute/v1/projects/qwiklabs-gcp-02-41a8d8ae2aba/global/networks/mynetwork",
+      "networkIP": "10.132.0.2",
+      "stackType": "IPV4_ONLY",
+      "subnetwork": "https://www.googleapis.com/compute/v1/projects/qwiklabs-gcp-02-41a8d8ae2aba/regions/europe-west1/subnetworks/mynetwork"
+    }
+  ],
+  "scheduling": {
+    "automaticRestart": true,
+    "onHostMaintenance": "MIGRATE",
+    "preemptible": false,
+    "provisioningModel": "STANDARD"
+  },
+  "selfLink": "https://www.googleapis.com/compute/v1/projects/qwiklabs-gcp-02-41a8d8ae2aba/zones/europe-west1-c/instances/mynetwork-eu-vm",
+  "serviceAccounts": [
+    {
+      "email": "952203523749-compute@developer.gserviceaccount.com",
+      "scopes": [
+        "https://www.googleapis.com/auth/devstorage.read_only",
+        "https://www.googleapis.com/auth/logging.write",
+        "https://www.googleapis.com/auth/monitoring.write",
+        "https://www.googleapis.com/auth/pubsub",
+        "https://www.googleapis.com/auth/service.management.readonly",
+        "https://www.googleapis.com/auth/servicecontrol",
+        "https://www.googleapis.com/auth/trace.append"
+      ]
+    }
+  ],
+  "shieldedInstanceConfig": {
+    "enableIntegrityMonitoring": true,
+    "enableSecureBoot": false,
+    "enableVtpm": true
+  },
+  "shieldedInstanceIntegrityPolicy": {
+    "updateAutoLearnPolicy": true
+  },
+  "startRestricted": false,
+  "status": "RUNNING",
+  "tags": {
+    "fingerprint": "42WmSpB8rSM="
+  },
+  "zone": "https://www.googleapis.com/compute/v1/projects/qwiklabs-gcp-02-41a8d8ae2aba/zones/europe-west1-c"
+},{
+  "_id": {
+    "$oid": "63b451a03f3b14f100acba22"
+  },
+  "canIpForward": false,
+  "cpuPlatform": "Intel Broadwell",
+  "creationTimestamp": "2023-01-02T01:00:13.602-08:00",
+  "deletionProtection": false,
+  "disks": [
+    {
+      "architecture": "X86_64",
+      "autoDelete": true,
+      "boot": true,
+      "deviceName": "privatenet-us-vm",
+      "diskSizeGb": "10",
+      "guestOsFeatures": [
+        {
+          "type": "UEFI_COMPATIBLE"
+        },
+        {
+          "type": "VIRTIO_SCSI_MULTIQUEUE"
+        },
+        {
+          "type": "GVNIC"
+        }
+      ],
+      "index": 0,
+      "interface": "SCSI",
+      "kind": "compute#attachedDisk",
+      "licenses": [
+        "https://www.googleapis.com/compute/v1/projects/debian-cloud/global/licenses/debian-11-bullseye"
+      ],
+      "mode": "READ_WRITE",
+      "source": "https://www.googleapis.com/compute/v1/projects/qwiklabs-gcp-02-41a8d8ae2aba/zones/europe-west1-c/disks/privatenet-eu-vm",
+      "type": "PERSISTENT"
+    }
+  ],
+  "fingerprint": "z1u-nxkhG4U=",
+  "id": "167440316819776499",
+  "kind": "compute#instance",
+  "labelFingerprint": "42WmSpB8rSM=",
+  "lastStartTimestamp": "2023-01-02T01:00:19.657-08:00",
+  "machineType": "https://www.googleapis.com/compute/v1/projects/qwiklabs-gcp-02-41a8d8ae2aba/zones/europe-west1-c/machineTypes/e2-micro",
+  "metadata": {
+    "fingerprint": "2UJPMt6DsaA=",
+    "kind": "compute#metadata"
+  },
+  "name": "privatenet-eu-vm",
+  "networkInterfaces": [
+    {
+      "accessConfigs": [
+        {
+          "kind": "compute#accessConfig",
+          "name": "external-nat",
+          "natIP": "35.233.109.131",
+          "networkTier": "PREMIUM",
+          "type": "ONE_TO_ONE_NAT"
+        }
+      ],
+      "fingerprint": "oTaWZZXAsjM=",
+      "kind": "compute#networkInterface",
+      "name": "nic0",
+      "network": "https://www.googleapis.com/compute/v1/projects/qwiklabs-gcp-02-41a8d8ae2aba/global/networks/privatenet",
+      "networkIP": "172.20.0.2",
+      "stackType": "IPV4_ONLY",
+      "subnetwork": "https://www.googleapis.com/compute/v1/projects/qwiklabs-gcp-02-41a8d8ae2aba/regions/europe-west1/subnetworks/privatesubnet-eu"
+    }
+  ],
+  "scheduling": {
+    "automaticRestart": true,
+    "onHostMaintenance": "MIGRATE",
+    "preemptible": false,
+    "provisioningModel": "STANDARD"
+  },
+  "selfLink": "https://www.googleapis.com/compute/v1/projects/qwiklabs-gcp-02-41a8d8ae2aba/zones/europe-west1-c/instances/privatenet-eu-vm",
+  "serviceAccounts": [
+    {
+      "email": "952203523749-compute@developer.gserviceaccount.com",
+      "scopes": [
+        "https://www.googleapis.com/auth/devstorage.read_only",
+        "https://www.googleapis.com/auth/logging.write",
+        "https://www.googleapis.com/auth/monitoring.write",
+        "https://www.googleapis.com/auth/pubsub",
+        "https://www.googleapis.com/auth/service.management.readonly",
+        "https://www.googleapis.com/auth/servicecontrol",
+        "https://www.googleapis.com/auth/trace.append"
+      ]
+    }
+  ],
+  "shieldedInstanceConfig": {
+    "enableIntegrityMonitoring": true,
+    "enableSecureBoot": false,
+    "enableVtpm": true
+  },
+  "shieldedInstanceIntegrityPolicy": {
+    "updateAutoLearnPolicy": true
+  },
+  "startRestricted": false,
+  "status": "RUNNING",
+  "tags": {
+    "fingerprint": "42WmSpB8rSM="
+  },
+  "zone": "https://www.googleapis.com/compute/v1/projects/qwiklabs-gcp-02-41a8d8ae2aba/zones/europe-west1-c"
+},{
+  "_id": {
+    "$oid": "63b451e03f3b14f100acba23"
+  },
+  "canIpForward": false,
+  "cpuPlatform": "Intel Haswell",
+  "creationTimestamp": "2023-01-02T07:09:47.659-08:00",
+  "deletionProtection": false,
+  "disks": [
+    {
+      "architecture": "X86_64",
+      "autoDelete": true,
+      "boot": true,
+      "deviceName": "vm-internal",
+      "diskSizeGb": "10",
+      "guestOsFeatures": [
+        {
+          "type": "UEFI_COMPATIBLE"
+        },
+        {
+          "type": "VIRTIO_SCSI_MULTIQUEUE"
+        },
+        {
+          "type": "GVNIC"
+        }
+      ],
+      "index": 0,
+      "interface": "SCSI",
+      "kind": "compute#attachedDisk",
+      "licenses": [
+        "https://www.googleapis.com/compute/v1/projects/debian-cloud/global/licenses/debian-11-bullseye"
+      ],
+      "mode": "READ_WRITE",
+      "source": "https://www.googleapis.com/compute/v1/projects/qwiklabs-gcp-00-107214e97e2f/zones/us-central1-c/disks/vm-internal",
+      "type": "PERSISTENT"
+    }
+  ],
+  "fingerprint": "j_f8MmALR8Q=",
+  "id": "3259625777039101268",
+  "kind": "compute#instance",
+  "labelFingerprint": "42WmSpB8rSM=",
+  "lastStartTimestamp": "2023-01-02T07:09:53.472-08:00",
+  "machineType": "https://www.googleapis.com/compute/v1/projects/qwiklabs-gcp-00-107214e97e2f/zones/us-central1-c/machineTypes/n1-standard-1",
+  "metadata": {
+    "fingerprint": "6in5lN_Ew8E=",
+    "kind": "compute#metadata"
+  },
+  "name": "vm-internal",
+  "networkInterfaces": [
+    {
+      "fingerprint": "R46wtMfNbXI=",
+      "kind": "compute#networkInterface",
+      "name": "nic0",
+      "network": "https://www.googleapis.com/compute/v1/projects/qwiklabs-gcp-00-107214e97e2f/global/networks/privatenet",
+      "networkIP": "10.130.0.2",
+      "stackType": "IPV4_ONLY",
+      "subnetwork": "https://www.googleapis.com/compute/v1/projects/qwiklabs-gcp-00-107214e97e2f/regions/us-central1/subnetworks/privatenet-us"
+    }
+  ],
+  "scheduling": {
+    "automaticRestart": true,
+    "onHostMaintenance": "MIGRATE",
+    "preemptible": false,
+    "provisioningModel": "STANDARD"
+  },
+  "selfLink": "https://www.googleapis.com/compute/v1/projects/qwiklabs-gcp-00-107214e97e2f/zones/us-central1-c/instances/vm-internal",
+  "serviceAccounts": [
+    {
+      "email": "528959332087-compute@developer.gserviceaccount.com",
+      "scopes": [
+        "https://www.googleapis.com/auth/devstorage.read_only",
+        "https://www.googleapis.com/auth/logging.write",
+        "https://www.googleapis.com/auth/monitoring.write",
+        "https://www.googleapis.com/auth/pubsub",
+        "https://www.googleapis.com/auth/service.management.readonly",
+        "https://www.googleapis.com/auth/servicecontrol",
+        "https://www.googleapis.com/auth/trace.append"
+      ]
+    }
+  ],
+  "shieldedInstanceConfig": {
+    "enableIntegrityMonitoring": true,
+    "enableSecureBoot": false,
+    "enableVtpm": true
+  },
+  "shieldedInstanceIntegrityPolicy": {
+    "updateAutoLearnPolicy": true
+  },
+  "startRestricted": false,
+  "status": "RUNNING",
+  "tags": {
+    "fingerprint": "42WmSpB8rSM="
+  },
+  "zone": "https://www.googleapis.com/compute/v1/projects/qwiklabs-gcp-00-107214e97e2f/zones/us-central1-c"
+},{
+  "_id": {
+    "$oid": "63b451f53f3b14f100acba24"
+  },
+  "canIpForward": false,
+  "cpuPlatform": "Intel Haswell",
+  "creationTimestamp": "2023-01-02T07:09:47.659-08:00",
+  "deletionProtection": false,
+  "disks": [
+    {
+      "architecture": "X86_64",
+      "autoDelete": true,
+      "boot": true,
+      "deviceName": "vm-internal",
+      "diskSizeGb": "10",
+      "guestOsFeatures": [
+        {
+          "type": "UEFI_COMPATIBLE"
+        },
+        {
+          "type": "VIRTIO_SCSI_MULTIQUEUE"
+        },
+        {
+          "type": "GVNIC"
+        }
+      ],
+      "index": 0,
+      "interface": "SCSI",
+      "kind": "compute#attachedDisk",
+      "licenses": [
+        "https://www.googleapis.com/compute/v1/projects/debian-cloud/global/licenses/debian-11-bullseye"
+      ],
+      "mode": "READ_WRITE",
+      "source": "https://www.googleapis.com/compute/v1/projects/qwiklabs-gcp-00-107214e97e2f/zones/us-central1-c/disks/vm-internal",
+      "type": "PERSISTENT"
+    }
+  ],
+  "fingerprint": "j_f8MmALR8Q=",
+  "id": "3259625777039101268",
+  "kind": "compute#instance",
+  "labelFingerprint": "42WmSpB8rSM=",
+  "lastStartTimestamp": "2023-01-02T07:09:53.472-08:00",
+  "machineType": "https://www.googleapis.com/compute/v1/projects/qwiklabs-gcp-00-107214e97e2f/zones/us-central1-c/machineTypes/n1-standard-1",
+  "metadata": {
+    "fingerprint": "6in5lN_Ew8E=",
+    "kind": "compute#metadata"
+  },
+  "name": "vm-internal",
+  "networkInterfaces": [
+    {
+      "fingerprint": "R46wtMfNbXI=",
+      "kind": "compute#networkInterface",
+      "name": "nic0",
+      "network": "https://www.googleapis.com/compute/v1/projects/qwiklabs-gcp-00-107214e97e2f/global/networks/privatenet",
+      "networkIP": "10.130.0.2",
+      "stackType": "IPV4_ONLY",
+      "subnetwork": "https://www.googleapis.com/compute/v1/projects/qwiklabs-gcp-00-107214e97e2f/regions/us-central1/subnetworks/privatenet-us"
+    }
+  ],
+  "scheduling": {
+    "automaticRestart": true,
+    "onHostMaintenance": "MIGRATE",
+    "preemptible": false,
+    "provisioningModel": "STANDARD"
+  },
+  "selfLink": "https://www.googleapis.com/compute/v1/projects/qwiklabs-gcp-00-107214e97e2f/zones/us-central1-c/instances/vm-internal",
+  "serviceAccounts": [
+    {
+      "email": "528959332087-compute@developer.gserviceaccount.com",
+      "scopes": [
+        "https://www.googleapis.com/auth/devstorage.read_only",
+        "https://www.googleapis.com/auth/logging.write",
+        "https://www.googleapis.com/auth/monitoring.write",
+        "https://www.googleapis.com/auth/pubsub",
+        "https://www.googleapis.com/auth/service.management.readonly",
+        "https://www.googleapis.com/auth/servicecontrol",
+        "https://www.googleapis.com/auth/trace.append"
+      ]
+    }
+  ],
+  "shieldedInstanceConfig": {
+    "enableIntegrityMonitoring": true,
+    "enableSecureBoot": false,
+    "enableVtpm": true
+  },
+  "shieldedInstanceIntegrityPolicy": {
+    "updateAutoLearnPolicy": true
+  },
+  "startRestricted": false,
+  "status": "RUNNING",
+  "tags": {
+    "fingerprint": "42WmSpB8rSM="
+  },
+  "zone": "https://www.googleapis.com/compute/v1/projects/qwiklabs-gcp-00-107214e97e2f/zones/us-central1-c"
+}]
