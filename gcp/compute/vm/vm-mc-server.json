@@ -1,0 +1,132 @@
+[
+  {
+    "canIpForward": false,
+    "cpuPlatform": "Intel Broadwell",
+    "creationTimestamp": "2023-01-04T06:33:44.901-08:00",
+    "deletionProtection": false,
+    "disks": [
+      {
+        "architecture": "X86_64",
+        "autoDelete": true,
+        "boot": true,
+        "deviceName": "mc-server",
+        "diskSizeGb": "10",
+        "guestOsFeatures": [
+          {
+            "type": "UEFI_COMPATIBLE"
+          },
+          {
+            "type": "VIRTIO_SCSI_MULTIQUEUE"
+          },
+          {
+            "type": "GVNIC"
+          }
+        ],
+        "index": 0,
+        "interface": "SCSI",
+        "kind": "compute#attachedDisk",
+        "licenses": [
+          "https://www.googleapis.com/compute/v1/projects/debian-cloud/global/licenses/debian-11-bullseye"
+        ],
+        "mode": "READ_WRITE",
+        "source": "https://www.googleapis.com/compute/v1/projects/qwiklabs-gcp-02-5e0531820d00/zones/us-central1-a/disks/mc-server",
+        "type": "PERSISTENT"
+      },
+      {
+        "autoDelete": true,
+        "boot": false,
+        "deviceName": "minecraft-disk",
+        "diskSizeGb": "50",
+        "index": 1,
+        "interface": "SCSI",
+        "kind": "compute#attachedDisk",
+        "mode": "READ_WRITE",
+        "source": "https://www.googleapis.com/compute/v1/projects/qwiklabs-gcp-02-5e0531820d00/zones/us-central1-a/disks/minecraft-disk",
+        "type": "PERSISTENT"
+      }
+    ],
+    "fingerprint": "sKb3mn7sAXo=",
+    "id": "2013805809151520937",
+    "kind": "compute#instance",
+    "labelFingerprint": "42WmSpB8rSM=",
+    "lastStartTimestamp": "2023-01-04T07:41:33.825-08:00",
+    "lastStopTimestamp": "2023-01-04T07:37:49.916-08:00",
+    "machineType": "https://www.googleapis.com/compute/v1/projects/qwiklabs-gcp-02-5e0531820d00/zones/us-central1-a/machineTypes/e2-medium",
+    "metadata": {
+      "fingerprint": "ExB_fWFxnwU=",
+      "items": [
+        {
+          "key": "startup-script-url",
+          "value": "https://storage.googleapis.com/cloud-training/archinfra/mcserver/startup.sh"
+        },
+        {
+          "key": "shutdown-script-url",
+          "value": "https://storage.googleapis.com/cloud-training/archinfra/mcserver/shutdown.sh"
+        }
+      ],
+      "kind": "compute#metadata"
+    },
+    "name": "mc-server",
+    "networkInterfaces": [
+      {
+        "accessConfigs": [
+          {
+            "kind": "compute#accessConfig",
+            "name": "external-nat",
+            "natIP": "34.172.240.66",
+            "networkTier": "PREMIUM",
+            "type": "ONE_TO_ONE_NAT"
+          }
+        ],
+        "fingerprint": "O-tEDndniMU=",
+        "kind": "compute#networkInterface",
+        "name": "nic0",
+        "network": "https://www.googleapis.com/compute/v1/projects/qwiklabs-gcp-02-5e0531820d00/global/networks/default",
+        "networkIP": "10.128.0.2",
+        "stackType": "IPV4_ONLY",
+        "subnetwork": "https://www.googleapis.com/compute/v1/projects/qwiklabs-gcp-02-5e0531820d00/regions/us-central1/subnetworks/default"
+      }
+    ],
+    "reservationAffinity": {
+      "consumeReservationType": "ANY_RESERVATION"
+    },
+    "scheduling": {
+      "automaticRestart": true,
+      "onHostMaintenance": "MIGRATE",
+      "preemptible": false,
+      "provisioningModel": "STANDARD"
+    },
+    "selfLink": "https://www.googleapis.com/compute/v1/projects/qwiklabs-gcp-02-5e0531820d00/zones/us-central1-a/instances/mc-server",
+    "serviceAccounts": [
+      {
+        "email": "123707282915-compute@developer.gserviceaccount.com",
+        "scopes": [
+          "https://www.googleapis.com/auth/devstorage.read_write",
+          "https://www.googleapis.com/auth/logging.write",
+          "https://www.googleapis.com/auth/monitoring.write",
+          "https://www.googleapis.com/auth/pubsub",
+          "https://www.googleapis.com/auth/service.management.readonly",
+          "https://www.googleapis.com/auth/servicecontrol",
+          "https://www.googleapis.com/auth/trace.append"
+        ]
+      }
+    ],
+    "shieldedInstanceConfig": {
+      "enableIntegrityMonitoring": true,
+      "enableSecureBoot": false,
+      "enableVtpm": true
+    },
+    "shieldedInstanceIntegrityPolicy": {
+      "updateAutoLearnPolicy": true
+    },
+    "startRestricted": false,
+    "status": "RUNNING",
+    "tags": {
+      "fingerprint": "eKJo3f3n-AU=",
+      "items": [
+        "minecraft-server"
+      ]
+    },
+    "zone": "https://www.googleapis.com/compute/v1/projects/qwiklabs-gcp-02-5e0531820d00/zones/us-central1-a"
+  }
+]

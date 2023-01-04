@@ -233,7 +233,7 @@ gcp> db.machinetypes.aggregate([{$match: {zone: {$eq: "asia-southeast1-b"}}}, {$
 
 [source, bash]
 ----
-gcp> db.machinetypes.aggregate([{$group: {_id: {cpu: "$guestCpus", memory: "$memoryMb"}, count: {$count: {}}}}, {$sort: {count: -1}}])
+gcp> db.machinetypes.aggregate([{$group: {_id: {cpu: "$guestCpus", memory: "$memoryMb"}, count: {$count: {}}}}, {$sort: {count: -1}}, {$limit: 30}])
 [
   { _id: { cpu: 4, memory: 16384 }, count: 473 },
   { _id: { cpu: 8, memory: 32768 }, count: 473 },
@@ -265,6 +265,35 @@ gcp> db.machinetypes.aggregate([{$group: {_id: {cpu: "$guestCpus", memory: "$mem
   { _id: { cpu: 40, memory: 984064 }, count: 146 },
   { _id: { cpu: 160, memory: 3936256 }, count: 146 },
   { _id: { cpu: 2, memory: 4096 }, count: 146 }
+]
+----
+
+=== What's hotest 20 categories by CPU and Memory in asia-northeast1-b?
+
+[source, bash]
+----
+gcp> db.machinetypes.aggregate([{$match: {zone: {$eq: "asia-southeast1-b"}}}, {$group: {_id: {cpu: "$guestCpus", memory: "$memoryMb"}, count: {$count: {}}}}, {$sort: {count: -1}}, {$limit: 20}])
+[
+  { _id: { cpu: 16, memory: 65536 }, count: 7 },
+  { _id: { cpu: 8, memory: 32768 }, count: 7 },
+  { _id: { cpu: 4, memory: 16384 }, count: 7 },
+  { _id: { cpu: 2, memory: 8192 }, count: 6 },
+  { _id: { cpu: 32, memory: 131072 }, count: 6 },
+  { _id: { cpu: 8, memory: 65536 }, count: 4 },
+  { _id: { cpu: 2, memory: 2048 }, count: 4 },
+  { _id: { cpu: 2, memory: 16384 }, count: 4 },
+  { _id: { cpu: 16, memory: 131072 }, count: 4 },
+  { _id: { cpu: 4, memory: 32768 }, count: 4 },
+  { _id: { cpu: 48, memory: 196608 }, count: 4 },
+  { _id: { cpu: 32, memory: 262144 }, count: 3 },
+  { _id: { cpu: 32, memory: 32768 }, count: 3 },
+  { _id: { cpu: 8, memory: 8192 }, count: 3 },
+  { _id: { cpu: 16, memory: 16384 }, count: 3 },
+  { _id: { cpu: 4, memory: 4096 }, count: 3 },
+  { _id: { cpu: 48, memory: 49152 }, count: 2 },
+  { _id: { cpu: 80, memory: 327680 }, count: 2 },
+  { _id: { cpu: 80, memory: 1968128 }, count: 2 },
+  { _id: { cpu: 48, memory: 393216 }, count: 2 }
 ]
 ----
 
@@ -541,3 +570,134 @@ The above 3 vms be import to MongoDB vm.vm collection, in this section use the A
 |34.76.22.158
 |ONE_TO_ONE_NAT
 |===
+
+== Deploy App to VM
+
+=== Create VM with static public IP and additional persist disk
+
+[source, bash]
+----
+gcloud compute instances create mc-server --zone=us-central1-a --machine-type=e2-medium --network-interface=address=34.172.240.66,network-tier=PREMIUM,subnet=default --metadata=enable-oslogin=true --maintenance-policy=MIGRATE --provisioning-model=STANDARD --tags=minecraft-server --create-disk=auto-delete=yes,boot=yes,device-name=mc-server,image=projects/debian-cloud/global/images/debian-11-bullseye-v20221206,mode=rw,size=10,type=pd-balanced --create-disk=device-name=minecraft-disk,mode=rw,name=minecraft-disk,size=50,type=pd-ssd --no-shielded-secure-boot --shielded-vtpm --shielded-integrity-monitoring --reservation-affinity=any
+----
+
+* link:vm-mc-server.json[vm-mc-server.json]
+
+=== SSH to VM, format disk to ext4 type file system and mount to VM 
+
+[source, bash]
+.*1. Review Block Device*
+----
+$ lsblk 
+NAME    MAJ:MIN RM  SIZE RO TYPE MOUNTPOINT
+sda       8:0    0   10G  0 disk 
+├─sda1    8:1    0  9.9G  0 part /
+├─sda14   8:14   0    3M  0 part 
+└─sda15   8:15   0  124M  0 part /boot/efi
+sdb       8:16   0   50G  0 disk
+----
+
+Note that there are 2 disks, one has partitions and mounted as file system, the other is idle.
+
+[source, bash]
+.*2. Further review sdb device by id*
+----
+$ ls -l /dev/sdb 
+brw-rw---- 1 root disk 8, 16 Jan  4 14:35 /dev/sdb
+
+$ sudo ls -l /dev/disk/by-id/google-minecraft-disk 
+lrwxrwxrwx 1 root root 9 Jan  4 14:35 /dev/disk/by-id/google-minecraft-disk -> ../../sdb
+----
+
+[source, bash]
+.*3. Format the disk with ext4 file system type, *
+----
+$ sudo mkfs.ext4 -F -E lazy_itable_init=0,lazy_journal_init=0,discard /dev/disk/by-id/google-minecraft-disk
+mke2fs 1.46.2 (28-Feb-2021)
+Discarding device blocks: done                            
+Creating filesystem with 13107200 4k blocks and 3276800 inodes
+Filesystem UUID: 50bc3477-84f7-4859-b288-9f93919f905f
+Superblock backups stored on blocks: 
+        32768, 98304, 163840, 229376, 294912, 819200, 884736, 1605632, 2654208, 
+        4096000, 7962624, 11239424
+
+Allocating group tables: done                            
+Writing inode tables: done                            
+Creating journal (65536 blocks): done
+Writing superblocks and filesystem accounting information: done  
+----
+
+[source, bash]
+.*4. Create mount point and mount disk*
+----
+$ sudo mkdir -p /home/minecraft
+$ sudo mount -o discard,defaults /dev/disk/by-id/google-minecraft-disk /home/minecraft
+----
+
+[source, bash]
+.*5. Review disk and mounted file system*
+----
+$ df -h
+Filesystem      Size  Used Avail Use% Mounted on
+udev            2.0G     0  2.0G   0% /dev
+tmpfs           394M  356K  393M   1% /run
+/dev/sda1       9.7G  1.7G  7.5G  19% /
+tmpfs           2.0G     0  2.0G   0% /dev/shm
+tmpfs           5.0M     0  5.0M   0% /run/lock
+/dev/sda15      124M  5.9M  118M   5% /boot/efi
+/dev/sdb         49G   24K   47G   1% /home/minecraft
+----
+
+=== Create firewall rule to allow VM ingress traffic on specific port 
+
+[source, bash]
+----
+gcloud compute firewall-rules create minecraft-rule --direction=INGRESS --priority=1000 --network=default --action=ALLOW --rules=tcp:25565 --source-ranges=0.0.0.0/0 --target-tags=minecraft-server
+----
+
+=== Perform regular backup application data to Cloud Storage
+
+[source, bash]
+.*1. Create Bucket*
+----
+gsutil mb gs://$BUCKET_NAME-minecraft-backup
+----
+
+[source, bash]
+.*2. Create application backup script*
+----
+#!/bin/bash
+screen -r mcs -X stuff '/save-all\n/save-off\n'
+/usr/bin/gsutil cp -R ${BASH_SOURCE%/*}/world gs://${BUCKET_NAME}-minecraft-backup/$(date "+%Y%m%d-%H%M%S")-world
+screen -r mcs -X stuff '/save-on\n'
+----
+
+[source, bash]
+.*3. Cron job for regular run backup.sh*
+----
+$ sudo crontab -e
+
+// add the following line, this will schedule a cron job run per 4 hours
+0 */4 * * * /home/minecraft/backup.sh
+----
+
+=== Add start/stop script for VM maintenance
+
+[source, bash]
+----
+$ gcloud compute instances list --format=json
+...
+    "metadata": {
+      "fingerprint": "ExB_fWFxnwU=",
+      "items": [
+        {
+          "key": "startup-script-url",
+          "value": "https://storage.googleapis.com/cloud-training/archinfra/mcserver/startup.sh"
+        },
+        {
+          "key": "shutdown-script-url",
+          "value": "https://storage.googleapis.com/cloud-training/archinfra/mcserver/shutdown.sh"
+        }
+      ],
+...
+----
+
