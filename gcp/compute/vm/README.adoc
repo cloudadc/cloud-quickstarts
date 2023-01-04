@@ -248,13 +248,125 @@ The above 3 vms be import to MongoDB vm.vm collection, in this section use the A
 
 
 [source, bash]
-.**
+.*Pipeline for Disks*
+----
+[
+  {
+    $match: {
+      name: {$regex: "test-instance" }
+    }
+  },
+  {
+    $project: {
+      _id: 0,
+      disks: 1
+    }
+  },
+  {
+    $unwind: {
+      path: "$disks"
+    }
+  },
+  {
+    $project: {
+      deviceName: "$disks.deviceName",
+      architecture: "$disks.architecture",
+      size: "$disks.diskSizeGb",
+      interface: "$disks.interface",
+      kind: {$substr: ["$disks.kind", 8,-1]},
+      mode: "$disks.mode",
+      source: {$substr: ["$disks.source", {$add: [{$indexOfCP: ["$disks.source", "disks"]}, 6]}, -1]}
+    }
+  }
+]
 ----
 
-----
+|===
+|deviceName |architecture |size |interface |kind |mode |source
+
+|test-instance-1
+|X86_64
+|10
+|SCSI
+|attachedDisk
+|READ_WRITE
+|test-instance-1
+
+|test-instance-2
+|X86_64
+|100
+|SCSI
+|attachedDisk
+|READ_WRITE
+|test-instance-2
+
+|test-instance-3
+|X86_64
+|10
+|SCSI
+|attachedDisk
+|READ_WRITE
+|test-instance-3
+|===
 
 [source, bash]
-.**
+.*Pipeline for Networks*
+----
+[ 
+  { 
+    $match: {
+      name: {$regex: "test-instance" }
+    }
+  },
+  { 
+    $project: {
+      _id: 0,
+      networkInterfaces: 1
+    }
+  },
+  { 
+    $unwind: {
+      path: "$networkInterfaces"
+    }
+  },
+  {
+    $project: {
+      name:"$networkInterfaces.name",
+      network: {$substr: ["$networkInterfaces.network", 92, -1]},
+      subnetwork: {$substr: ["$networkInterfaces.subnetwork", {$add: [{$indexOfCP: ["$networkInterfaces.subnetwork", "networks"]}, 9]}, -1]},
+      networkIP: "$networkInterfaces.networkIP",
+      accessname: {$arrayElemAt: ["$networkInterfaces.accessConfigs.name", 0]},
+      natIP: {$arrayElemAt: ["$networkInterfaces.accessConfigs.natIP", 0]},
+      natType: {$arrayElemAt: ["$networkInterfaces.accessConfigs.type", 0]}
+    }
+  }
+]
 ----
 
-----
+|===
+|name |network |subnetwork |networkIP |accessname |natIP |natType
+
+|nic0
+|default
+|default
+|10.128.0.2
+|
+|
+|
+
+|nic0
+|default
+|default
+|10.128.0.3
+|external-nat
+|35.224.252.172
+|ONE_TO_ONE_NAT
+
+|nic0
+|default
+|default
+|10.132.0.2
+|external-nat
+|34.76.22.158
+|ONE_TO_ONE_NAT
+|===
