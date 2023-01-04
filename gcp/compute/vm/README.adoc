@@ -14,12 +14,16 @@ var pipeline = [
       _id: 0,
       name: 1,
       type: {$substr: ["$name", 0, {$indexOfCP: ["$name", "-"]}]},
+      id: 1,
+      imageSpaceGb: 1,
       guestCpus: 1,
       isSharedCpu: 1,
       memoryMb: 1,
       maximumPersistentDisks: 1,
       maximumPersistentDisksSizeGb: 1,
-      zone: 1
+      zone: 1,
+      guestAcceleratorCount: {$arrayElemAt: ["$accelerators.guestAcceleratorCount", 0]},
+      guestAcceleratorType: {$arrayElemAt: ["$accelerators.guestAcceleratorType", 0]}
     }
   }
 ]
@@ -35,7 +39,7 @@ gcp> db.machinetypes.countDocuments()
 12221
 ----
 
-=== How many categories?
+=== How many series?
 
 [source, bash]
 ----
@@ -55,6 +59,173 @@ gcp> db.machinetypes.aggregate([{$group: {_id: "$type", count: {$count: {}}}}, {
   { _id: 'a2', count: 88 },
   { _id: 't2a', count: 63 },
   { _id: 'm3', count: 45 }
+]
+----
+
+Note that these 14 series belong to four types of machine families:
+
+|===
+|Machine families |Machine series
+
+|General-purpose
+|n2, n2d, n1, e2, t2d,t2a
+
+|Compute-optimized
+|c2d, c2
+
+|Memory-optimized
+|m1, m2, m3 
+
+|Accelerator-optimized
+|a2
+|===
+
+=== How many types per zone?
+
+[source, bash]
+----
+gcp> db.machinetypes.aggregate([{$group: {_id: "$zone", count: {$count: {}}}}, {$sort: {count: -1}}])
+[
+  { _id: 'us-central1-b', count: 164 },
+  { _id: 'europe-west4-b', count: 164 },
+  { _id: 'us-central1-a', count: 164 },
+  { _id: 'europe-west4-a', count: 162 },
+  { _id: 'us-central1-c', count: 156 },
+  { _id: 'europe-west4-c', count: 154 },
+  { _id: 'asia-southeast1-b', count: 154 },
+  { _id: 'asia-southeast1-c', count: 153 },
+  { _id: 'europe-west3-b', count: 152 },
+  { _id: 'europe-west3-a', count: 152 },
+  { _id: 'us-central1-f', count: 147 },
+  { _id: 'us-east4-c', count: 147 },
+  { _id: 'us-east4-b', count: 147 },
+  { _id: 'europe-west1-b', count: 147 },
+  { _id: 'europe-west1-d', count: 147 },
+  { _id: 'us-east1-b', count: 147 },
+  { _id: 'us-west1-b', count: 147 },
+  { _id: 'us-east4-a', count: 146 },
+  { _id: 'us-east1-d', count: 143 },
+  { _id: 'us-west1-a', count: 143 },
+  { _id: 'asia-southeast1-a', count: 143 },
+  { _id: 'asia-east1-b', count: 143 },
+  { _id: 'europe-west3-c', count: 143 },
+  { _id: 'us-central1-d', count: 142 },
+  { _id: 'europe-west1-c', count: 139 },
+  { _id: 'europe-west2-b', count: 138 },
+  { _id: 'asia-south1-a', count: 138 },
+  { _id: 'asia-south1-b', count: 138 },
+  { _id: 'us-east1-c', count: 137 },
+  { _id: 'us-west1-c', count: 135 },
+  { _id: 'europe-west2-c', count: 134 },
+  { _id: 'us-west4-b', count: 134 },
+  { _id: 'asia-east1-a', count: 132 },
+  { _id: 'asia-south1-c', count: 131 },
+  { _id: 'us-west4-a', count: 130 },
+  { _id: 'asia-northeast1-a', count: 129 },
+  { _id: 'asia-east1-c', count: 128 },
+  { _id: 'asia-northeast1-c', count: 125 },
+  { _id: 'northamerica-northeast1-b', count: 124 },
+  { _id: 'northamerica-northeast1-c', count: 124 },
+  { _id: 'australia-southeast1-b', count: 122 },
+  { _id: 'australia-southeast1-a', count: 122 },
+  { _id: 'southamerica-east1-b', count: 119 },
+  { _id: 'southamerica-east1-c', count: 119 },
+  { _id: 'asia-northeast1-b', count: 119 },
+  { _id: 'us-east1-a', count: 118 },
+  { _id: 'australia-southeast1-c', count: 118 },
+  { _id: 'europe-west2-a', count: 117 },
+  { _id: 'asia-south2-a', count: 116 },
+  { _id: 'asia-south2-b', count: 116 },
+  { _id: 'asia-northeast3-a', count: 115 },
+  { _id: 'us-west2-b', count: 112 },
+  { _id: 'northamerica-northeast1-a', count: 112 },
+  { _id: 'asia-northeast2-c', count: 111 },
+  { _id: 'asia-northeast2-b', count: 111 },
+  { _id: 'us-west3-b', count: 110 },
+  { _id: 'southamerica-east1-a', count: 109 },
+  { _id: 'asia-northeast2-a', count: 107 },
+  { _id: 'europe-central2-b', count: 107 },
+  { _id: 'us-west3-a', count: 106 },
+  { _id: 'us-west2-a', count: 106 },
+  { _id: 'us-west4-c', count: 106 },
+  { _id: 'us-west3-c', count: 106 },
+  { _id: 'asia-south2-c', count: 101 },
+  { _id: 'asia-east2-a', count: 101 },
+  { _id: 'europe-north1-a', count: 101 },
+  { _id: 'asia-east2-b', count: 101 },
+  { _id: 'asia-east2-c', count: 101 },
+  { _id: 'europe-north1-c', count: 101 },
+  { _id: 'europe-north1-b', count: 101 },
+  { _id: 'me-west1-c', count: 100 },
+  { _id: 'me-west1-b', count: 94 },
+  { _id: 'asia-northeast3-b', count: 84 },
+  { _id: 'europe-west8-c', count: 82 },
+  { _id: 'us-east5-a', count: 82 },
+  { _id: 'europe-west8-a', count: 82 },
+  { _id: 'europe-west6-c', count: 80 },
+  { _id: 'europe-west6-b', count: 80 },
+  { _id: 'europe-southwest1-a', count: 78 },
+  { _id: 'europe-west9-b', count: 78 },
+  { _id: 'europe-southwest1-c', count: 78 },
+  { _id: 'europe-west9-c', count: 78 },
+  { _id: 'me-west1-a', count: 78 },
+  { _id: 'us-west2-c', count: 77 },
+  { _id: 'us-east5-c', count: 77 },
+  { _id: 'us-east5-b', count: 77 },
+  { _id: 'asia-northeast3-c', count: 75 },
+  { _id: 'northamerica-northeast2-a', count: 74 },
+  { _id: 'australia-southeast2-c', count: 74 },
+  { _id: 'northamerica-northeast2-b', count: 74 },
+  { _id: 'australia-southeast2-b', count: 74 },
+  { _id: 'europe-central2-a', count: 74 },
+  { _id: 'europe-west6-a', count: 73 },
+  { _id: 'asia-southeast2-c', count: 73 },
+  { _id: 'asia-southeast2-a', count: 73 },
+  { _id: 'europe-west9-a', count: 72 },
+  { _id: 'europe-west8-b', count: 72 },
+  { _id: 'europe-southwest1-b', count: 72 },
+  { _id: 'europe-central2-c', count: 68 },
+  { _id: 'australia-southeast2-a', count: 68 },
+  { _id: 'asia-southeast2-b', count: 65 },
+  { _id: 'northamerica-northeast2-c', count: 65 },
+  { _id: 'southamerica-west1-b', count: 56 },
+  { _id: 'southamerica-west1-c', count: 56 },
+  { _id: 'us-central2-a', count: 53 },
+  { _id: 'us-central2-b', count: 53 },
+  { _id: 'us-central2-c', count: 53 },
+  { _id: 'southamerica-west1-a', count: 46 },
+  { _id: 'us-east7-a', count: 45 },
+  { _id: 'us-east7-b', count: 44 },
+  { _id: 'us-east7-c', count: 44 },
+  { _id: 'us-south1-a', count: 41 },
+  { _id: 'us-south1-c', count: 41 },
+  { _id: 'us-south1-b', count: 41 },
+  { _id: 'europe-west5-b', count: 36 },
+  { _id: 'europe-west5-c', count: 36 },
+  { _id: 'us-east2-a', count: 35 },
+  { _id: 'europe-west5-a', count: 32 },
+  { _id: 'us-central2-d', count: 24 }
+]
+---- 
+
+=== How many series in asia-northeast1-b?
+
+[source, bash]
+----
+gcp> db.machinetypes.aggregate([{$match: {zone: {$eq: "asia-southeast1-b"}}}, {$group: {_id: "$type", count: {$count: {}}}}, {$sort: {count: -1}}])
+[
+  { _id: 'n2d', count: 31 },
+  { _id: 'n2', count: 29 },
+  { _id: 'n1', count: 26 },
+  { _id: 'c2d', count: 21 },
+  { _id: 'e2', count: 17 },
+  { _id: 't2d', count: 8 },
+  { _id: 't2a', count: 7 },
+  { _id: 'c2', count: 5 },
+  { _id: 'm1', count: 4 },
+  { _id: 'a2', count: 4 },
+  { _id: 'g1', count: 1 },
+  { _id: 'f1', count: 1 }
 ]
 ----
 
@@ -138,7 +309,7 @@ gcp> db.machinetypes.aggregate([{$group: {_id: {cpu: "$guestCpus", memory: "$mem
 
 == Create VM
 
-=== Machine configuration: Series
+=== General-purpose Machine Series
 
 From the GCP Console, there are six Series be used in Machine configuration.
 
