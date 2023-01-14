@@ -45,8 +45,7 @@
 |GA
 |Access Context Manager Admin
 
-|Edit access to policies.  Create, edit, and change access levels and
-  access zones.
+|Edit access to policies.  Create, edit, and change access levels and access zones.
 |AA==
 |roles/accesscontextmanager.policyEditor
 |GA
@@ -58,6 +57,7 @@
 |GA
 |Access Context Manager Reader
 
+|
 |AA==
 |roles/accesscontextmanager.vpcScTroubleshooterViewer
 |GA
