@@ -5973,16 +5973,19 @@
 |Access to create and change Cloud Run Applications and application configuration.
 |AA==
 |roles/runapps.developer
+|
 |Apps on Cloud Run Developer
 
 |Access to deploy Apps on Cloud Run Applications.
 |AA==
 |roles/runapps.operator
+|
 |Apps on Cloud Run Operator
 
 |Readonly access to Apps on Cloud Run resources.
 |AA==
 |roles/runapps.viewer
+|
 |Apps on Cloud Run Viewer
 
 |Full access to RuntimeConfig resources.
@@ -6855,7 +6858,6 @@
 |roles/vmwareengine.vmwareengineViewer
 |GA
 |VMware Engine Service Viewer
-
 |Full access to all Serverless VPC Access resources
 |AA==
 |roles/vpcaccess.admin
