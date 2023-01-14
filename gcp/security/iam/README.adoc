@@ -824,6 +824,7 @@
 |GA
 |BigQuery Connection Admin
 
+|
 |AA==
 |roles/bigquery.connectionUser
 |GA
