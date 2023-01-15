@@ -3,6 +3,12 @@
 
 A REST Service used to munipulate or retrive data from Public Cloud Storage and Data.
 
+API documents can be find via: http://localhost:8080/swagger-ui.html.
+
+== GCP Cloud Storage
+
+
+
 == ClickHouse on Local
 
 [source, json]

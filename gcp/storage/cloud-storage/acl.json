@@ -1,0 +1,31 @@
+[
+  {
+    "entity": "project-owners-142489565263",
+    "projectTeam": {
+      "projectNumber": "142489565263",
+      "team": "owners"
+    },
+    "role": "OWNER"
+  },
+  {
+    "entity": "project-editors-142489565263",
+    "projectTeam": {
+      "projectNumber": "142489565263",
+      "team": "editors"
+    },
+    "role": "OWNER"
+  },
+  {
+    "entity": "project-viewers-142489565263",
+    "projectTeam": {
+      "projectNumber": "142489565263",
+      "team": "viewers"
+    },
+    "role": "READER"
+  },
+  {
+    "email": "student-01-2f50fc858c40@qwiklabs.net",
+    "entity": "user-student-01-2f50fc858c40@qwiklabs.net",
+    "role": "OWNER"
+  }
+]

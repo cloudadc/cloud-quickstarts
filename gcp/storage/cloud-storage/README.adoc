@@ -1,22 +1,25 @@
 = Cloud Storage
 :toc: manual
 
-== Cloud Storage bucket
+== Use Access control lists (ACLs) to control file access
+
+=== Create Cloud Storage bucket and add file
 
 [source, bash]
 .*1. Set a unique bucket name*
 ----
-echo "export BUCKET_NAME_1=test-2022091201" >> ~/.bashrc
+echo "export BUCKET_NAME_1=test-2023011501" >> ~/.bashrc
 source ~/.bashrc
 echo $BUCKET_NAME_1
 ----
 
-*2. Create the bucket on Cloud Console*
+[source, bash]
+.*2. Create the bucket on Cloud Console*
+----
+gsutil mb -b off --pap inherited -c standard gs://$BUCKET_NAME_1
+----
 
-* Name - Step 1 seted
-* Location type - Multi-region
-* Enforce public access prevention on this bucket - unchecked
-* Access control - Fine-grained 
+The above commands creat a bucket with name `test-2023011501` which defined in step 1, Multi-region on US, public access prevention on this bucket are disabled, Fine-grained Access Control which means object-level permission in addition to your bucket-level permissions is necessary.
 
 [source, bash]
 .*3. Prepare 3 files*
@@ -26,72 +29,80 @@ cp setup.html setup2.html
 cp setup.html setup3.html
 ----
 
-== Access control lists (ACLs)
-
 [source, bash]
-.*1. Copy the first file to the bucket*
+.*4. Copy the first file to the bucket*
 ----
 gsutil cp setup.html gs://$BUCKET_NAME_1/
 ----
 
-[source, bash]
-.*2. Get the default access list that's been assigned to setup.html,*
+=== Review and update ACLs to make file public accessable
+
+[source, json]
+.*1. Get the default ACLs that's been assigned to setup.html*
 ----
-$ gsutil acl get gs://$BUCKET_NAME_1/setup.html  > acl.txt && cat acl.txt
+$ gsutil acl get gs://$BUCKET_NAME_1/setup.html  > acl.json && cat acl.json
 [
   {
-    "entity": "project-owners-493839134414",
+    "entity": "project-owners-142489565263",
     "projectTeam": {
-      "projectNumber": "493839134414",
+      "projectNumber": "142489565263",
       "team": "owners"
     },
     "role": "OWNER"
   },
   {
-    "entity": "project-editors-493839134414",
+    "entity": "project-editors-142489565263",
     "projectTeam": {
-      "projectNumber": "493839134414",
+      "projectNumber": "142489565263",
       "team": "editors"
     },
     "role": "OWNER"
   },
   {
-    "entity": "project-viewers-493839134414",
+    "entity": "project-viewers-142489565263",
     "projectTeam": {
-      "projectNumber": "493839134414",
+      "projectNumber": "142489565263",
       "team": "viewers"
     },
     "role": "READER"
   },
   {
-    "email": "student-01-87aed0b8300c@qwiklabs.net",
-    "entity": "user-student-01-87aed0b8300c@qwiklabs.net",
+    "email": "student-01-2f50fc858c40@qwiklabs.net",
+    "entity": "user-student-01-2f50fc858c40@qwiklabs.net",
     "role": "OWNER"
   }
 ]
 ----
 
-[source, bash]
-.*3. Set the access list to private and verify the results*
+* link:acl.json[acl.json]
+
+[source, json]
+.*2. Set the ACLs to private and verify the results*
 ----
-$ gsutil acl set private gs://$BUCKET_NAME_1/setup.html && gsutil acl get gs://$BUCKET_NAME_1/setup.html  > acl2.txt && cat acl2.txt
+$ gsutil acl set private gs://$BUCKET_NAME_1/setup.html 
+
+$ gsutil acl get gs://$BUCKET_NAME_1/setup.html  > acl-private.json && cat acl-private.json
 [
   {
-    "email": "student-01-87aed0b8300c@qwiklabs.net",
-    "entity": "user-student-01-87aed0b8300c@qwiklabs.net",
+    "email": "student-01-2f50fc858c40@qwiklabs.net",
+    "entity": "user-student-01-2f50fc858c40@qwiklabs.net",
     "role": "OWNER"
   }
 ]
 ----
 
+* link:acl-private.json[acl-private.json]
+
 [source, bash]
-.*4. Update the access list to make the file publicly readable and check ACLs*
+.*3. Update the ACL to make the file publicly readable*
 ----
-$ gsutil acl ch -u AllUsers:R gs://$BUCKET_NAME_1/setup.html && gsutil acl get gs://$BUCKET_NAME_1/setup.html  > acl3.txt && cat acl3.txt
+$ gsutil acl ch -u AllUsers:R gs://$BUCKET_NAME_1/setup.html 
+
+$ gsutil acl get gs://$BUCKET_NAME_1/setup.html  > acl-all-user-readable.json && cat acl-all-user-readable.json
 [
   {
-    "email": "student-01-87aed0b8300c@qwiklabs.net",
-    "entity": "user-student-01-87aed0b8300c@qwiklabs.net",
+    "email": "student-01-2f50fc858c40@qwiklabs.net",
+    "entity": "user-student-01-2f50fc858c40@qwiklabs.net",
     "role": "OWNER"
   },
   {
@@ -101,41 +112,76 @@ $ gsutil acl ch -u AllUsers:R gs://$BUCKET_NAME_1/setup.html && gsutil acl get g
 ]
 ----
 
+* link:acl-all-user-readable.json[acl-all-user-readable.json]
+
 [source, bash]
-.*5. gsutil download 2 load*
+.*4. Access the file*
 ----
-rm setup.html && gsutil cp gs://$BUCKET_NAME_1/setup.html setup.html && ls -l setup.html
+$ curl https://storage.googleapis.com/$BUCKET_NAME_1/setup.html -I
+HTTP/2 200
+x-guploader-uploadid: ADPycdu9U92IQzS42_LlvNb3S77768QcNjHgJrrDeDSnLaHnIDJEosIUL63B32ldcfHWUR0qMo0FBgVDtMprNt1I83l1rWHBLGaL
+expires: Sun, 15 Jan 2023 09:47:14 GMT
+date: Sun, 15 Jan 2023 08:47:14 GMT
+cache-control: public, max-age=3600
+last-modified: Sun, 15 Jan 2023 08:31:18 GMT
+etag: "3549d1f421e13bd9c444e179b593ddd3"
+x-goog-generation: 1673771478896821
+x-goog-metageneration: 3
+x-goog-stored-content-encoding: identity
+x-goog-stored-content-length: 58468
+content-type: text/html
+x-goog-hash: crc32c=ojcWqg==
+x-goog-hash: md5=NUnR9CHhO9nEROF5tZPd0w==
+x-goog-storage-class: STANDARD
+accept-ranges: bytes
+content-length: 58468
+server: UploadServer
+---- 
+
+[source, bash]
+.*5. gsutil to download file*
+----
+$ ls -l setup.html && rm setup.html && gsutil cp gs://$BUCKET_NAME_1/setup.html setup.html && ls -l setup.html
+-rw-r--r-- 1 student_01_2f50fc858c40 student_01_2f50fc858c40 58468 Jan 15 08:13 setup.html
+Copying gs://test-2023011501/setup.html...
+- [1 files][ 57.1 KiB/ 57.1 KiB]
+Operation completed over 1 objects/57.1 KiB.
+-rw-r--r-- 1 student_01_2f50fc858c40 student_01_2f50fc858c40 58468 Jan 15 08:49 setup.html
 ----
 
 == Customer-supplied encryption keys (CSEK)
 
+=== Generate CSEK Key
+
 [source, bash]
-.*1. Create a CSEK key*
+.*1. Create a CSEK AES-256 base-64 key*
 ----
 $ python3 -c 'import base64; import os; print(base64.encodebytes(os.urandom(32)))'
-b'cn2C0sNhWyt4fPCw5PoFaI/HNAoHeXJ6vLKePAkNHpU=\n'
+b'mBLDJR4t0kM/lwcMKc8cZMm9dfLjRijWUHZy1R/uAA4=\n'
 ----
 
-NOTE: Excluding b' and \n', so the key is `cn2C0sNhWyt4fPCw5PoFaI/HNAoHeXJ6vLKePAkNHpU=`
+NOTE: Excluding b' and \n', so the key is `mBLDJR4t0kM/lwcMKc8cZMm9dfLjRijWUHZy1R/uAA4=`.
 
 [source, bash]
 .*2. Add the key to gsutil config file .boto*
 ----
 $ gsutil config -n
-$ cat .boto | grep encryption_key
-# 'encryption_key' specifies a single customer-supplied encryption key that
-encryption_key=cn2C0sNhWyt4fPCw5PoFaI/HNAoHeXJ6vLKePAkNHpU=
+
+$ cat .boto | grep encryption_key=
+encryption_key=mBLDJR4t0kM/lwcMKc8cZMm9dfLjRijWUHZy1R/uAA4=
 ----
 
+=== Upload update with CSEK Key
+
 [source, bash]
-.*3. Update files to bucket*
+.*1. Update files to bucket*
 ----
 gsutil cp setup2.html gs://$BUCKET_NAME_1/
 gsutil cp setup3.html gs://$BUCKET_NAME_1/
 ----
 
 [source, bash]
-.*4. List all files in bucket*
+.*2. List all files in bucket*
 ----
 $ gsutil ls gs://$BUCKET_NAME_1/
 gs://test-2022091201/setup.html
@@ -143,9 +189,285 @@ gs://test-2022091201/setup2.html
 gs://test-2022091201/setup3.html
 ----
 
+*3. Review customer-encrypted from Google Cloud Console*
+
+=== Rotate CSEK keys
+
 [source, bash]
-.*5. Download and view the encryption*
+.*1. Generate new Key*
 ----
-rm setup* && gsutil cp gs://$BUCKET_NAME_1/setup* ./ 
+$ python3 -c 'import base64; import os; print(base64.encodebytes(os.urandom(32)))'
+b'LGV0QOhDFAvyMvGSduKQBLfPMohezClCL584z6/TqOg=\n'
 ----
+
+[source, bash]
+.*2. Movecurrent CSEK encrypt key to  decryption_key1*
+----
+$ cat .boto | grep decryption_key1
+decryption_key1=mBLDJR4t0kM/lwcMKc8cZMm9dfLjRijWUHZy1R/uAA4=
+----
+
+[source, bash]
+.*3. Replace ncryption_key*
+----
+$ cat .boto | grep encryption_key=
+#encryption_key=mBLDJR4t0kM/lwcMKc8cZMm9dfLjRijWUHZy1R/uAA4=
+encryption_key=LGV0QOhDFAvyMvGSduKQBLfPMohezClCL584z6/TqOg=
+----
+
+[source, bash]
+.*4. Rewite file to finished the CSEK rptation*
+----
+$ gsutil rewrite -k gs://$BUCKET_NAME_1/setup2.html
+- [1 files][ 57.1 KiB/ 57.1 KiB]                                                 0.0 B/ 57.1 KiB]
+Operation completed over 1 objects/57.1 KiB.
+----
+
+[source, bash]
+.*5. Comment out decryption_key1*
+----
+$ cat .boto | grep decryption_key1
+#decryption_key1=mBLDJR4t0kM/lwcMKc8cZMm9dfLjRijWUHZy1R/uAA4=
+----
+
+[source, bash]
+.*6. TEST: download setup2.html*
+----
+$ gsutil cp  gs://$BUCKET_NAME_1/setup2.html recover2.html
+Copying gs://teststorage-2023011501/setup2.html...
+- [1 files][ 57.1 KiB/ 57.1 KiB]
+Operation completed over 1 objects/57.1 KiB.
+----
+
+[source, bash]
+.*7. TEST: download setup3.html*
+----
+$ gsutil cp  gs://$BUCKET_NAME_1/setup3.html recover3.html
+...
+gslib.cloud_api.EncryptionException: Missing decryption key with SHA256 hash b'sW7xbrs/imdRln3y7R7I4YV1hyTuj48R0wXeJjD+0xM='. No decryption key matches object gs://teststorage-2023011501/setup3.html
+----
+
+== Lifecycle management
+
+[source, bash]
+.*1. Create a JSON lifecycle policy file*
+----
+{
+  "rule":
+  [
+    {
+      "action": {"type": "Delete"},
+      "condition": {"age": 31}
+    }
+  ]
+}
+----
+
+[source, bash]
+.*2. set lifecycle management*
+----
+gsutil lifecycle set life.json gs://$BUCKET_NAME_1
+----
+
+[source, bash]
+.*3. get lifecycle*
+----
+$ gsutil lifecycle get gs://$BUCKET_NAME_1
+{"rule": [{"action": {"type": "Delete"}, "condition": {"age": 31}}]}
+----
+
+== Enable versioning
+
+[source, bash]
+.*1. enable versioning*
+----
+gsutil versioning set on gs://$BUCKET_NAME_1
+----
+
+[source, bash]
+.*2. verify versioning was enabled*
+----
+$ gsutil versioning get gs://$BUCKET_NAME_1
+gs://test-2023011501: Enabled
+----
+
+=== Create Multiple version
+
+[source, bash]
+.*1. create several version*
+----
+echo "asd" >> setup.html
+gsutil cp -v setup.html gs://$BUCKET_NAME_1
+echo "asd" >> setup.html
+gsutil cp -v setup.html gs://$BUCKET_NAME_1
+echo "asd" >> setup.html
+gsutil cp -v setup.html gs://$BUCKET_NAME_1
+----
+
+=== List all versions
+
+[source, bash]
+.*1. list all versions*
+----
+$ gsutil ls -a gs://$BUCKET_NAME_1/setup.html
+gs://test-2023011501/setup.html#1673771478896821
+gs://test-2023011501/setup.html#1673774469530355
+gs://test-2023011501/setup.html#1673774484742779
+gs://test-2023011501/setup.html#1673774493970186
+----
+
+=== Download a specify version
+
+[source, bash]
+.*1. Download a specify version*
+----
+$ gsutil cp gs://test-2023011501/setup.html#1673774469530355 recovered.txt
+Copying gs://test-2023011501/setup.html#1673774469530355...
+/ [1 files][ 57.1 KiB/ 57.1 KiB]
+Operation completed over 1 objects/57.1 KiB.
+----
+
+[source, bash]
+.*2. Compare current version and old version*
+----
+$ ls -al recovered.txt && ls -al setup.html
+-rw-r--r-- 1 student_01_2f50fc858c40 student_01_2f50fc858c40 58468 Jan 15 09:52 recovered.txt
+-rw-r--r-- 1 student_01_2f50fc858c40 student_01_2f50fc858c40 58480 Jan 15 09:50 setup.html
+----
+
+== Synchronize a directory
+
+[source, bash]
+.*1. create directory and files*
+----
+mkdir firstlevel
+mkdir ./firstlevel/secondlevel
+cp setup.html firstlevel
+cp setup.html firstlevel/secondlevel
+----
+
+[source, bash]
+.*2. synchronize directory*
+----
+gsutil rsync -r ./firstlevel gs://$BUCKET_NAME_1/firstlevel
+----
+
+[source, bash]
+.*3. Examine the results*
+----
+$ gsutil ls -r gs://$BUCKET_NAME_1/firstlevel
+gs://test-2023011501/firstlevel/:
+gs://test-2023011501/firstlevel/setup.html
+
+gs://test-2023011501/firstlevel/secondlevel/:
+gs://test-2023011501/firstlevel/secondlevel/setup.html
+----
+
+== Cross-project sharing
+
+=== Create a bucket on different project
+
+[source, bash]
+.*1. Set a unique bucket name*
+----
+echo "export BUCKET_NAME_2=test-2023011502" >> ~/.bashrc
+source ~/.bashrc
+echo $BUCKET_NAME_2
+----
+
+[source, bash]
+.*2. create bucket on different project*
+----
+gsutil mb -b off -c standard gs://$BUCKET_NAME_2
+----
+
+=== Update a file to bucket
+
+Add a file named `ttcp.csv` to test-2023011502.
+
+=== Create an IAM Service Account
+
+Create an IAM Service Account named `cross-project-storage`, add a JSON key, and download the key.
+
+* link:credentials.json[credentials.json]
+
+=== Create a VM
+
+In a different project create a VM
+
+[source, bash]
+----
+gcloud compute instances create crossproject --zone=europe-west1-d --machine-type=n1-standard-1 --network-interface=network-tier=PREMIUM,subnet=default --metadata=enable-oslogin=true --maintenance-policy=MIGRATE --provisioning-model=STANDARD --create-disk=auto-delete=yes,boot=yes,device-name=crossproject,image=projects/debian-cloud/global/images/debian-10-buster-v20221206,mode=rw,size=10,type=pd-balanced --no-shielded-secure-boot --shielded-vtpm --shielded-integrity-monitoring --reservation-affinity=any
+----
+
+=== SSH to VM access bucket file
+
+[source, bash]
+.*1. set bucket name to env*
+----
+export BUCKET_NAME_2=test-2023011502
+export FILE_NAME=ttcp.csv
+echo $BUCKET_NAME_2/$FILE_NAME
+----
+
+[source, bash]
+.*2. list bucket file*
+----
+$ gsutil ls gs://$BUCKET_NAME_2/$FILE_NAME
+AccessDeniedException: 403 317595744480-compute@developer.gserviceaccount.com does not have storage.objects.list access to the Google Cloud Storage bucket. Permission 'storage.objects.list' denied on resource (or it may not exist).
+----
+
+=== Authorize the VM and access file
+
+[source, bash]
+.*1. upload credentials.json to VM*
+----
+$ ls -l
+total 4
+-rw-r--r-- 1 student-01-2f50fc858c40 google-sudoers 2381 Jan 15 10:26 credentials.json
+----
+
+[source, bash]
+.*2. authorize the VM*
+----
+$ gcloud auth activate-service-account --key-file credentials.json
+Activated service account credentials for: [cross-project-storage@qwiklabs-gcp-03-e8e80de41782.iam.gserviceaccount.com]
+----
+
+[source, bash]
+.*3. list bucket file*
+----
+$ gsutil ls gs://$BUCKET_NAME_2/$FILE_NAME
+gs://test-2023011502/ttcp.csv
+----
+
+[source, bash]
+.*4. Download File*
+----
+$ gsutil cp gs://$BUCKET_NAME_2/$FILE_NAME $FILE_NAME
+Copying gs://test-2023011502/ttcp.csv...
+/ [1 files][717.0 KiB/717.0 KiB]                                                
+Operation completed over 1 objects/717.0 KiB.   
+----
+
+[source, bash]
+.*5. Upload File*
+----
+$ gsutil cp credentials.json gs://$BUCKET_NAME_2/
+Copying file://credentials.json [Content-Type=application/json]...
+AccessDeniedException: 403 cross-project-storage@qwiklabs-gcp-03-e8e80de41782.iam.gserviceaccount.com does not have storage.objects.create access to the Google Cloud Storage object. Permission 'storage.objects.create' denied on resource (or it may not exist).
+----
+
+NOTE: the upload failed due to the service account only reference with `Storage Object Viewer` role
+
+[source, bash]
+.*6. re-upload after change the IAM role to Storage Object Admin*
+----
+$ gsutil cp credentials.json gs://$BUCKET_NAME_2/
+Copying file://credentials.json [Content-Type=application/json]...
+/ [1 files][  2.3 KiB/  2.3 KiB]                                                
+Operation completed over 1 objects/2.3 KiB.   
+----
+
+NOTE: The upload successful.
 
