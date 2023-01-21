@@ -1,0 +1,40 @@
+= BigQuery
+:toc: manual
+
+== Create Dataset and Table
+
+[source, bash]
+.*Create Dataset*
+----
+bq mk --default_table_expiration=86400 imported_billing_data
+----
+
+[source, bash]
+.**
+----
+
+----
+
+[source, bash]
+.**
+----
+
+----
+
+[source, bash]
+.**
+----
+
+----
+
+[source, bash]
+.**
+----
+
+----
+
+[source, bash]
+.**
+----
+
+----
