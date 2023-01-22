@@ -1,0 +1,88 @@
+= Development with App Engine
+:toc: manual
+
+== Deploy Version 1 to App Engine
+
+[source, bash]
+.*Deploy*
+----
+gcloud app deploy app.yaml
+----
+
+[source, bash]
+.*Test*
+----
+$ APPURL=$(gcloud app browse) ; curl -k $APPURL ; echo ; curl -k $APPURL -v ;
+Hello, World from webapp2!
+
+> GET / HTTP/2
+> Host: xxxx-04-a4b1f765ecba.de.r.appspot.com
+> user-agent: curl/7.74.0
+> accept: */*
+>
+* Connection state changed (MAX_CONCURRENT_STREAMS == 100)!
+< HTTP/2 200
+< cache-control: no-cache
+< content-type: text/plain
+< x-cloud-trace-context: 7ef06a2de0e2f4c3c3129e0342a3514c
+< date: Sun, 22 Jan 2023 10:53:08 GMT
+< server: Google Frontend
+< content-length: 26
+<
+----
+
+== Deploy Version 2 to App Engine
+
+[source, bash]
+.*Deploy*
+----
+gcloud app deploy app.yaml --quiet
+----
+
+[source, bash]
+.*Test*
+----
+$ APPURL=$(gcloud app browse) ; curl -k $APPURL ; echo ;
+Hello, World from Google App Engine!
+----
+
+== Overview the App Engine
+
+[source, bash]
+.*List all versions*
+----
+gcloud app versions list 
+----
+
+* link:../files/app-version.json[app-version.json]
+
+[source, bash]
+.*List all services*
+----
+gcloud app services list
+----
+
+* link:../files/app-service.json[app-service.json]
+
+[source, bash]
+.*List all instances*
+----
+gcloud app instances list
+----
+
+* link:../files/app-instances.json[app-instances.json]
+
+[source, bash]
+.*List all firewall rules*
+----
+gcloud app firewall-rules list 
+----
+
+* link:../files/app-firewall-rules.json[app-firewall-rules.json]
+
+
+
+
+
+
+

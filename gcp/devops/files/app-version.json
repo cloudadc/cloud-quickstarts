@@ -1,0 +1,125 @@
+[
+  {
+    "environment": {
+      "name": "STANDARD",
+      "value": 1
+    },
+    "id": "20230122t102529",
+    "last_deployed_time": {
+      "datetime": "2023-01-22 10:25:48+00:00",
+      "day": 22,
+      "fold": 0,
+      "hour": 10,
+      "microsecond": 0,
+      "minute": 25,
+      "month": 1,
+      "second": 48,
+      "year": 2023
+    },
+    "project": "qwiklabs-gcp-04-a4b1f765ecba",
+    "service": "default",
+    "service_account": null,
+    "traffic_split": 0.0,
+    "version": {
+      "createTime": "2023-01-22T10:25:48Z",
+      "createdBy": "student-01-b3de5c5c544d@qwiklabs.net",
+      "diskUsageBytes": "1745",
+      "env": "standard",
+      "id": "20230122t102529",
+      "instanceClass": "B2",
+      "manualScaling": {
+        "instances": 1
+      },
+      "name": "apps/qwiklabs-gcp-04-a4b1f765ecba/services/default/versions/20230122t102529",
+      "network": {},
+      "runtime": "python27",
+      "runtimeApiVersion": "1",
+      "serviceAccount": "qwiklabs-gcp-04-a4b1f765ecba@appspot.gserviceaccount.com",
+      "servingStatus": "STOPPED",
+      "threadsafe": true,
+      "versionUrl": "https://20230122t102529-dot-qwiklabs-gcp-04-a4b1f765ecba.appspot.com"
+    }
+  },
+  {
+    "environment": {
+      "name": "STANDARD",
+      "value": 1
+    },
+    "id": "20230122t104550",
+    "last_deployed_time": {
+      "datetime": "2023-01-22 10:46:15+00:00",
+      "day": 22,
+      "fold": 0,
+      "hour": 10,
+      "microsecond": 0,
+      "minute": 46,
+      "month": 1,
+      "second": 15,
+      "year": 2023
+    },
+    "project": "qwiklabs-gcp-04-a4b1f765ecba",
+    "service": "default",
+    "service_account": null,
+    "traffic_split": 0.0,
+    "version": {
+      "createTime": "2023-01-22T10:46:15Z",
+      "createdBy": "student-01-b3de5c5c544d@qwiklabs.net",
+      "diskUsageBytes": "1758",
+      "env": "standard",
+      "id": "20230122t104550",
+      "instanceClass": "B2",
+      "manualScaling": {
+        "instances": 1
+      },
+      "name": "apps/qwiklabs-gcp-04-a4b1f765ecba/services/default/versions/20230122t104550",
+      "network": {},
+      "runtime": "python27",
+      "runtimeApiVersion": "1",
+      "serviceAccount": "qwiklabs-gcp-04-a4b1f765ecba@appspot.gserviceaccount.com",
+      "servingStatus": "STOPPED",
+      "threadsafe": true,
+      "versionUrl": "https://20230122t104550-dot-qwiklabs-gcp-04-a4b1f765ecba.appspot.com"
+    }
+  },
+  {
+    "environment": {
+      "name": "STANDARD",
+      "value": 1
+    },
+    "id": "20230122t105616",
+    "last_deployed_time": {
+      "datetime": "2023-01-22 10:56:36+00:00",
+      "day": 22,
+      "fold": 0,
+      "hour": 10,
+      "microsecond": 0,
+      "minute": 56,
+      "month": 1,
+      "second": 36,
+      "year": 2023
+    },
+    "project": "qwiklabs-gcp-04-a4b1f765ecba",
+    "service": "default",
+    "service_account": null,
+    "traffic_split": 1.0,
+    "version": {
+      "createTime": "2023-01-22T10:56:36Z",
+      "createdBy": "student-01-b3de5c5c544d@qwiklabs.net",
+      "diskUsageBytes": "1768",
+      "env": "standard",
+      "id": "20230122t105616",
+      "instanceClass": "B2",
+      "manualScaling": {
+        "instances": 1
+      },
+      "name": "apps/qwiklabs-gcp-04-a4b1f765ecba/services/default/versions/20230122t105616",
+      "network": {},
+      "runtime": "python27",
+      "runtimeApiVersion": "1",
+      "serviceAccount": "qwiklabs-gcp-04-a4b1f765ecba@appspot.gserviceaccount.com",
+      "servingStatus": "SERVING",
+      "threadsafe": true,
+      "versionUrl": "https://20230122t105616-dot-qwiklabs-gcp-04-a4b1f765ecba.appspot.com"
+    }
+  }
+]
