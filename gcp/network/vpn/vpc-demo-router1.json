@@ -1,0 +1,14 @@
+{
+  "bgp": {
+    "advertiseMode": "DEFAULT",
+    "asn": 65001,
+    "keepaliveInterval": 20
+  },
+  "creationTimestamp": "2023-01-24T01:12:22.219-08:00",
+  "id": "5276357984759455257",
+  "kind": "compute#router",
+  "name": "vpc-demo-router1",
+  "network": "https://www.googleapis.com/compute/v1/projects/qwiklabs-gcp-01-0e4b3b1f8f92/global/networks/vpc-demo",
+  "region": "https://www.googleapis.com/compute/v1/projects/qwiklabs-gcp-01-0e4b3b1f8f92/regions/us-central1",
+  "selfLink": "https://www.googleapis.com/compute/v1/projects/qwiklabs-gcp-01-0e4b3b1f8f92/regions/us-central1/routers/vpc-demo-router1"
+}

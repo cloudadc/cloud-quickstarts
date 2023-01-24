@@ -1,0 +1,14 @@
+{
+  "bgp": {
+    "advertiseMode": "DEFAULT",
+    "asn": 65002,
+    "keepaliveInterval": 20
+  },
+  "creationTimestamp": "2023-01-24T01:14:56.616-08:00",
+  "id": "1096972188589891455",
+  "kind": "compute#router",
+  "name": "on-prem-router1",
+  "network": "https://www.googleapis.com/compute/v1/projects/qwiklabs-gcp-01-0e4b3b1f8f92/global/networks/on-prem",
+  "region": "https://www.googleapis.com/compute/v1/projects/qwiklabs-gcp-01-0e4b3b1f8f92/regions/us-central1",
+  "selfLink": "https://www.googleapis.com/compute/v1/projects/qwiklabs-gcp-01-0e4b3b1f8f92/regions/us-central1/routers/on-prem-router1"
+}

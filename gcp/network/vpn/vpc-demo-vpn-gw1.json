@@ -1,0 +1,21 @@
+{
+  "creationTimestamp": "2023-01-24T01:02:43.130-08:00",
+  "id": "7388101625046507612",
+  "kind": "compute#vpnGateway",
+  "labelFingerprint": "42WmSpB8rSM=",
+  "name": "vpc-demo-vpn-gw1",
+  "network": "https://www.googleapis.com/compute/v1/projects/qwiklabs-gcp-01-0e4b3b1f8f92/global/networks/vpc-demo",
+  "region": "https://www.googleapis.com/compute/v1/projects/qwiklabs-gcp-01-0e4b3b1f8f92/regions/us-central1",
+  "selfLink": "https://www.googleapis.com/compute/v1/projects/qwiklabs-gcp-01-0e4b3b1f8f92/regions/us-central1/vpnGateways/vpc-demo-vpn-gw1",
+  "stackType": "IPV4_ONLY",
+  "vpnInterfaces": [
+    {
+      "id": 0,
+      "ipAddress": "34.157.109.112"
+    },
+    {
+      "id": 1,
+      "ipAddress": "35.220.92.201"
+    }
+  ]
+}

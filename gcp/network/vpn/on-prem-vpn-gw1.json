@@ -1,0 +1,21 @@
+{
+  "creationTimestamp": "2023-01-24T01:03:13.960-08:00",
+  "id": "7443166657719181374",
+  "kind": "compute#vpnGateway",
+  "labelFingerprint": "42WmSpB8rSM=",
+  "name": "on-prem-vpn-gw1",
+  "network": "https://www.googleapis.com/compute/v1/projects/qwiklabs-gcp-01-0e4b3b1f8f92/global/networks/on-prem",
+  "region": "https://www.googleapis.com/compute/v1/projects/qwiklabs-gcp-01-0e4b3b1f8f92/regions/us-central1",
+  "selfLink": "https://www.googleapis.com/compute/v1/projects/qwiklabs-gcp-01-0e4b3b1f8f92/regions/us-central1/vpnGateways/on-prem-vpn-gw1",
+  "stackType": "IPV4_ONLY",
+  "vpnInterfaces": [
+    {
+      "id": 0,
+      "ipAddress": "34.157.85.34"
+    },
+    {
+      "id": 1,
+      "ipAddress": "35.220.88.184"
+    }
+  ]
+}

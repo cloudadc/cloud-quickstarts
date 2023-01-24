@@ -1,0 +1,102 @@
+[
+  {
+    "creationTimestamp": "2023-01-24T01:26:18.101-08:00",
+    "description": "",
+    "detailedStatus": "Tunnel is up and running.",
+    "id": "1207536994819906261",
+    "ikeVersion": 2,
+    "kind": "compute#vpnTunnel",
+    "localTrafficSelector": [
+      "0.0.0.0/0"
+    ],
+    "name": "on-prem-tunnel0",
+    "peerGcpGateway": "https://www.googleapis.com/compute/v1/projects/qwiklabs-gcp-01-0e4b3b1f8f92/regions/us-central1/vpnGateways/vpc-demo-vpn-gw1",
+    "peerIp": "34.157.109.112",
+    "region": "https://www.googleapis.com/compute/v1/projects/qwiklabs-gcp-01-0e4b3b1f8f92/regions/us-central1",
+    "remoteTrafficSelector": [
+      "0.0.0.0/0"
+    ],
+    "router": "https://www.googleapis.com/compute/v1/projects/qwiklabs-gcp-01-0e4b3b1f8f92/regions/us-central1/routers/on-prem-router1",
+    "selfLink": "https://www.googleapis.com/compute/v1/projects/qwiklabs-gcp-01-0e4b3b1f8f92/regions/us-central1/vpnTunnels/on-prem-tunnel0",
+    "sharedSecret": "*************",
+    "sharedSecretHash": "AOre5pLSLFw16TRGatJuHrbrLODs",
+    "status": "ESTABLISHED",
+    "vpnGateway": "https://www.googleapis.com/compute/v1/projects/qwiklabs-gcp-01-0e4b3b1f8f92/regions/us-central1/vpnGateways/on-prem-vpn-gw1",
+    "vpnGatewayInterface": 0
+  },
+  {
+    "creationTimestamp": "2023-01-24T01:27:11.422-08:00",
+    "description": "",
+    "detailedStatus": "Tunnel is up and running.",
+    "id": "7732870010084924032",
+    "ikeVersion": 2,
+    "kind": "compute#vpnTunnel",
+    "localTrafficSelector": [
+      "0.0.0.0/0"
+    ],
+    "name": "on-prem-tunnel1",
+    "peerGcpGateway": "https://www.googleapis.com/compute/v1/projects/qwiklabs-gcp-01-0e4b3b1f8f92/regions/us-central1/vpnGateways/vpc-demo-vpn-gw1",
+    "peerIp": "35.220.92.201",
+    "region": "https://www.googleapis.com/compute/v1/projects/qwiklabs-gcp-01-0e4b3b1f8f92/regions/us-central1",
+    "remoteTrafficSelector": [
+      "0.0.0.0/0"
+    ],
+    "router": "https://www.googleapis.com/compute/v1/projects/qwiklabs-gcp-01-0e4b3b1f8f92/regions/us-central1/routers/on-prem-router1",
+    "selfLink": "https://www.googleapis.com/compute/v1/projects/qwiklabs-gcp-01-0e4b3b1f8f92/regions/us-central1/vpnTunnels/on-prem-tunnel1",
+    "sharedSecret": "*************",
+    "sharedSecretHash": "AJtRKOd1DszVA5qT3rjesCYqUsDo",
+    "status": "ESTABLISHED",
+    "vpnGateway": "https://www.googleapis.com/compute/v1/projects/qwiklabs-gcp-01-0e4b3b1f8f92/regions/us-central1/vpnGateways/on-prem-vpn-gw1",
+    "vpnGatewayInterface": 1
+  },
+  {
+    "creationTimestamp": "2023-01-24T01:22:39.690-08:00",
+    "description": "",
+    "detailedStatus": "Tunnel is up and running.",
+    "id": "1086819182254890416",
+    "ikeVersion": 2,
+    "kind": "compute#vpnTunnel",
+    "localTrafficSelector": [
+      "0.0.0.0/0"
+    ],
+    "name": "vpc-demo-tunnel0",
+    "peerGcpGateway": "https://www.googleapis.com/compute/v1/projects/qwiklabs-gcp-01-0e4b3b1f8f92/regions/us-central1/vpnGateways/on-prem-vpn-gw1",
+    "peerIp": "34.157.85.34",
+    "region": "https://www.googleapis.com/compute/v1/projects/qwiklabs-gcp-01-0e4b3b1f8f92/regions/us-central1",
+    "remoteTrafficSelector": [
+      "0.0.0.0/0"
+    ],
+    "router": "https://www.googleapis.com/compute/v1/projects/qwiklabs-gcp-01-0e4b3b1f8f92/regions/us-central1/routers/vpc-demo-router1",
+    "selfLink": "https://www.googleapis.com/compute/v1/projects/qwiklabs-gcp-01-0e4b3b1f8f92/regions/us-central1/vpnTunnels/vpc-demo-tunnel0",
+    "sharedSecret": "*************",
+    "sharedSecretHash": "AFOL79kmglXKewxnQJ4abjp1FPT-",
+    "status": "ESTABLISHED",
+    "vpnGateway": "https://www.googleapis.com/compute/v1/projects/qwiklabs-gcp-01-0e4b3b1f8f92/regions/us-central1/vpnGateways/vpc-demo-vpn-gw1",
+    "vpnGatewayInterface": 0
+  },
+  {
+    "creationTimestamp": "2023-01-24T01:24:41.195-08:00",
+    "description": "",
+    "detailedStatus": "Tunnel is up and running.",
+    "id": "7127680096984505654",
+    "ikeVersion": 2,
+    "kind": "compute#vpnTunnel",
+    "localTrafficSelector": [
+      "0.0.0.0/0"
+    ],
+    "name": "vpc-demo-tunnel1",
+    "peerGcpGateway": "https://www.googleapis.com/compute/v1/projects/qwiklabs-gcp-01-0e4b3b1f8f92/regions/us-central1/vpnGateways/on-prem-vpn-gw1",
+    "peerIp": "35.220.88.184",
+    "region": "https://www.googleapis.com/compute/v1/projects/qwiklabs-gcp-01-0e4b3b1f8f92/regions/us-central1",
+    "remoteTrafficSelector": [
+      "0.0.0.0/0"
+    ],
+    "router": "https://www.googleapis.com/compute/v1/projects/qwiklabs-gcp-01-0e4b3b1f8f92/regions/us-central1/routers/vpc-demo-router1",
+    "selfLink": "https://www.googleapis.com/compute/v1/projects/qwiklabs-gcp-01-0e4b3b1f8f92/regions/us-central1/vpnTunnels/vpc-demo-tunnel1",
+    "sharedSecret": "*************",
+    "sharedSecretHash": "AK99rYquFyPAJfkk6DNDNlQ1S0ky",
+    "status": "ESTABLISHED",
+    "vpnGateway": "https://www.googleapis.com/compute/v1/projects/qwiklabs-gcp-01-0e4b3b1f8f92/regions/us-central1/vpnGateways/vpc-demo-vpn-gw1",
+    "vpnGatewayInterface": 1
+  }
+]
