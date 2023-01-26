@@ -3,7 +3,6 @@
 
 == About Cloud Load Balancer
 
-[cols="2,2,2,5a"]
 |===
 |ID |Scope |Name |Note
 
@@ -11,9 +10,6 @@
 |Global
 |HTTP/HTTPS
 |
-
-* implemented at the edge of Google's network in Google's points of presence (POP) around the world.
-* User traffic directed to an HTTP(S) load balancer enters the POP closest to the user and is then load-balanced over Google's global network to the closest backend that has sufficient available capacity.
 
 |2
 |Global
@@ -40,4 +36,83 @@
 |Internal HTTP/HTTPS
 |
 |===
+
+== HTTP Load Balancer
+
+Google Cloud HTTP(S) load balancing is implemented at the edge of Google's network in Google's points of presence (POP) around the world. User traffic directed to an HTTP(S) load balancer enters the POP closest to the user and is then load-balanced over Google's global network to the closest backend that has sufficient available capacity.
+
+=== Configure a health check firewall rule
+
+[source, bash]
+----
+gcloud compute firewall-rules create fw-allow-health-checks --network default --allow tcp:80 --source-ranges 130.211.0.0/22,35.191.0.0/16 --target-tags allow-health-checks
+----
+
+NOTE: Health checks determine which instances of a load balancer can receive new connections. For HTTP load balancing, the health check probes to your load-balanced instances come from addresses in the ranges `130.211.0.0/22` and `35.191.0.0/16`.
+
+=== Create a NAT configuration using Cloud Router
+
+[source, bash]
+.*1. create cloud router*
+----
+gcloud compute routers create nat-router-us-central1 --region us-central1 --network default
+----
+
+[source, bash]
+.*2. create cloud nat*
+----
+gcloud compute routers nats create nat-config --router=nat-router-us-central1 --router-region=us-central1 --auto-allocate-nat-external-ips --nat-all-subnet-ip-ranges
+----
+
+NOTE: If VM instances without an external IP address, Cloud NAT service to allow these VM instances to send outbound traffic only through the Cloud NAT, and receive inbound traffic through the load balancer.
+
+=== Create instance groups
+
+[source, bash]
+.*1. Create custom image*
+----
+gcloud compute images create mywebserver --source-disk=webserver --source-disk-zone=us-central1-a --storage-location=us
+----
+
+[source, bash]
+.*2. configure the instance template*
+----
+gcloud compute instance-templates create mywebserver-template --machine-type=f1-micro --network-interface=network=default,no-address --metadata=enable-oslogin=true --maintenance-policy=MIGRATE --provisioning-model=STANDARD --tags=allow-health-checks --create-disk=auto-delete=yes,boot=yes,device-name=mywebserver-template,image=mywebserver,mode=rw,size=10,type=pd-balanced --no-shielded-secure-boot --shielded-vtpm --shielded-integrity-monitoring --reservation-affinity=any
+----
+
+[source, bash]
+.*3. create health check for managed instance groups*
+----
+gcloud beta compute health-checks create tcp http-health-check --port=80 --proxy-header=NONE --no-enable-logging --check-interval=5 --timeout=5 --unhealthy-threshold=2 --healthy-threshold=2
+----
+
+[source, bash]
+.*4. create managed instance groups*
+----
+gcloud beta compute instance-groups managed create us-central1-mig --base-instance-name=us-central1-mig --size=1 --template=mywebserver-template --zones=us-central1-c,us-central1-f,us-central1-b --target-distribution-shape=EVEN --instance-redistribution-type=PROACTIVE --list-managed-instances-results=PAGELESS --health-check=http-health-check --initial-delay=60 --no-force-update-on-repair
+
+gcloud beta compute instance-groups managed set-autoscaling us-central1-mig --region=us-central1 --cool-down-period=60 --max-num-replicas=2 --min-num-replicas=1 --mode=on --target-load-balancing-utilization=0.8
+----
+
+[source, bash]
+.*5. create another managed instance groups*
+----
+gcloud beta compute instance-groups managed create europe-west1-mig --base-instance-name=europe-west1-mig --size=1 --template=mywebserver-template --zones=europe-west1-b,europe-west1-d,europe-west1-c --target-distribution-shape=EVEN --instance-redistribution-type=PROACTIVE --list-managed-instances-results=PAGELESS --health-check=http-health-check --initial-delay=60 --no-force-update-on-repair
+
+gcloud beta compute instance-groups managed set-autoscaling europe-west1-mig --region=europe-west1 --cool-down-period=60 --max-num-replicas=2 --min-num-replicas=1 --mode=on --target-load-balancing-utilization=0.8
+----
+
+=== Configure the HTTP load balancer
+
+*Frontend*
+
+image:lb-fronted.png[]
+
+*Backend*
+
+image:lb-bakcend.jpeg[]
+
+*Observability*
+
+image:lb-observe.png[]
 
