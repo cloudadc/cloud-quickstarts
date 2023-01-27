@@ -116,3 +116,34 @@ image:lb-bakcend.jpeg[]
 
 image:lb-observe.png[]
 
+== Internal Load Balancer
+
+Google Cloud offers Internal Load Balancing for your TCP/UDP-based traffic. Internal Load Balancing enables you to run and scale your services behind a private load balancing IP address that is accessible only to your internal virtual machine instances.
+
+=== Configure internal traffic and health check firewall rules
+
+[source, bash]
+----
+gcloud compute firewall-rules create fw-allow-health-checks --network my-internal-app --allow tcp:80 --source-ranges 130.211.0.0/22,35.191.0.0/16 --target-tags backend-service
+gcloud compute firewall-rules create fw-allow-lb-access --network my-internal-app --allow all --source-ranges 10.10.0.0/16 --target-tags backend-service
+----
+
+NOTE: Configure firewall rules to allow internal traffic connectivity from sources in the 10.10.0.0/16 range. This rule allows incoming traffic from any client located in the subnet. Health checks determine which instances of a load balancer can receive new connections. For HTTP load balancing, the health check probes to your load-balanced instances come from addresses in the ranges 130.211.0.0/22 and 35.191.0.0/16. Your firewall rules must allow these connections.
+
+=== Create a NAT configuration using Cloud Router
+
+[source, bash]
+.*1. create cloud router*
+----
+gcloud compute routers create nat-router-us-central1 --region us-central1 --network my-internal-app
+----
+
+[source, bash]
+.*2. create cloud nat*
+----
+gcloud compute routers nats create nat-config --router=nat-router-us-central1 --router-region=us-central1 --auto-allocate-nat-external-ips --nat-all-subnet-ip-ranges
+----
+
+NOTE: If VM instances without an external IP address, Cloud NAT service to allow these VM instances to send outbound traffic only through the Cloud NAT, and receive inbound traffic through the load balancer.
+
+

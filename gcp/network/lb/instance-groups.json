@@ -1,0 +1,32 @@
+[
+  {
+    "creationTimestamp": "2023-01-26T23:50:10.818-08:00",
+    "description": "This instance group is controlled by Instance Group Manager 'instance-group-1'. To modify instances in this group, use the Instance Group Manager API: https://cloud.google.com/compute/docs/reference/latest/instanceGroupManagers",
+    "fingerprint": "42WmSpB8rSM=",
+    "id": "6904027904204487901",
+    "instanceGroupManagerUri": "https://www.googleapis.com/compute/v1/projects/qwiklabs-gcp-03-b234d38cf91a/zones/us-central1-a/instanceGroupManagers/instance-group-1",
+    "isManaged": "Yes",
+    "kind": "compute#instanceGroup",
+    "name": "instance-group-1",
+    "network": "https://www.googleapis.com/compute/v1/projects/qwiklabs-gcp-03-b234d38cf91a/global/networks/my-internal-app",
+    "selfLink": "https://www.googleapis.com/compute/v1/projects/qwiklabs-gcp-03-b234d38cf91a/zones/us-central1-a/instanceGroups/instance-group-1",
+    "size": 3,
+    "subnetwork": "https://www.googleapis.com/compute/v1/projects/qwiklabs-gcp-03-b234d38cf91a/regions/us-central1/subnetworks/subnet-a",
+    "zone": "https://www.googleapis.com/compute/v1/projects/qwiklabs-gcp-03-b234d38cf91a/zones/us-central1-a"
+  },
+  {
+    "creationTimestamp": "2023-01-26T23:50:09.502-08:00",
+    "description": "This instance group is controlled by Instance Group Manager 'instance-group-2'. To modify instances in this group, use the Instance Group Manager API: https://cloud.google.com/compute/docs/reference/latest/instanceGroupManagers",
+    "fingerprint": "42WmSpB8rSM=",
+    "id": "7110898414220360926",
+    "instanceGroupManagerUri": "https://www.googleapis.com/compute/v1/projects/qwiklabs-gcp-03-b234d38cf91a/zones/us-central1-b/instanceGroupManagers/instance-group-2",
+    "isManaged": "Yes",
+    "kind": "compute#instanceGroup",
+    "name": "instance-group-2",
+    "network": "https://www.googleapis.com/compute/v1/projects/qwiklabs-gcp-03-b234d38cf91a/global/networks/my-internal-app",
+    "selfLink": "https://www.googleapis.com/compute/v1/projects/qwiklabs-gcp-03-b234d38cf91a/zones/us-central1-b/instanceGroups/instance-group-2",
+    "size": 2,
+    "subnetwork": "https://www.googleapis.com/compute/v1/projects/qwiklabs-gcp-03-b234d38cf91a/regions/us-central1/subnetworks/subnet-b",
+    "zone": "https://www.googleapis.com/compute/v1/projects/qwiklabs-gcp-03-b234d38cf91a/zones/us-central1-b"
+  }
+]
