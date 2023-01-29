@@ -1,0 +1,302 @@
+[
+  {
+    "canIpForward": false,
+    "cpuPlatform": "Intel Broadwell",
+    "creationTimestamp": "2023-01-28T23:54:28.485-08:00",
+    "deletionProtection": false,
+    "disks": [
+      {
+        "architecture": "X86_64",
+        "autoDelete": true,
+        "boot": true,
+        "deviceName": "persistent-disk-0",
+        "diskSizeGb": "10",
+        "guestOsFeatures": [
+          {
+            "type": "UEFI_COMPATIBLE"
+          },
+          {
+            "type": "VIRTIO_SCSI_MULTIQUEUE"
+          },
+          {
+            "type": "GVNIC"
+          }
+        ],
+        "index": 0,
+        "interface": "SCSI",
+        "kind": "compute#attachedDisk",
+        "licenses": [
+          "https://www.googleapis.com/compute/v1/projects/debian-cloud/global/licenses/debian-11-bullseye"
+        ],
+        "mode": "READ_WRITE",
+        "source": "https://www.googleapis.com/compute/v1/projects/planning-and-261-4c2c827f/zones/us-east1-b/disks/t1",
+        "type": "PERSISTENT"
+      }
+    ],
+    "fingerprint": "ORpJ0pUc7xE=",
+    "id": "6442069077341739230",
+    "kind": "compute#instance",
+    "labelFingerprint": "42WmSpB8rSM=",
+    "lastStartTimestamp": "2023-01-28T23:54:33.225-08:00",
+    "machineType": "https://www.googleapis.com/compute/v1/projects/planning-and-261-4c2c827f/zones/us-east1-b/machineTypes/e2-micro",
+    "metadata": {
+      "fingerprint": "sO0jzaeiXXI=",
+      "kind": "compute#metadata"
+    },
+    "name": "t1",
+    "networkInterfaces": [
+      {
+        "accessConfigs": [
+          {
+            "kind": "compute#accessConfig",
+            "name": "external-nat",
+            "natIP": "34.139.102.44",
+            "networkTier": "PREMIUM",
+            "type": "ONE_TO_ONE_NAT"
+          }
+        ],
+        "fingerprint": "AWi-hRhD_YY=",
+        "kind": "compute#networkInterface",
+        "name": "nic0",
+        "network": "https://www.googleapis.com/compute/v1/projects/planning-and-261-4c2c827f/global/networks/default",
+        "networkIP": "10.142.0.4",
+        "stackType": "IPV4_ONLY",
+        "subnetwork": "https://www.googleapis.com/compute/v1/projects/planning-and-261-4c2c827f/regions/us-east1/subnetworks/default"
+      }
+    ],
+    "scheduling": {
+      "automaticRestart": false,
+      "onHostMaintenance": "TERMINATE",
+      "preemptible": true
+    },
+    "selfLink": "https://www.googleapis.com/compute/v1/projects/planning-and-261-4c2c827f/zones/us-east1-b/instances/t1",
+    "serviceAccounts": [
+      {
+        "email": "527819690844-compute@developer.gserviceaccount.com",
+        "scopes": [
+          "https://www.googleapis.com/auth/devstorage.read_only",
+          "https://www.googleapis.com/auth/logging.write",
+          "https://www.googleapis.com/auth/monitoring.write",
+          "https://www.googleapis.com/auth/pubsub",
+          "https://www.googleapis.com/auth/service.management.readonly",
+          "https://www.googleapis.com/auth/servicecontrol",
+          "https://www.googleapis.com/auth/trace.append"
+        ]
+      }
+    ],
+    "shieldedInstanceConfig": {
+      "enableIntegrityMonitoring": true,
+      "enableSecureBoot": false,
+      "enableVtpm": true
+    },
+    "shieldedInstanceIntegrityPolicy": {
+      "updateAutoLearnPolicy": true
+    },
+    "startRestricted": false,
+    "status": "RUNNING",
+    "tags": {
+      "fingerprint": "42WmSpB8rSM="
+    },
+    "zone": "https://www.googleapis.com/compute/v1/projects/planning-and-261-4c2c827f/zones/us-east1-b"
+  },
+  {
+    "canIpForward": false,
+    "cpuPlatform": "Intel Broadwell",
+    "creationTimestamp": "2023-01-28T23:54:26.945-08:00",
+    "deletionProtection": false,
+    "disks": [
+      {
+        "architecture": "X86_64",
+        "autoDelete": true,
+        "boot": true,
+        "deviceName": "persistent-disk-0",
+        "diskSizeGb": "10",
+        "guestOsFeatures": [
+          {
+            "type": "UEFI_COMPATIBLE"
+          },
+          {
+            "type": "VIRTIO_SCSI_MULTIQUEUE"
+          },
+          {
+            "type": "GVNIC"
+          }
+        ],
+        "index": 0,
+        "interface": "SCSI",
+        "kind": "compute#attachedDisk",
+        "licenses": [
+          "https://www.googleapis.com/compute/v1/projects/debian-cloud/global/licenses/debian-11-bullseye"
+        ],
+        "mode": "READ_WRITE",
+        "source": "https://www.googleapis.com/compute/v1/projects/planning-and-261-4c2c827f/zones/us-east1-b/disks/t2",
+        "type": "PERSISTENT"
+      }
+    ],
+    "fingerprint": "On05XEYGiq0=",
+    "id": "6705278125078190302",
+    "kind": "compute#instance",
+    "labelFingerprint": "42WmSpB8rSM=",
+    "lastStartTimestamp": "2023-01-28T23:54:32.100-08:00",
+    "machineType": "https://www.googleapis.com/compute/v1/projects/planning-and-261-4c2c827f/zones/us-east1-b/machineTypes/e2-micro",
+    "metadata": {
+      "fingerprint": "sO0jzaeiXXI=",
+      "kind": "compute#metadata"
+    },
+    "name": "t2",
+    "networkInterfaces": [
+      {
+        "accessConfigs": [
+          {
+            "kind": "compute#accessConfig",
+            "name": "external-nat",
+            "natIP": "34.23.138.223",
+            "networkTier": "PREMIUM",
+            "type": "ONE_TO_ONE_NAT"
+          }
+        ],
+        "fingerprint": "vSiXtafuQ1A=",
+        "kind": "compute#networkInterface",
+        "name": "nic0",
+        "network": "https://www.googleapis.com/compute/v1/projects/planning-and-261-4c2c827f/global/networks/default",
+        "networkIP": "10.142.0.2",
+        "stackType": "IPV4_ONLY",
+        "subnetwork": "https://www.googleapis.com/compute/v1/projects/planning-and-261-4c2c827f/regions/us-east1/subnetworks/default"
+      }
+    ],
+    "scheduling": {
+      "automaticRestart": false,
+      "onHostMaintenance": "TERMINATE",
+      "preemptible": true
+    },
+    "selfLink": "https://www.googleapis.com/compute/v1/projects/planning-and-261-4c2c827f/zones/us-east1-b/instances/t2",
+    "serviceAccounts": [
+      {
+        "email": "527819690844-compute@developer.gserviceaccount.com",
+        "scopes": [
+          "https://www.googleapis.com/auth/devstorage.read_only",
+          "https://www.googleapis.com/auth/logging.write",
+          "https://www.googleapis.com/auth/monitoring.write",
+          "https://www.googleapis.com/auth/pubsub",
+          "https://www.googleapis.com/auth/service.management.readonly",
+          "https://www.googleapis.com/auth/servicecontrol",
+          "https://www.googleapis.com/auth/trace.append"
+        ]
+      }
+    ],
+    "shieldedInstanceConfig": {
+      "enableIntegrityMonitoring": true,
+      "enableSecureBoot": false,
+      "enableVtpm": true
+    },
+    "shieldedInstanceIntegrityPolicy": {
+      "updateAutoLearnPolicy": true
+    },
+    "startRestricted": false,
+    "status": "RUNNING",
+    "tags": {
+      "fingerprint": "42WmSpB8rSM="
+    },
+    "zone": "https://www.googleapis.com/compute/v1/projects/planning-and-261-4c2c827f/zones/us-east1-b"
+  },
+  {
+    "canIpForward": false,
+    "cpuPlatform": "Intel Broadwell",
+    "creationTimestamp": "2023-01-28T23:54:27.821-08:00",
+    "deletionProtection": false,
+    "disks": [
+      {
+        "architecture": "X86_64",
+        "autoDelete": true,
+        "boot": true,
+        "deviceName": "persistent-disk-0",
+        "diskSizeGb": "10",
+        "guestOsFeatures": [
+          {
+            "type": "UEFI_COMPATIBLE"
+          },
+          {
+            "type": "VIRTIO_SCSI_MULTIQUEUE"
+          },
+          {
+            "type": "GVNIC"
+          }
+        ],
+        "index": 0,
+        "interface": "SCSI",
+        "kind": "compute#attachedDisk",
+        "licenses": [
+          "https://www.googleapis.com/compute/v1/projects/debian-cloud/global/licenses/debian-11-bullseye"
+        ],
+        "mode": "READ_WRITE",
+        "source": "https://www.googleapis.com/compute/v1/projects/planning-and-261-4c2c827f/zones/us-east1-b/disks/t3",
+        "type": "PERSISTENT"
+      }
+    ],
+    "fingerprint": "y0EM57nAzbA=",
+    "id": "2832424088989571294",
+    "kind": "compute#instance",
+    "labelFingerprint": "42WmSpB8rSM=",
+    "lastStartTimestamp": "2023-01-28T23:54:32.800-08:00",
+    "machineType": "https://www.googleapis.com/compute/v1/projects/planning-and-261-4c2c827f/zones/us-east1-b/machineTypes/e2-micro",
+    "metadata": {
+      "fingerprint": "sO0jzaeiXXI=",
+      "kind": "compute#metadata"
+    },
+    "name": "t3",
+    "networkInterfaces": [
+      {
+        "accessConfigs": [
+          {
+            "kind": "compute#accessConfig",
+            "name": "external-nat",
+            "natIP": "34.148.197.133",
+            "networkTier": "PREMIUM",
+            "type": "ONE_TO_ONE_NAT"
+          }
+        ],
+        "fingerprint": "yli8fEnZQZk=",
+        "kind": "compute#networkInterface",
+        "name": "nic0",
+        "network": "https://www.googleapis.com/compute/v1/projects/planning-and-261-4c2c827f/global/networks/default",
+        "networkIP": "10.142.0.3",
+        "stackType": "IPV4_ONLY",
+        "subnetwork": "https://www.googleapis.com/compute/v1/projects/planning-and-261-4c2c827f/regions/us-east1/subnetworks/default"
+      }
+    ],
+    "scheduling": {
+      "automaticRestart": false,
+      "onHostMaintenance": "TERMINATE",
+      "preemptible": true
+    },
+    "selfLink": "https://www.googleapis.com/compute/v1/projects/planning-and-261-4c2c827f/zones/us-east1-b/instances/t3",
+    "serviceAccounts": [
+      {
+        "email": "527819690844-compute@developer.gserviceaccount.com",
+        "scopes": [
+          "https://www.googleapis.com/auth/devstorage.read_only",
+          "https://www.googleapis.com/auth/logging.write",
+          "https://www.googleapis.com/auth/monitoring.write",
+          "https://www.googleapis.com/auth/pubsub",
+          "https://www.googleapis.com/auth/service.management.readonly",
+          "https://www.googleapis.com/auth/servicecontrol",
+          "https://www.googleapis.com/auth/trace.append"
+        ]
+      }
+    ],
+    "shieldedInstanceConfig": {
+      "enableIntegrityMonitoring": true,
+      "enableSecureBoot": false,
+      "enableVtpm": true
+    },
+    "shieldedInstanceIntegrityPolicy": {
+      "updateAutoLearnPolicy": true
+    },
+    "startRestricted": false,
+    "status": "RUNNING",
+    "tags": {
+      "fingerprint": "42WmSpB8rSM="
+    },
+    "zone": "https://www.googleapis.com/compute/v1/projects/planning-and-261-4c2c827f/zones/us-east1-b"
+  }
+]

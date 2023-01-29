@@ -701,3 +701,18 @@ $ gcloud compute instances list --format=json
 ...
 ----
 
+== Create Preemptible VMs
+
+[source, bash]
+.*Create 3 preemptible VMs*
+----
+gcloud compute instances create t1 t2 t3 --zone=us-east1-b --machine-type=e2-micro --preemptible
+----
+
+[source, bash]
+.*List all VMs*
+----
+gcloud compute instances list --format=json
+----
+
+link:preemptible-vms.json[preemptible-vms.json]
