@@ -1,0 +1,121 @@
+[
+  {
+    "autoCreateSubnetworks": true,
+    "creationTimestamp": "2023-01-24T08:50:24.711-08:00",
+    "description": "Default network for the project",
+    "id": "292644613573685951",
+    "kind": "compute#network",
+    "name": "default",
+    "networkFirewallPolicyEnforcementOrder": "AFTER_CLASSIC_FIREWALL",
+    "routingConfig": {
+      "routingMode": "REGIONAL"
+    },
+    "selfLink": "https://www.googleapis.com/compute/v1/projects/qwiklabs-gcp-00-26795a3c807a/global/networks/default",
+    "selfLinkWithId": "https://www.googleapis.com/compute/v1/projects/qwiklabs-gcp-00-26795a3c807a/global/networks/292644613573685951",
+    "subnetworks": [
+      "https://www.googleapis.com/compute/v1/projects/qwiklabs-gcp-00-26795a3c807a/regions/me-west1/subnetworks/default",
+      "https://www.googleapis.com/compute/v1/projects/qwiklabs-gcp-00-26795a3c807a/regions/us-east5/subnetworks/default",
+      "https://www.googleapis.com/compute/v1/projects/qwiklabs-gcp-00-26795a3c807a/regions/us-south1/subnetworks/default",
+      "https://www.googleapis.com/compute/v1/projects/qwiklabs-gcp-00-26795a3c807a/regions/asia-northeast1/subnetworks/default",
+      "https://www.googleapis.com/compute/v1/projects/qwiklabs-gcp-00-26795a3c807a/regions/us-east7/subnetworks/default",
+      "https://www.googleapis.com/compute/v1/projects/qwiklabs-gcp-00-26795a3c807a/regions/australia-southeast1/subnetworks/default",
+      "https://www.googleapis.com/compute/v1/projects/qwiklabs-gcp-00-26795a3c807a/regions/europe-west3/subnetworks/default",
+      "https://www.googleapis.com/compute/v1/projects/qwiklabs-gcp-00-26795a3c807a/regions/us-west2/subnetworks/default",
+      "https://www.googleapis.com/compute/v1/projects/qwiklabs-gcp-00-26795a3c807a/regions/asia-east1/subnetworks/default",
+      "https://www.googleapis.com/compute/v1/projects/qwiklabs-gcp-00-26795a3c807a/regions/us-west1/subnetworks/default",
+      "https://www.googleapis.com/compute/v1/projects/qwiklabs-gcp-00-26795a3c807a/regions/europe-central2/subnetworks/default",
+      "https://www.googleapis.com/compute/v1/projects/qwiklabs-gcp-00-26795a3c807a/regions/southamerica-west1/subnetworks/default",
+      "https://www.googleapis.com/compute/v1/projects/qwiklabs-gcp-00-26795a3c807a/regions/us-west3/subnetworks/default",
+      "https://www.googleapis.com/compute/v1/projects/qwiklabs-gcp-00-26795a3c807a/regions/asia-south1/subnetworks/default",
+      "https://www.googleapis.com/compute/v1/projects/qwiklabs-gcp-00-26795a3c807a/regions/europe-west4/subnetworks/default",
+      "https://www.googleapis.com/compute/v1/projects/qwiklabs-gcp-00-26795a3c807a/regions/us-central1/subnetworks/default",
+      "https://www.googleapis.com/compute/v1/projects/qwiklabs-gcp-00-26795a3c807a/regions/europe-west1/subnetworks/default",
+      "https://www.googleapis.com/compute/v1/projects/qwiklabs-gcp-00-26795a3c807a/regions/europe-north1/subnetworks/default",
+      "https://www.googleapis.com/compute/v1/projects/qwiklabs-gcp-00-26795a3c807a/regions/us-west4/subnetworks/default",
+      "https://www.googleapis.com/compute/v1/projects/qwiklabs-gcp-00-26795a3c807a/regions/asia-southeast1/subnetworks/default",
+      "https://www.googleapis.com/compute/v1/projects/qwiklabs-gcp-00-26795a3c807a/regions/europe-west2/subnetworks/default",
+      "https://www.googleapis.com/compute/v1/projects/qwiklabs-gcp-00-26795a3c807a/regions/us-east1/subnetworks/default",
+      "https://www.googleapis.com/compute/v1/projects/qwiklabs-gcp-00-26795a3c807a/regions/us-east4/subnetworks/default"
+    ],
+    "x_gcloud_bgp_routing_mode": "REGIONAL",
+    "x_gcloud_subnet_mode": "AUTO"
+  },
+  {
+    "autoCreateSubnetworks": false,
+    "creationTimestamp": "2023-01-28T21:03:13.354-08:00",
+    "description": "",
+    "id": "988944625701503230",
+    "kind": "compute#network",
+    "mtu": 1460,
+    "name": "managementnet",
+    "networkFirewallPolicyEnforcementOrder": "AFTER_CLASSIC_FIREWALL",
+    "routingConfig": {
+      "routingMode": "REGIONAL"
+    },
+    "selfLink": "https://www.googleapis.com/compute/v1/projects/qwiklabs-gcp-00-26795a3c807a/global/networks/managementnet",
+    "selfLinkWithId": "https://www.googleapis.com/compute/v1/projects/qwiklabs-gcp-00-26795a3c807a/global/networks/988944625701503230",
+    "subnetworks": [
+      "https://www.googleapis.com/compute/v1/projects/qwiklabs-gcp-00-26795a3c807a/regions/us-central1/subnetworks/managementsubnet-us"
+    ],
+    "x_gcloud_bgp_routing_mode": "REGIONAL",
+    "x_gcloud_subnet_mode": "CUSTOM"
+  },
+  {
+    "autoCreateSubnetworks": true,
+    "creationTimestamp": "2023-01-28T16:31:13.249-08:00",
+    "id": "3445832413420716222",
+    "kind": "compute#network",
+    "name": "mynetwork",
+    "networkFirewallPolicyEnforcementOrder": "AFTER_CLASSIC_FIREWALL",
+    "routingConfig": {
+      "routingMode": "REGIONAL"
+    },
+    "selfLink": "https://www.googleapis.com/compute/v1/projects/qwiklabs-gcp-00-26795a3c807a/global/networks/mynetwork",
+    "selfLinkWithId": "https://www.googleapis.com/compute/v1/projects/qwiklabs-gcp-00-26795a3c807a/global/networks/3445832413420716222",
+    "subnetworks": [
+      "https://www.googleapis.com/compute/v1/projects/qwiklabs-gcp-00-26795a3c807a/regions/southamerica-west1/subnetworks/mynetwork",
+      "https://www.googleapis.com/compute/v1/projects/qwiklabs-gcp-00-26795a3c807a/regions/europe-west4/subnetworks/mynetwork",
+      "https://www.googleapis.com/compute/v1/projects/qwiklabs-gcp-00-26795a3c807a/regions/asia-east1/subnetworks/mynetwork",
+      "https://www.googleapis.com/compute/v1/projects/qwiklabs-gcp-00-26795a3c807a/regions/us-east1/subnetworks/mynetwork",
+      "https://www.googleapis.com/compute/v1/projects/qwiklabs-gcp-00-26795a3c807a/regions/us-east4/subnetworks/mynetwork",
+      "https://www.googleapis.com/compute/v1/projects/qwiklabs-gcp-00-26795a3c807a/regions/us-west1/subnetworks/mynetwork",
+      "https://www.googleapis.com/compute/v1/projects/qwiklabs-gcp-00-26795a3c807a/regions/us-central1/subnetworks/mynetwork",
+      "https://www.googleapis.com/compute/v1/projects/qwiklabs-gcp-00-26795a3c807a/regions/europe-west2/subnetworks/mynetwork",
+      "https://www.googleapis.com/compute/v1/projects/qwiklabs-gcp-00-26795a3c807a/regions/asia-northeast1/subnetworks/mynetwork",
+      "https://www.googleapis.com/compute/v1/projects/qwiklabs-gcp-00-26795a3c807a/regions/asia-southeast1/subnetworks/mynetwork",
+      "https://www.googleapis.com/compute/v1/projects/qwiklabs-gcp-00-26795a3c807a/regions/me-west1/subnetworks/mynetwork",
+      "https://www.googleapis.com/compute/v1/projects/qwiklabs-gcp-00-26795a3c807a/regions/australia-southeast1/subnetworks/mynetwork",
+      "https://www.googleapis.com/compute/v1/projects/qwiklabs-gcp-00-26795a3c807a/regions/us-south1/subnetworks/mynetwork",
+      "https://www.googleapis.com/compute/v1/projects/qwiklabs-gcp-00-26795a3c807a/regions/asia-south1/subnetworks/mynetwork",
+      "https://www.googleapis.com/compute/v1/projects/qwiklabs-gcp-00-26795a3c807a/regions/us-west2/subnetworks/mynetwork",
+      "https://www.googleapis.com/compute/v1/projects/qwiklabs-gcp-00-26795a3c807a/regions/us-west4/subnetworks/mynetwork",
+      "https://www.googleapis.com/compute/v1/projects/qwiklabs-gcp-00-26795a3c807a/regions/us-east5/subnetworks/mynetwork",
+      "https://www.googleapis.com/compute/v1/projects/qwiklabs-gcp-00-26795a3c807a/regions/europe-west1/subnetworks/mynetwork",
+      "https://www.googleapis.com/compute/v1/projects/qwiklabs-gcp-00-26795a3c807a/regions/europe-north1/subnetworks/mynetwork",
+      "https://www.googleapis.com/compute/v1/projects/qwiklabs-gcp-00-26795a3c807a/regions/europe-west3/subnetworks/mynetwork",
+      "https://www.googleapis.com/compute/v1/projects/qwiklabs-gcp-00-26795a3c807a/regions/europe-central2/subnetworks/mynetwork",
+      "https://www.googleapis.com/compute/v1/projects/qwiklabs-gcp-00-26795a3c807a/regions/us-west3/subnetworks/mynetwork"
+    ],
+    "x_gcloud_bgp_routing_mode": "REGIONAL",
+    "x_gcloud_subnet_mode": "AUTO"
+  },
+  {
+    "autoCreateSubnetworks": false,
+    "creationTimestamp": "2023-01-28T21:03:56.617-08:00",
+    "id": "447221886715707603",
+    "kind": "compute#network",
+    "name": "privatenet",
+    "networkFirewallPolicyEnforcementOrder": "AFTER_CLASSIC_FIREWALL",
+    "routingConfig": {
+      "routingMode": "REGIONAL"
+    },
+    "selfLink": "https://www.googleapis.com/compute/v1/projects/qwiklabs-gcp-00-26795a3c807a/global/networks/privatenet",
+    "selfLinkWithId": "https://www.googleapis.com/compute/v1/projects/qwiklabs-gcp-00-26795a3c807a/global/networks/447221886715707603",
+    "subnetworks": [
+      "https://www.googleapis.com/compute/v1/projects/qwiklabs-gcp-00-26795a3c807a/regions/us-central1/subnetworks/privatesubnet-us",
+      "https://www.googleapis.com/compute/v1/projects/qwiklabs-gcp-00-26795a3c807a/regions/europe-west3/subnetworks/privatesubnet-eu"
+    ],
+    "x_gcloud_bgp_routing_mode": "REGIONAL",
+    "x_gcloud_subnet_mode": "CUSTOM"
+  }
+]

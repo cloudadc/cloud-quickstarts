@@ -1001,4 +1001,64 @@ internal
         minimum = 5
 ----
 
+== VM instance with multiple network interfaces
 
+[source, bash]
+.*Create Instances*
+----
+gcloud compute instances create vm-appliance --zone=us-central1-c --machine-type=n1-standard-4 --network-interface=network-tier=PREMIUM,subnet=privatesubnet-us --network-interface=network-tier=PREMIUM,subnet=managementsubnet-us --network-interface=network-tier=PREMIUM,subnet=mynetwork --metadata=enable-oslogin=true --maintenance-policy=MIGRATE --provisioning-model=STANDARD --create-disk=auto-delete=yes,boot=yes,device-name=vm-appliance,image=projects/debian-cloud/global/images/debian-11-bullseye-v20221206,mode=rw,size=10,type=pd-balanced --no-shielded-secure-boot --shielded-vtpm --shielded-integrity-monitoring --reservation-affinity=any
+----
+
+[source, bash]
+.*Verify network interfaces*
+----
+$ sudo ifconfig
+ens4: flags=4163<UP,BROADCAST,RUNNING,MULTICAST>  mtu 1460
+        inet 172.16.0.3  netmask 255.255.255.255  broadcast 172.16.0.3
+        inet6 fe80::4001:acff:fe10:3  prefixlen 64  scopeid 0x20<link>
+        ether 42:01:ac:10:00:03  txqueuelen 1000  (Ethernet)
+        RX packets 508  bytes 124182 (121.2 KiB)
+        RX errors 0  dropped 0  overruns 0  frame 0
+        TX packets 460  bytes 51961 (50.7 KiB)
+        TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
+
+ens5: flags=4163<UP,BROADCAST,RUNNING,MULTICAST>  mtu 1460
+        inet 10.130.0.3  netmask 255.255.255.255  broadcast 10.130.0.3
+        inet6 fe80::4001:aff:fe82:3  prefixlen 64  scopeid 0x20<link>
+        ether 42:01:0a:82:00:03  txqueuelen 1000  (Ethernet)
+        RX packets 5  bytes 2362 (2.3 KiB)
+        RX errors 0  dropped 0  overruns 0  frame 0
+        TX packets 15  bytes 2234 (2.1 KiB)
+        TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
+
+ens6: flags=4163<UP,BROADCAST,RUNNING,MULTICAST>  mtu 1460
+        inet 10.128.0.3  netmask 255.255.255.255  broadcast 10.128.0.3
+        inet6 fe80::4001:aff:fe80:3  prefixlen 64  scopeid 0x20<link>
+        ether 42:01:0a:80:00:03  txqueuelen 1000  (Ethernet)
+        RX packets 5  bytes 2374 (2.3 KiB)
+        RX errors 0  dropped 0  overruns 0  frame 0
+        TX packets 15  bytes 2234 (2.1 KiB)
+        TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
+
+lo: flags=73<UP,LOOPBACK,RUNNING>  mtu 65536
+        inet 127.0.0.1  netmask 255.0.0.0
+        inet6 ::1  prefixlen 128  scopeid 0x10<host>
+        loop  txqueuelen 1000  (Local Loopback)
+        RX packets 36  bytes 3060 (2.9 KiB)
+        RX errors 0  dropped 0  overruns 0  frame 0
+        TX packets 36  bytes 3060 (2.9 KiB)
+        TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
+----
+
+[source, bash]
+.*Route Tables*
+----
+$ ip route
+default via 172.16.0.1 dev ens4 
+10.128.0.0/20 via 10.128.0.1 dev ens6 
+10.128.0.1 dev ens6 scope link 
+10.130.0.0/20 via 10.130.0.1 dev ens5 
+10.130.0.1 dev ens5 scope link 
+172.16.0.0/24 via 172.16.0.1 dev ens4 
+172.16.0.1 dev ens4 scope link 
+----
