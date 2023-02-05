@@ -1,0 +1,39 @@
+bindings:
+- members:
+  - user:cloud_user_p_c80d595b@linuxacademygclabs.com
+  role: organizations/413785091449/roles/StudentLabAdmin1
+- members:
+  - user:cloud_user_p_c80d595b@linuxacademygclabs.com
+  role: organizations/413785091449/roles/StudentLabAdmin2
+- members:
+  - user:cloud_user_p_c80d595b@linuxacademygclabs.com
+  role: organizations/413785091449/roles/StudentLabAdmin3
+- members:
+  - user:cloud_user_p_695ad5c0@linuxacademygclabs.com
+  role: roles/compute.networkAdmin
+- members:
+  - user:cloud_user_p_695ad5c0@linuxacademygclabs.com
+  role: projects/create-and-m-245-9afccd16/roles/customFirewallAdmin
+- members:
+  - serviceAccount:service-864299626572@compute-system.iam.gserviceaccount.com
+  role: roles/compute.serviceAgent
+- members:
+  - serviceAccount:864299626572-compute@developer.gserviceaccount.com
+  - serviceAccount:864299626572@cloudservices.gserviceaccount.com
+  role: roles/editor
+- members:
+  - user:cloud_user_p_c80d595b@linuxacademygclabs.com
+  role: roles/iam.serviceAccountUser
+- members:
+  - serviceAccount:834712824987@cloudservices.gserviceaccount.com
+  - serviceAccount:864299626572@cloudservices.gserviceaccount.com
+  - user:cloud_user_p_c80d595b@linuxacademygclabs.com
+  role: roles/owner
+- members:
+  - serviceAccount:service-864299626572@gcp-sa-pubsub.iam.gserviceaccount.com
+  role: roles/pubsub.serviceAgent
+- members:
+  - user:cloud_user_p_c80d595b@linuxacademygclabs.com
+  role: roles/viewer
+etag: BwXz7sfv_r4=
+version: 1

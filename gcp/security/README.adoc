@@ -1,7 +1,7 @@
 = Security
 :toc: manual
 
-== Resource hierarchy
+== IAM Objects
 
 === Projects
 
@@ -23,8 +23,6 @@ projectNumber: '314951011236'
 ----
 
 * link:files/projects.yaml[projects.yaml]
-
-== IAM Objects
 
 === Principals(Members)
 
@@ -279,4 +277,130 @@ bindings:
   role: roles/viewer
 etag: BwXz63gnNKM=
 version: 1
+----
+
+== Create Custom Role
+
+=== Add IAM Member with Compute Network Admin Role
+
+[source, bash]
+----
+$ gcloud projects add-iam-policy-binding $PROJECT_ID --member user:cloud_user_p_695ad5c0@linuxacademygclabs.com --role roles/compute.networkAdmin
+Updated IAM policy for project [create-and-m-245-9afccd16].
+bindings:
+- members:
+  - user:cloud_user_p_c80d595b@linuxacademygclabs.com
+  role: organizations/413785091449/roles/StudentLabAdmin1
+- members:
+  - user:cloud_user_p_c80d595b@linuxacademygclabs.com
+  role: organizations/413785091449/roles/StudentLabAdmin2
+- members:
+  - user:cloud_user_p_c80d595b@linuxacademygclabs.com
+  role: organizations/413785091449/roles/StudentLabAdmin3
+- members:
+  - user:cloud_user_p_695ad5c0@linuxacademygclabs.com
+  role: roles/compute.networkAdmin
+- members:
+  - serviceAccount:service-864299626572@compute-system.iam.gserviceaccount.com
+  role: roles/compute.serviceAgent
+- members:
+  - serviceAccount:864299626572-compute@developer.gserviceaccount.com
+  - serviceAccount:864299626572@cloudservices.gserviceaccount.com
+  role: roles/editor
+- members:
+  - user:cloud_user_p_c80d595b@linuxacademygclabs.com
+  role: roles/iam.serviceAccountUser
+- members:
+  - serviceAccount:834712824987@cloudservices.gserviceaccount.com
+  - serviceAccount:864299626572@cloudservices.gserviceaccount.com
+  - user:cloud_user_p_c80d595b@linuxacademygclabs.com
+  role: roles/owner
+- members:
+  - serviceAccount:service-864299626572@gcp-sa-pubsub.iam.gserviceaccount.com
+  role: roles/pubsub.serviceAgent
+- members:
+  - user:cloud_user_p_c80d595b@linuxacademygclabs.com
+  role: roles/viewer
+etag: BwXz7sfv_r4=
+version: 1
+----
+
+=== Create a Custom IAM Role
+
+[source, bash]
+.*1. Prepare YAML file*
+----
+$ cat firewall.admin.yaml
+title: Firewall Admin
+description: role-description
+stage: Beta
+includedPermissions:
+- compute.firewalls.create
+- compute.firewalls.delete
+- compute.firewalls.get
+- compute.firewalls.list
+- compute.firewalls.update
+----
+
+[source, bash]
+.*2. Create Custom Role*
+----
+gcloud iam roles create customFirewallAdmin --project=$PROJECT_ID --file=firewall.admin.yaml
+----
+
+[source, bash]
+.*3. Describe Custom Role*
+----
+$ gcloud iam roles describe customFirewallAdmin --project=$PROJECT_ID
+description: role-description
+etag: BwXz7v5ReRY=
+includedPermissions:
+- compute.firewalls.create
+- compute.firewalls.delete
+- compute.firewalls.get
+- compute.firewalls.list
+- compute.firewalls.update
+name: projects/create-and-m-245-9afccd16/roles/customFirewallAdmin
+stage: BETA
+title: Firewall Admin
+----
+
+=== Assign the Custom Role
+
+In this section will add `customFirewallAdmin` created in above steps to a existed members
+
+[source, bash]
+.*1. Get the current Policy*
+----
+gcloud projects get-iam-policy $PROJECT_ID --format yaml > policies.yaml
+----
+
+[source, bash]
+.*2. Modify policies.yaml, add the following lines*
+----
+- members:
+  - user:cloud_user_p_695ad5c0@linuxacademygclabs.com
+  role: projects/$PROJECT_ID/roles/customFirewallAdmin
+----
+
+link:files/policies.yaml[Completed policies yaml]
+
+[source, bash]
+.*3. Set IAM Policies*
+----
+gcloud projects set-iam-policy $PROJECT_ID policies.yaml
+----
+
+== TODO
+
+[source, bash]
+.**
+----
+
+----
+
+[source, bash]
+.**
+----
+
 ----
