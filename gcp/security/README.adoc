@@ -46,7 +46,7 @@ Use the `gcloud iam roles list` can list all roles. Refer to link:iam/README.ado
 * link:files/billing.user.yaml[billing.user.yaml]
 * link:files/billing.viewer.yaml[billing.viewer.yaml]
 
-.*Role and binded permissions*
+.*Billing Role and binded permissions*
 [cols="2,5a"]
 |===
 |Role |Assigned Permissions
@@ -242,6 +242,73 @@ recommender.usageCommitmentRecommendations.list
 ----
 |===
 
+.*Billing Role and binded permissions*
+[cols="2,5a"]
+|===
+|Role |Assigned Permissions
+
+|Service Account User
+|
+
+----
+iam.serviceAccounts.actAs
+iam.serviceAccounts.get
+iam.serviceAccounts.list
+resourcemanager.projects.get
+resourcemanager.projects.list
+----
+
+|Service Account Admin
+|
+
+----
+iam.serviceAccounts.create
+iam.serviceAccounts.delete
+iam.serviceAccounts.disable
+iam.serviceAccounts.enable
+iam.serviceAccounts.get
+iam.serviceAccounts.getIamPolicy
+iam.serviceAccounts.list
+iam.serviceAccounts.setIamPolicy
+iam.serviceAccounts.undelete
+iam.serviceAccounts.update
+resourcemanager.projects.get
+resourcemanager.projects.list
+----
+
+|Service Account Key Admin
+|
+
+----
+iam.serviceAccountKeys.create
+iam.serviceAccountKeys.delete
+iam.serviceAccountKeys.disable
+iam.serviceAccountKeys.enable
+iam.serviceAccountKeys.get
+iam.serviceAccountKeys.list
+iam.serviceAccounts.get
+iam.serviceAccounts.list
+resourcemanager.projects.get
+resourcemanager.projects.list
+----
+
+|Service Account Token Creator
+|
+
+----
+iam.serviceAccounts.get
+iam.serviceAccounts.getAccessToken
+iam.serviceAccounts.getOpenIdToken
+iam.serviceAccounts.implicitDelegation
+iam.serviceAccounts.list
+iam.serviceAccounts.signBlob
+iam.serviceAccounts.signJwt
+resourcemanager.projects.get
+resourcemanager.projects.list
+----
+
+|===
+
 === Policy
 
 [source, bash]
@@ -391,16 +458,3 @@ link:files/policies.yaml[Completed policies yaml]
 gcloud projects set-iam-policy $PROJECT_ID policies.yaml
 ----
 
-== TODO
-
-[source, bash]
-.**
-----
-
-----
-
-[source, bash]
-.**
-----
-
-----
