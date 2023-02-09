@@ -1,0 +1,18 @@
+---
+checkIntervalSec: 10
+creationTimestamp: '2023-02-08T16:31:25.215-08:00'
+description: ''
+healthyThreshold: 2
+id: '1532855787960500274'
+kind: compute#healthCheck
+logConfig:
+  enable: false
+name: acloud-hc
+selfLink: https://www.googleapis.com/compute/v1/projects/launching-a--304-0cd65c75/global/healthChecks/acloud-hc
+tcpHealthCheck:
+  port: 22
+  portSpecification: USE_FIXED_PORT
+  proxyHeader: NONE
+timeoutSec: 5
+type: TCP
+unhealthyThreshold: 2

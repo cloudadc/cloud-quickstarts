@@ -1,0 +1,256 @@
+---
+canIpForward: false
+cpuPlatform: Intel Broadwell
+creationTimestamp: '2023-02-08T16:47:21.157-08:00'
+deletionProtection: false
+disks:
+- architecture: X86_64
+  autoDelete: true
+  boot: true
+  deviceName: instance-template-1
+  diskSizeGb: '10'
+  guestOsFeatures:
+  - type: UEFI_COMPATIBLE
+  - type: VIRTIO_SCSI_MULTIQUEUE
+  - type: GVNIC
+  index: 0
+  interface: SCSI
+  kind: compute#attachedDisk
+  licenses:
+  - https://www.googleapis.com/compute/v1/projects/debian-cloud/global/licenses/debian-11-bullseye
+  mode: READ_WRITE
+  source: https://www.googleapis.com/compute/v1/projects/launching-a--304-0cd65c75/zones/us-central1-a/disks/instance-group-1-l5fw
+  type: PERSISTENT
+fingerprint: uzjzwS7-igQ=
+id: '4091207522303212663'
+kind: compute#instance
+labelFingerprint: 42WmSpB8rSM=
+lastStartTimestamp: '2023-02-08T16:47:29.783-08:00'
+machineType: https://www.googleapis.com/compute/v1/projects/launching-a--304-0cd65c75/zones/us-central1-a/machineTypes/e2-micro
+metadata:
+  fingerprint: BVhBkf-ZUvM=
+  items:
+  - key: instance-template
+    value: projects/225133828431/global/instanceTemplates/instance-template-1
+  - key: created-by
+    value: projects/225133828431/zones/us-central1-a/instanceGroupManagers/instance-group-1
+  kind: compute#metadata
+name: instance-group-1-l5fw
+networkInterfaces:
+- accessConfigs:
+  - kind: compute#accessConfig
+    name: external-nat
+    natIP: 34.123.206.79
+    networkTier: PREMIUM
+    type: ONE_TO_ONE_NAT
+  fingerprint: rF9mnYi9-6w=
+  kind: compute#networkInterface
+  name: nic0
+  network: https://www.googleapis.com/compute/v1/projects/launching-a--304-0cd65c75/global/networks/default
+  networkIP: 10.128.0.4
+  stackType: IPV4_ONLY
+  subnetwork: https://www.googleapis.com/compute/v1/projects/launching-a--304-0cd65c75/regions/us-central1/subnetworks/default
+reservationAffinity:
+  consumeReservationType: ANY_RESERVATION
+scheduling:
+  automaticRestart: true
+  onHostMaintenance: MIGRATE
+  preemptible: false
+  provisioningModel: STANDARD
+selfLink: https://www.googleapis.com/compute/v1/projects/launching-a--304-0cd65c75/zones/us-central1-a/instances/instance-group-1-l5fw
+serviceAccounts:
+- email: 225133828431-compute@developer.gserviceaccount.com
+  scopes:
+  - https://www.googleapis.com/auth/devstorage.read_only
+  - https://www.googleapis.com/auth/logging.write
+  - https://www.googleapis.com/auth/monitoring.write
+  - https://www.googleapis.com/auth/pubsub
+  - https://www.googleapis.com/auth/service.management.readonly
+  - https://www.googleapis.com/auth/servicecontrol
+  - https://www.googleapis.com/auth/trace.append
+shieldedInstanceConfig:
+  enableIntegrityMonitoring: true
+  enableSecureBoot: false
+  enableVtpm: true
+shieldedInstanceIntegrityPolicy:
+  updateAutoLearnPolicy: true
+startRestricted: false
+status: STOPPING
+tags:
+  fingerprint: 6smc4R4d39I=
+  items:
+  - http-server
+  - https-server
+zone: https://www.googleapis.com/compute/v1/projects/launching-a--304-0cd65c75/zones/us-central1-a
+---
+canIpForward: false
+cpuPlatform: Intel Broadwell
+creationTimestamp: '2023-02-08T16:40:19.315-08:00'
+deletionProtection: false
+disks:
+- architecture: X86_64
+  autoDelete: true
+  boot: true
+  deviceName: instance-template-1
+  diskSizeGb: '10'
+  guestOsFeatures:
+  - type: UEFI_COMPATIBLE
+  - type: VIRTIO_SCSI_MULTIQUEUE
+  - type: GVNIC
+  index: 0
+  interface: SCSI
+  kind: compute#attachedDisk
+  licenses:
+  - https://www.googleapis.com/compute/v1/projects/debian-cloud/global/licenses/debian-11-bullseye
+  mode: READ_WRITE
+  source: https://www.googleapis.com/compute/v1/projects/launching-a--304-0cd65c75/zones/us-central1-a/disks/instance-group-1-nzv5
+  type: PERSISTENT
+fingerprint: ttpgc-njijE=
+id: '1554260710962888221'
+kind: compute#instance
+labelFingerprint: 42WmSpB8rSM=
+lastStartTimestamp: '2023-02-08T16:40:26.487-08:00'
+machineType: https://www.googleapis.com/compute/v1/projects/launching-a--304-0cd65c75/zones/us-central1-a/machineTypes/e2-micro
+metadata:
+  fingerprint: UuIBaiNAG-Q=
+  items:
+  - key: instance-template
+    value: projects/225133828431/global/instanceTemplates/instance-template-1
+  - key: created-by
+    value: projects/225133828431/zones/us-central1-a/instanceGroupManagers/instance-group-1
+  - key: ssh-keys
+    value: |-
+      cloud_user_p_dc33c51b:ecdsa-sha2-nistp256 AAAAE2VjZHNhLXNoYTItbmlzdHAyNTYAAAAIbmlzdHAyNTYAAABBBH28wkBS3wtsiQgoAMVN+zHTs1/2z0jJX0p+5xfnt86ckwaG/2HxVdIjhcB9d6lFFnJvskVG5cuFss4sk/rThZc= google-ssh {"userName":"cloud_user_p_dc33c51b@linuxacademygclabs.com","expireOn":"2023-02-09T00:46:30+0000"}
+      cloud_user_p_dc33c51b:ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCb76+vdufx2901Mnq4o3+YwGk/YZZMgXB3ZU3KrRZNxI8NGAKx46A1jsl2SUTtspOH+ohzlwidmLT8+vJwZE6QTJwVrx3nzqMXeleu6AzwW2deqtIaPP6OGRbHC5RdOhYFu7ui7nVk6vwwJsPSGGrkqoRepTAkpXQC0Eifr7vNoih3m0a9jRvbUYOc7hCAPXqlhI/m0wQKN1cOTncbiheD2Z7KfGncECM9SYlstVtKEp5f98qsSRuSEejIJcD2XUIAxfoMjMPgz48r0cYv51hkXa+1AVUxBimsY0jn8syLgfJWENp6bPB7SqVDU7rn/8s601FJNTV8Thx8MOEx9GrB google-ssh {"userName":"cloud_user_p_dc33c51b@linuxacademygclabs.com","expireOn":"2023-02-09T00:46:38+0000"}
+  kind: compute#metadata
+name: instance-group-1-nzv5
+networkInterfaces:
+- accessConfigs:
+  - kind: compute#accessConfig
+    name: external-nat
+    natIP: 34.29.196.177
+    networkTier: PREMIUM
+    type: ONE_TO_ONE_NAT
+  fingerprint: 9S8vydeWPb8=
+  kind: compute#networkInterface
+  name: nic0
+  network: https://www.googleapis.com/compute/v1/projects/launching-a--304-0cd65c75/global/networks/default
+  networkIP: 10.128.0.2
+  stackType: IPV4_ONLY
+  subnetwork: https://www.googleapis.com/compute/v1/projects/launching-a--304-0cd65c75/regions/us-central1/subnetworks/default
+reservationAffinity:
+  consumeReservationType: ANY_RESERVATION
+scheduling:
+  automaticRestart: true
+  onHostMaintenance: MIGRATE
+  preemptible: false
+  provisioningModel: STANDARD
+selfLink: https://www.googleapis.com/compute/v1/projects/launching-a--304-0cd65c75/zones/us-central1-a/instances/instance-group-1-nzv5
+serviceAccounts:
+- email: 225133828431-compute@developer.gserviceaccount.com
+  scopes:
+  - https://www.googleapis.com/auth/devstorage.read_only
+  - https://www.googleapis.com/auth/logging.write
+  - https://www.googleapis.com/auth/monitoring.write
+  - https://www.googleapis.com/auth/pubsub
+  - https://www.googleapis.com/auth/service.management.readonly
+  - https://www.googleapis.com/auth/servicecontrol
+  - https://www.googleapis.com/auth/trace.append
+shieldedInstanceConfig:
+  enableIntegrityMonitoring: true
+  enableSecureBoot: false
+  enableVtpm: true
+shieldedInstanceIntegrityPolicy:
+  updateAutoLearnPolicy: true
+startRestricted: false
+status: RUNNING
+tags:
+  fingerprint: 6smc4R4d39I=
+  items:
+  - http-server
+  - https-server
+zone: https://www.googleapis.com/compute/v1/projects/launching-a--304-0cd65c75/zones/us-central1-a
+---
+canIpForward: false
+cpuPlatform: Intel Broadwell
+creationTimestamp: '2023-02-08T16:47:21.153-08:00'
+deletionProtection: false
+disks:
+- architecture: X86_64
+  autoDelete: true
+  boot: true
+  deviceName: instance-template-1
+  diskSizeGb: '10'
+  guestOsFeatures:
+  - type: UEFI_COMPATIBLE
+  - type: VIRTIO_SCSI_MULTIQUEUE
+  - type: GVNIC
+  index: 0
+  interface: SCSI
+  kind: compute#attachedDisk
+  licenses:
+  - https://www.googleapis.com/compute/v1/projects/debian-cloud/global/licenses/debian-11-bullseye
+  mode: READ_WRITE
+  source: https://www.googleapis.com/compute/v1/projects/launching-a--304-0cd65c75/zones/us-central1-a/disks/instance-group-1-zjqf
+  type: PERSISTENT
+fingerprint: 5RtKpaAw5xE=
+id: '4847585575622540407'
+kind: compute#instance
+labelFingerprint: 42WmSpB8rSM=
+lastStartTimestamp: '2023-02-08T16:47:27.743-08:00'
+machineType: https://www.googleapis.com/compute/v1/projects/launching-a--304-0cd65c75/zones/us-central1-a/machineTypes/e2-micro
+metadata:
+  fingerprint: BVhBkf-ZUvM=
+  items:
+  - key: instance-template
+    value: projects/225133828431/global/instanceTemplates/instance-template-1
+  - key: created-by
+    value: projects/225133828431/zones/us-central1-a/instanceGroupManagers/instance-group-1
+  kind: compute#metadata
+name: instance-group-1-zjqf
+networkInterfaces:
+- accessConfigs:
+  - kind: compute#accessConfig
+    name: external-nat
+    natIP: 34.173.97.139
+    networkTier: PREMIUM
+    type: ONE_TO_ONE_NAT
+  fingerprint: Mce8G_-7Ujw=
+  kind: compute#networkInterface
+  name: nic0
+  network: https://www.googleapis.com/compute/v1/projects/launching-a--304-0cd65c75/global/networks/default
+  networkIP: 10.128.0.3
+  stackType: IPV4_ONLY
+  subnetwork: https://www.googleapis.com/compute/v1/projects/launching-a--304-0cd65c75/regions/us-central1/subnetworks/default
+reservationAffinity:
+  consumeReservationType: ANY_RESERVATION
+scheduling:
+  automaticRestart: true
+  onHostMaintenance: MIGRATE
+  preemptible: false
+  provisioningModel: STANDARD
+selfLink: https://www.googleapis.com/compute/v1/projects/launching-a--304-0cd65c75/zones/us-central1-a/instances/instance-group-1-zjqf
+serviceAccounts:
+- email: 225133828431-compute@developer.gserviceaccount.com
+  scopes:
+  - https://www.googleapis.com/auth/devstorage.read_only
+  - https://www.googleapis.com/auth/logging.write
+  - https://www.googleapis.com/auth/monitoring.write
+  - https://www.googleapis.com/auth/pubsub
+  - https://www.googleapis.com/auth/service.management.readonly
+  - https://www.googleapis.com/auth/servicecontrol
+  - https://www.googleapis.com/auth/trace.append
+shieldedInstanceConfig:
+  enableIntegrityMonitoring: true
+  enableSecureBoot: false
+  enableVtpm: true
+shieldedInstanceIntegrityPolicy:
+  updateAutoLearnPolicy: true
+startRestricted: false
+status: RUNNING
+tags:
+  fingerprint: 6smc4R4d39I=
+  items:
+  - http-server
+  - https-server
+zone: https://www.googleapis.com/compute/v1/projects/launching-a--304-0cd65c75/zones/us-central1-a
