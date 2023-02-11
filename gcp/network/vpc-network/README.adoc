@@ -1062,3 +1062,35 @@ default via 172.16.0.1 dev ens4
 172.16.0.0/24 via 172.16.0.1 dev ens4 
 172.16.0.1 dev ens4 scope link 
 ----
+
+== Custom Mode VPC Network
+
+[source, bash]
+.*Create VPC*
+----
+gcloud compute networks create custom-vpc --subnet-mode=custom --mtu=1460 --bgp-routing-mode=regional
+----
+
+[source, bash]
+.*Create Subnet A*
+----
+gcloud compute networks subnets create subnet-a --range=10.0.1.0/24 --stack-type=IPV4_ONLY --network=custom-vpc --region=us-central1
+----
+
+[source, bash]
+.*Create Subnet B*
+----
+gcloud compute networks subnets create subnet-b --range=10.0.2.0/24 --stack-type=IPV4_ONLY --network=custom-vpc --region=us-east1
+---- 
+
+[source, bash]
+.*Create Firewall*
+----
+gcloud compute firewall-rules create allow-ssh --direction=INGRESS --priority=1000 --network=custom-vpc --action=ALLOW --rules=tcp:22 --source-ranges=0.0.0.0/0
+----
+
+[source, bash]
+.*Create VM instance to use the network*
+----
+gcloud compute instances create instance-1 --zone=us-central1-c --machine-type=e2-micro --network-interface=subnet=subnet-a,no-address --maintenance-policy=MIGRATE --provisioning-model=STANDARD --create-disk=auto-delete=yes,boot=yes,device-name=instance-1,image=projects/debian-cloud/global/images/debian-11-bullseye-v20230206,mode=rw,size=10,type=pd-balanced  
+----
