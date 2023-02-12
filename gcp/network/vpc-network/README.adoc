@@ -1065,32 +1065,293 @@ default via 172.16.0.1 dev ens4
 
 == Custom Mode VPC Network
 
+=== create subnet
+
 [source, bash]
 .*Create VPC*
 ----
-gcloud compute networks create custom-vpc --subnet-mode=custom --mtu=1460 --bgp-routing-mode=regional
+gcloud compute networks create custom-network --subnet-mode=custom
 ----
 
 [source, bash]
 .*Create Subnet A*
 ----
-gcloud compute networks subnets create subnet-a --range=10.0.1.0/24 --stack-type=IPV4_ONLY --network=custom-vpc --region=us-central1
+gcloud compute networks subnets create subnet-a --network=custom-network --region=us-central1 --range=10.0.1.0/24
 ----
 
 [source, bash]
 .*Create Subnet B*
 ----
-gcloud compute networks subnets create subnet-b --range=10.0.2.0/24 --stack-type=IPV4_ONLY --network=custom-vpc --region=us-east1
+gcloud compute networks subnets create subnet-b --network=custom-network --region=europe-west1 --range=10.0.2.0/24
 ---- 
+
+[source, bash]
+.*View the network*
+----
+$ gcloud compute networks list --format=yaml
+---
+autoCreateSubnetworks: false
+creationTimestamp: '2023-02-11T16:39:10.886-08:00'
+id: '8956849635478309825'
+kind: compute#network
+name: custom-network
+networkFirewallPolicyEnforcementOrder: AFTER_CLASSIC_FIREWALL
+routingConfig:
+  routingMode: REGIONAL
+selfLink: https://www.googleapis.com/compute/v1/projects/build-a-cust-83-4aabe271/global/networks/custom-network
+selfLinkWithId: https://www.googleapis.com/compute/v1/projects/build-a-cust-83-4aabe271/global/networks/8956849635478309825
+subnetworks:
+- https://www.googleapis.com/compute/v1/projects/build-a-cust-83-4aabe271/regions/europe-west1/subnetworks/subnet-b
+- https://www.googleapis.com/compute/v1/projects/build-a-cust-83-4aabe271/regions/us-central1/subnetworks/subnet-a
+x_gcloud_bgp_routing_mode: REGIONAL
+x_gcloud_subnet_mode: CUSTOM
+----
+
+[source, bash]
+.*View the subnets*
+----
+$ gcloud compute networks subnets list --network=custom-network --format=yaml
+---
+creationTimestamp: '2023-02-11T16:41:54.891-08:00'
+fingerprint: 0hsKms7xsk4=
+gatewayAddress: 10.0.1.1
+id: '4111491110948670269'
+ipCidrRange: 10.0.1.0/24
+kind: compute#subnetwork
+name: subnet-a
+network: https://www.googleapis.com/compute/v1/projects/build-a-cust-83-4aabe271/global/networks/custom-network
+privateIpGoogleAccess: false
+privateIpv6GoogleAccess: DISABLE_GOOGLE_ACCESS
+purpose: PRIVATE
+region: https://www.googleapis.com/compute/v1/projects/build-a-cust-83-4aabe271/regions/us-central1
+selfLink: https://www.googleapis.com/compute/v1/projects/build-a-cust-83-4aabe271/regions/us-central1/subnetworks/subnet-a
+stackType: IPV4_ONLY
+---
+creationTimestamp: '2023-02-11T16:43:32.888-08:00'
+fingerprint: qNGQcOdB0p0=
+gatewayAddress: 10.0.2.1
+id: '808864107335092443'
+ipCidrRange: 10.0.2.0/24
+kind: compute#subnetwork
+name: subnet-b
+network: https://www.googleapis.com/compute/v1/projects/build-a-cust-83-4aabe271/global/networks/custom-network
+privateIpGoogleAccess: false
+privateIpv6GoogleAccess: DISABLE_GOOGLE_ACCESS
+purpose: PRIVATE
+region: https://www.googleapis.com/compute/v1/projects/build-a-cust-83-4aabe271/regions/europe-west1
+selfLink: https://www.googleapis.com/compute/v1/projects/build-a-cust-83-4aabe271/regions/europe-west1/subnetworks/subnet-b
+stackType: IPV4_ONLY
+----
+
+=== create firewall
 
 [source, bash]
 .*Create Firewall*
 ----
-gcloud compute firewall-rules create allow-ssh --direction=INGRESS --priority=1000 --network=custom-vpc --action=ALLOW --rules=tcp:22 --source-ranges=0.0.0.0/0
+gcloud compute firewall-rules create allow-ssh-icmp --allow=tcp:22,icmp --network=custom-network
 ----
+
+[source, bash]
+.*View firewall*
+----
+$ gcloud compute firewall-rules list --format=yaml
+---
+allowed:
+- IPProtocol: tcp
+  ports:
+  - '22'
+- IPProtocol: icmp
+creationTimestamp: '2023-02-11T16:50:45.520-08:00'
+description: ''
+direction: INGRESS
+disabled: false
+id: '1249548788654508298'
+kind: compute#firewall
+logConfig:
+  enable: false
+name: allow-ssh-icmp
+network: https://www.googleapis.com/compute/v1/projects/build-a-cust-83-4aabe271/global/networks/custom-network
+priority: 1000
+selfLink: https://www.googleapis.com/compute/v1/projects/build-a-cust-83-4aabe271/global/firewalls/allow-ssh-icmp
+sourceRanges:
+- 0.0.0.0/0
+----
+
+=== Create VMs
 
 [source, bash]
 .*Create VM instance to use the network*
 ----
-gcloud compute instances create instance-1 --zone=us-central1-c --machine-type=e2-micro --network-interface=subnet=subnet-a,no-address --maintenance-policy=MIGRATE --provisioning-model=STANDARD --create-disk=auto-delete=yes,boot=yes,device-name=instance-1,image=projects/debian-cloud/global/images/debian-11-bullseye-v20230206,mode=rw,size=10,type=pd-balanced  
+gcloud compute instances create vm-us --subnet=subnet-a --zone=us-central1-a
+gcloud compute instances create vm-eu --subnet=subnet-b --zone=europe-west1-b
+----
+
+[source, bash]
+.*View vm-us*
+----
+canIpForward: false
+cpuPlatform: Intel Haswell
+creationTimestamp: '2023-02-11T16:54:37.110-08:00'
+deletionProtection: false
+disks:
+- architecture: X86_64
+  autoDelete: true
+  boot: true
+  deviceName: persistent-disk-0
+  diskSizeGb: '10'
+  guestOsFeatures:
+  - type: UEFI_COMPATIBLE
+  - type: VIRTIO_SCSI_MULTIQUEUE
+  - type: GVNIC
+  index: 0
+  interface: SCSI
+  kind: compute#attachedDisk
+  licenses:
+  - https://www.googleapis.com/compute/v1/projects/debian-cloud/global/licenses/debian-11-bullseye
+  mode: READ_WRITE
+  source: https://www.googleapis.com/compute/v1/projects/build-a-cust-83-4aabe271/zones/us-central1-a/disks/vm-us
+  type: PERSISTENT
+fingerprint: gfkXkOBotgI=
+id: '8499902172161738276'
+kind: compute#instance
+labelFingerprint: 42WmSpB8rSM=
+lastStartTimestamp: '2023-02-11T16:54:46.291-08:00'
+machineType: https://www.googleapis.com/compute/v1/projects/build-a-cust-83-4aabe271/zones/us-central1-a/machineTypes/n1-standard-1
+metadata:
+  fingerprint: tRj5tDQxPH8=
+  kind: compute#metadata
+name: vm-us
+networkInterfaces:
+- accessConfigs:
+  - kind: compute#accessConfig
+    name: external-nat
+    natIP: 34.68.58.85
+    networkTier: PREMIUM
+    type: ONE_TO_ONE_NAT
+  fingerprint: gO06wFOR1ZU=
+  kind: compute#networkInterface
+  name: nic0
+  network: https://www.googleapis.com/compute/v1/projects/build-a-cust-83-4aabe271/global/networks/custom-network
+  networkIP: 10.0.1.2
+  stackType: IPV4_ONLY
+  subnetwork: https://www.googleapis.com/compute/v1/projects/build-a-cust-83-4aabe271/regions/us-central1/subnetworks/subnet-a
+scheduling:
+  automaticRestart: true
+  onHostMaintenance: MIGRATE
+  preemptible: false
+  provisioningModel: STANDARD
+selfLink: https://www.googleapis.com/compute/v1/projects/build-a-cust-83-4aabe271/zones/us-central1-a/instances/vm-us
+serviceAccounts:
+- email: 892646637332-compute@developer.gserviceaccount.com
+  scopes:
+  - https://www.googleapis.com/auth/devstorage.read_only
+  - https://www.googleapis.com/auth/logging.write
+  - https://www.googleapis.com/auth/monitoring.write
+  - https://www.googleapis.com/auth/pubsub
+  - https://www.googleapis.com/auth/service.management.readonly
+  - https://www.googleapis.com/auth/servicecontrol
+  - https://www.googleapis.com/auth/trace.append
+shieldedInstanceConfig:
+  enableIntegrityMonitoring: true
+  enableSecureBoot: false
+  enableVtpm: true
+shieldedInstanceIntegrityPolicy:
+  updateAutoLearnPolicy: true
+startRestricted: false
+status: RUNNING
+tags:
+  fingerprint: 42WmSpB8rSM=
+zone: https://www.googleapis.com/compute/v1/projects/build-a-cust-83-4aabe271/zones/us-central1-a
+----
+
+[source, bash]
+.*View vm-eu*
+----
+canIpForward: false
+cpuPlatform: Intel Haswell
+creationTimestamp: '2023-02-11T16:55:42.618-08:00'
+deletionProtection: false
+disks:
+- architecture: X86_64
+  autoDelete: true
+  boot: true
+  deviceName: persistent-disk-0
+  diskSizeGb: '10'
+  guestOsFeatures:
+  - type: UEFI_COMPATIBLE
+  - type: VIRTIO_SCSI_MULTIQUEUE
+  - type: GVNIC
+  index: 0
+  interface: SCSI
+  kind: compute#attachedDisk
+  licenses:
+  - https://www.googleapis.com/compute/v1/projects/debian-cloud/global/licenses/debian-11-bullseye
+  mode: READ_WRITE
+  source: https://www.googleapis.com/compute/v1/projects/build-a-cust-83-4aabe271/zones/europe-west1-b/disks/vm-eu
+  type: PERSISTENT
+fingerprint: HN8IB7b9mok=
+id: '206073706563602403'
+kind: compute#instance
+labelFingerprint: 42WmSpB8rSM=
+lastStartTimestamp: '2023-02-11T16:55:46.866-08:00'
+machineType: https://www.googleapis.com/compute/v1/projects/build-a-cust-83-4aabe271/zones/europe-west1-b/machineTypes/n1-standard-1
+metadata:
+  fingerprint: tRj5tDQxPH8=
+  kind: compute#metadata
+name: vm-eu
+networkInterfaces:
+- accessConfigs:
+  - kind: compute#accessConfig
+    name: external-nat
+    natIP: 34.77.138.124
+    networkTier: PREMIUM
+    type: ONE_TO_ONE_NAT
+  fingerprint: rtfX-f08OjQ=
+  kind: compute#networkInterface
+  name: nic0
+  network: https://www.googleapis.com/compute/v1/projects/build-a-cust-83-4aabe271/global/networks/custom-network
+  networkIP: 10.0.2.2
+  stackType: IPV4_ONLY
+  subnetwork: https://www.googleapis.com/compute/v1/projects/build-a-cust-83-4aabe271/regions/europe-west1/subnetworks/subnet-b
+scheduling:
+  automaticRestart: true
+  onHostMaintenance: MIGRATE
+  preemptible: false
+  provisioningModel: STANDARD
+selfLink: https://www.googleapis.com/compute/v1/projects/build-a-cust-83-4aabe271/zones/europe-west1-b/instances/vm-eu
+serviceAccounts:
+- email: 892646637332-compute@developer.gserviceaccount.com
+  scopes:
+  - https://www.googleapis.com/auth/devstorage.read_only
+  - https://www.googleapis.com/auth/logging.write
+  - https://www.googleapis.com/auth/monitoring.write
+  - https://www.googleapis.com/auth/pubsub
+  - https://www.googleapis.com/auth/service.management.readonly
+  - https://www.googleapis.com/auth/servicecontrol
+  - https://www.googleapis.com/auth/trace.append
+shieldedInstanceConfig:
+  enableIntegrityMonitoring: true
+  enableSecureBoot: false
+  enableVtpm: true
+shieldedInstanceIntegrityPolicy:
+  updateAutoLearnPolicy: true
+startRestricted: false
+status: RUNNING
+tags:
+  fingerprint: 42WmSpB8rSM=
+zone: https://www.googleapis.com/compute/v1/projects/build-a-cust-83-4aabe271/zones/europe-west1-b
+----
+
+== TD
+
+[source, bash]
+.**
+----
+
+----
+
+[source, bash]
+.**
+----
+
 ----
