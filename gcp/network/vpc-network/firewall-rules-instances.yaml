@@ -1,0 +1,269 @@
+---
+canIpForward: false
+cpuPlatform: Intel Cascade Lake
+creationTimestamp: '2023-02-11T17:09:59.875-08:00'
+deletionProtection: false
+disks:
+- architecture: X86_64
+  autoDelete: true
+  boot: true
+  deviceName: boot
+  diskSizeGb: '10'
+  guestOsFeatures:
+  - type: UEFI_COMPATIBLE
+  - type: VIRTIO_SCSI_MULTIQUEUE
+  index: 0
+  interface: SCSI
+  kind: compute#attachedDisk
+  licenses:
+  - https://www.googleapis.com/compute/v1/projects/debian-cloud/global/licenses/debian-10-buster
+  mode: READ_WRITE
+  source: https://www.googleapis.com/compute/v1/projects/creating-fir-32-20a9c753/zones/us-central1-a/disks/instance-1a
+  type: PERSISTENT
+fingerprint: k9Ugdzqa-f4=
+id: '6134489491265913483'
+kind: compute#instance
+labelFingerprint: o7Ivx4ML_MM=
+labels:
+  goog-dm: deploy-creating-fir-32-20a9c753
+lastStartTimestamp: '2023-02-11T17:10:08.153-08:00'
+machineType: https://www.googleapis.com/compute/v1/projects/creating-fir-32-20a9c753/zones/us-central1-a/machineTypes/n2-standard-2
+metadata:
+  fingerprint: bPiBqRJCOL0=
+  items:
+  - key: ssh-keys
+    value: |-
+      cloud_user_p_d27bba26:ecdsa-sha2-nistp256 AAAAE2VjZHNhLXNoYTItbmlzdHAyNTYAAAAIbmlzdHAyNTYAAABBBNlpNK6lJ+vcjguwgVFhN0DVT5ZTgEVCoCNFkA55rFeWFZa0+5YmimvoP1/5feO+2g7PTusslkwTiG2W9LmPLjo= google-ssh {"userName":"cloud_user_p_d27bba26@linuxacademygclabs.com","expireOn":"2023-02-12T01:49:02+0000"}
+      cloud_user_p_d27bba26:ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDEwgZtfNQ/VXGp0j1JDbuCvUEDLqddAKwgPBpbu3dvTYBFSM6VOWK/TVO/KuylL+G4R/69CQMTLvmvcH2zw2RTJ00SXEgWZGJ6YZ5kI61JrpZD+lHF/SCXwdsQ2h7rMSlNiEnFMcyf46wrtdlgBN4PRYSCjJhA8rJJ7C/dQ04deggclQwrb9vfTmikBrADNaiCik0HoWrG8LxkjokBOMxqdpV/TlhHr7UDL5at8lTw93r2KRNxySyeI4ARRO6iJCU5LIRYqqOkrWAs6D53icSfOCQmNEVJ9gb6zRzBUMW8eiDUlK9jPfaD7SdzkQJHMZP9rOjKYvVa/OE6xtLLdraV google-ssh {"userName":"cloud_user_p_d27bba26@linuxacademygclabs.com","expireOn":"2023-02-12T01:49:09+0000"}
+  kind: compute#metadata
+name: instance-1a
+networkInterfaces:
+- accessConfigs:
+  - kind: compute#accessConfig
+    name: External NAT
+    natIP: 34.67.108.122
+    networkTier: PREMIUM
+    type: ONE_TO_ONE_NAT
+  fingerprint: YqQPHPndVUY=
+  kind: compute#networkInterface
+  name: nic0
+  network: https://www.googleapis.com/compute/v1/projects/creating-fir-32-20a9c753/global/networks/custom-vpc
+  networkIP: 10.0.1.3
+  stackType: IPV4_ONLY
+  subnetwork: https://www.googleapis.com/compute/v1/projects/creating-fir-32-20a9c753/regions/us-central1/subnetworks/subnet-a
+scheduling:
+  automaticRestart: true
+  onHostMaintenance: MIGRATE
+  preemptible: false
+  provisioningModel: STANDARD
+selfLink: https://www.googleapis.com/compute/v1/projects/creating-fir-32-20a9c753/zones/us-central1-a/instances/instance-1a
+shieldedInstanceConfig:
+  enableIntegrityMonitoring: true
+  enableSecureBoot: false
+  enableVtpm: true
+shieldedInstanceIntegrityPolicy:
+  updateAutoLearnPolicy: true
+startRestricted: false
+status: RUNNING
+tags:
+  fingerprint: 42WmSpB8rSM=
+zone: https://www.googleapis.com/compute/v1/projects/creating-fir-32-20a9c753/zones/us-central1-a
+---
+canIpForward: false
+cpuPlatform: Intel Cascade Lake
+creationTimestamp: '2023-02-11T17:09:58.298-08:00'
+deletionProtection: false
+disks:
+- architecture: X86_64
+  autoDelete: true
+  boot: true
+  deviceName: boot
+  diskSizeGb: '10'
+  guestOsFeatures:
+  - type: UEFI_COMPATIBLE
+  - type: VIRTIO_SCSI_MULTIQUEUE
+  index: 0
+  interface: SCSI
+  kind: compute#attachedDisk
+  licenses:
+  - https://www.googleapis.com/compute/v1/projects/debian-cloud/global/licenses/debian-10-buster
+  mode: READ_WRITE
+  source: https://www.googleapis.com/compute/v1/projects/creating-fir-32-20a9c753/zones/us-central1-a/disks/instance-1b
+  type: PERSISTENT
+fingerprint: K6Zn5LFItW8=
+id: '4931034805908636299'
+kind: compute#instance
+labelFingerprint: o7Ivx4ML_MM=
+labels:
+  goog-dm: deploy-creating-fir-32-20a9c753
+lastStartTimestamp: '2023-02-11T17:10:07.582-08:00'
+machineType: https://www.googleapis.com/compute/v1/projects/creating-fir-32-20a9c753/zones/us-central1-a/machineTypes/n2-standard-2
+metadata:
+  fingerprint: 87IML7R_bhA=
+  kind: compute#metadata
+name: instance-1b
+networkInterfaces:
+- accessConfigs:
+  - kind: compute#accessConfig
+    name: External NAT
+    natIP: 35.184.12.171
+    networkTier: PREMIUM
+    type: ONE_TO_ONE_NAT
+  fingerprint: HGeTQrBB2IE=
+  kind: compute#networkInterface
+  name: nic0
+  network: https://www.googleapis.com/compute/v1/projects/creating-fir-32-20a9c753/global/networks/custom-vpc
+  networkIP: 10.0.1.2
+  stackType: IPV4_ONLY
+  subnetwork: https://www.googleapis.com/compute/v1/projects/creating-fir-32-20a9c753/regions/us-central1/subnetworks/subnet-a
+scheduling:
+  automaticRestart: true
+  onHostMaintenance: MIGRATE
+  preemptible: false
+  provisioningModel: STANDARD
+selfLink: https://www.googleapis.com/compute/v1/projects/creating-fir-32-20a9c753/zones/us-central1-a/instances/instance-1b
+shieldedInstanceConfig:
+  enableIntegrityMonitoring: true
+  enableSecureBoot: false
+  enableVtpm: true
+shieldedInstanceIntegrityPolicy:
+  updateAutoLearnPolicy: true
+startRestricted: false
+status: RUNNING
+tags:
+  fingerprint: 42WmSpB8rSM=
+zone: https://www.googleapis.com/compute/v1/projects/creating-fir-32-20a9c753/zones/us-central1-a
+---
+canIpForward: false
+cpuPlatform: Intel Cascade Lake
+creationTimestamp: '2023-02-11T17:10:01.747-08:00'
+deletionProtection: false
+disks:
+- architecture: X86_64
+  autoDelete: true
+  boot: true
+  deviceName: boot
+  diskSizeGb: '10'
+  guestOsFeatures:
+  - type: UEFI_COMPATIBLE
+  - type: VIRTIO_SCSI_MULTIQUEUE
+  index: 0
+  interface: SCSI
+  kind: compute#attachedDisk
+  licenses:
+  - https://www.googleapis.com/compute/v1/projects/debian-cloud/global/licenses/debian-10-buster
+  mode: READ_WRITE
+  source: https://www.googleapis.com/compute/v1/projects/creating-fir-32-20a9c753/zones/us-west1-b/disks/instance-3
+  type: PERSISTENT
+fingerprint: 0qIT3LL7vQE=
+id: '4260814741439873672'
+kind: compute#instance
+labelFingerprint: o7Ivx4ML_MM=
+labels:
+  goog-dm: deploy-creating-fir-32-20a9c753
+lastStartTimestamp: '2023-02-11T17:10:05.838-08:00'
+machineType: https://www.googleapis.com/compute/v1/projects/creating-fir-32-20a9c753/zones/us-west1-b/machineTypes/n2-standard-2
+metadata:
+  fingerprint: 87IML7R_bhA=
+  kind: compute#metadata
+name: instance-3
+networkInterfaces:
+- accessConfigs:
+  - kind: compute#accessConfig
+    name: External NAT
+    natIP: 35.230.105.197
+    networkTier: PREMIUM
+    type: ONE_TO_ONE_NAT
+  fingerprint: QdZcZdH2DYg=
+  kind: compute#networkInterface
+  name: nic0
+  network: https://www.googleapis.com/compute/v1/projects/creating-fir-32-20a9c753/global/networks/custom-vpc
+  networkIP: 10.0.3.2
+  stackType: IPV4_ONLY
+  subnetwork: https://www.googleapis.com/compute/v1/projects/creating-fir-32-20a9c753/regions/us-west1/subnetworks/subnet-c
+scheduling:
+  automaticRestart: true
+  onHostMaintenance: MIGRATE
+  preemptible: false
+  provisioningModel: STANDARD
+selfLink: https://www.googleapis.com/compute/v1/projects/creating-fir-32-20a9c753/zones/us-west1-b/instances/instance-3
+shieldedInstanceConfig:
+  enableIntegrityMonitoring: true
+  enableSecureBoot: false
+  enableVtpm: true
+shieldedInstanceIntegrityPolicy:
+  updateAutoLearnPolicy: true
+startRestricted: false
+status: RUNNING
+tags:
+  fingerprint: nfuETx1oHkM=
+  items:
+  - allow-icmp
+zone: https://www.googleapis.com/compute/v1/projects/creating-fir-32-20a9c753/zones/us-west1-b
+---
+canIpForward: false
+cpuPlatform: Intel Cascade Lake
+creationTimestamp: '2023-02-11T17:09:58.941-08:00'
+deletionProtection: false
+disks:
+- architecture: X86_64
+  autoDelete: true
+  boot: true
+  deviceName: boot
+  diskSizeGb: '10'
+  guestOsFeatures:
+  - type: UEFI_COMPATIBLE
+  - type: VIRTIO_SCSI_MULTIQUEUE
+  index: 0
+  interface: SCSI
+  kind: compute#attachedDisk
+  licenses:
+  - https://www.googleapis.com/compute/v1/projects/debian-cloud/global/licenses/debian-10-buster
+  mode: READ_WRITE
+  source: https://www.googleapis.com/compute/v1/projects/creating-fir-32-20a9c753/zones/us-east1-c/disks/instance-2
+  type: PERSISTENT
+fingerprint: NmiQGaxdVD4=
+id: '2711356756277428873'
+kind: compute#instance
+labelFingerprint: o7Ivx4ML_MM=
+labels:
+  goog-dm: deploy-creating-fir-32-20a9c753
+lastStartTimestamp: '2023-02-11T17:10:03.306-08:00'
+machineType: https://www.googleapis.com/compute/v1/projects/creating-fir-32-20a9c753/zones/us-east1-c/machineTypes/n2-standard-2
+metadata:
+  fingerprint: 87IML7R_bhA=
+  kind: compute#metadata
+name: instance-2
+networkInterfaces:
+- accessConfigs:
+  - kind: compute#accessConfig
+    name: External NAT
+    natIP: 35.227.111.0
+    networkTier: PREMIUM
+    type: ONE_TO_ONE_NAT
+  fingerprint: dpSl94_Vcgs=
+  kind: compute#networkInterface
+  name: nic0
+  network: https://www.googleapis.com/compute/v1/projects/creating-fir-32-20a9c753/global/networks/custom-vpc
+  networkIP: 10.0.2.2
+  stackType: IPV4_ONLY
+  subnetwork: https://www.googleapis.com/compute/v1/projects/creating-fir-32-20a9c753/regions/us-east1/subnetworks/subnet-b
+scheduling:
+  automaticRestart: true
+  onHostMaintenance: MIGRATE
+  preemptible: false
+  provisioningModel: STANDARD
+selfLink: https://www.googleapis.com/compute/v1/projects/creating-fir-32-20a9c753/zones/us-east1-c/instances/instance-2
+shieldedInstanceConfig:
+  enableIntegrityMonitoring: true
+  enableSecureBoot: false
+  enableVtpm: true
+shieldedInstanceIntegrityPolicy:
+  updateAutoLearnPolicy: true
+startRestricted: false
+status: RUNNING
+tags:
+  fingerprint: nfuETx1oHkM=
+  items:
+  - allow-icmp
+zone: https://www.googleapis.com/compute/v1/projects/creating-fir-32-20a9c753/zones/us-east1-c
