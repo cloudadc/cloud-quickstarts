@@ -1,0 +1,12 @@
+= Certification
+
+|===
+|ID |TITLE |CERTIFICATION |DATE
+
+|01
+|GCP ACE
+|link:https://www.credential.net/ec71e3a4-055d-492d-935f-52f144935daf?key=2b0f16b2cac8c55fe16f9345437bbbb1a1ab0ed2649b68399ef94a358d77d921[link]
+|2023-02-13
+
+|===
+
