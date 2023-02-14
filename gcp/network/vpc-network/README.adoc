@@ -1447,3 +1447,10 @@ PING 10.0.3.2 (10.0.3.2) 56(84) bytes of data.
 3 packets transmitted, 3 received, 0% packet loss, time 4ms
 rtt min/avg/max/mdev = 31.890/32.292/33.088/0.599 ms
 ----
+
+== Firewall with target tag
+
+[source, bash]
+----
+gcloud compute firewall-rules create allow-http-web-server --direction=INGRESS --priority=1000 --network=default --action=ALLOW --rules=tcp:80 --source-ranges=0.0.0.0/0 --target-tags=web-server
+----
