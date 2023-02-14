@@ -1,0 +1,65 @@
+---
+backendType: SECOND_GEN
+connectionName: managing-goo-51-3dfdb4e2:us-central1:la-sql
+createTime: '2023-02-14T10:41:24.905Z'
+databaseInstalledVersion: MYSQL_5_7_39
+databaseVersion: MYSQL_5_7
+etag: 3b3ce38dddd72b115ab9c8ba7dd7b535a7a24df390025f0bf99beef9d7225673
+gceZone: us-central1-b
+instanceType: CLOUD_SQL_INSTANCE
+ipAddresses:
+- ipAddress: 35.202.210.23
+  type: PRIMARY
+kind: sql#instance
+maintenanceVersion: MYSQL_5_7_39.R20221108.00_03
+name: la-sql
+project: managing-goo-51-3dfdb4e2
+region: us-central1
+selfLink: https://sqladmin.googleapis.com/sql/v1beta4/projects/managing-goo-51-3dfdb4e2/instances/la-sql
+serverCaCert:
+  cert: |-
+    -----BEGIN CERTIFICATE-----
+    ...
+    -----END CERTIFICATE-----
+  certSerialNumber: '0'
+  commonName: C=US,O=Google\, Inc,CN=Google Cloud SQL Server CA,dnQualifier=f84b0487-4300-4950-9988-9a7f1afcb40d
+  createTime: '2023-02-14T10:42:26.626Z'
+  expirationTime: '2033-02-11T10:43:26.626Z'
+  instance: la-sql
+  kind: sql#sslCert
+  sha1Fingerprint: 8a5e47654f0b379c4f4d7db6eeb957e343e56198
+serviceAccountEmailAddress: p200092319576-0w9i6h@gcp-sa-cloud-sql.iam.gserviceaccount.com
+settings:
+  activationPolicy: ALWAYS
+  availabilityType: ZONAL
+  backupConfiguration:
+    backupRetentionSettings:
+      retainedBackups: 7
+      retentionUnit: COUNT
+    binaryLogEnabled: true
+    enabled: true
+    kind: sql#backupConfiguration
+    location: us
+    startTime: 15:00
+    transactionLogRetentionDays: 7
+  connectorEnforcement: NOT_REQUIRED
+  dataDiskSizeGb: '20'
+  dataDiskType: PD_SSD
+  deletionProtectionEnabled: true
+  ipConfiguration:
+    ipv4Enabled: true
+  kind: sql#settings
+  locationPreference:
+    kind: sql#locationPreference
+    zone: us-central1-b
+  maintenanceWindow:
+    day: 0
+    hour: 0
+    kind: sql#maintenanceWindow
+  pricingPlan: PER_USE
+  replicationType: SYNCHRONOUS
+  settingsVersion: '1'
+  storageAutoResize: true
+  storageAutoResizeLimit: '0'
+  tier: db-custom-2-4096
+state: RUNNABLE

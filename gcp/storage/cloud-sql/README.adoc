@@ -1,3 +1,52 @@
 = Cloud SQL
 :toc: manual
 
+== Create an Instance
+
+[source, bash]
+----
+gcloud sql instances create la-sql --database-version=MYSQL_5_7 --cpu=2 --memory=4GB --region=us-central1 --root-password=root
+----
+
+* link:sql-instance.yaml[sql-instance.yaml]
+
+== Create a Database
+
+[source, bash]
+----
+gcloud sql databases create my_db --instance=la-sql
+----
+
+* link:databases.yaml[databases.yaml]
+
+== Clone an Instance
+
+[source, bash]
+----
+gcloud sql instances clone la-sql my-instance
+----
+
+Check the database be cloned to new instance:
+
+[source, bash]
+----
+$ gcloud sql databases list --instance=my-instance
+NAME: my_db
+CHARSET: utf8
+COLLATION: utf8_general_ci
+----
+
+== Restart an Instance
+
+[source, bash]
+----
+gcloud sql instances restart my-instance
+----
+
+== Delete an Instance
+
+[source, bash]
+----
+gcloud sql instances delete la-sql
+----
+

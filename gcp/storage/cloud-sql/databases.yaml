@@ -1,0 +1,45 @@
+---
+charset: utf8
+collation: utf8_general_ci
+etag: e16be5c9a1f531ec83173d6e3cd3137e983330219b472be5e3386821398f22a8
+instance: la-sql
+kind: sql#database
+name: information_schema
+project: managing-goo-51-3dfdb4e2
+selfLink: https://sqladmin.googleapis.com/sql/v1beta4/projects/managing-goo-51-3dfdb4e2/instances/la-sql/databases/information_schema
+---
+charset: utf8
+collation: utf8_general_ci
+etag: b2c7d61883c55b7ca6d184e545451ba68bb291bd2eab5be49ffc2cfb14b444e7
+instance: la-sql
+kind: sql#database
+name: my_db
+project: managing-goo-51-3dfdb4e2
+selfLink: https://sqladmin.googleapis.com/sql/v1beta4/projects/managing-goo-51-3dfdb4e2/instances/la-sql/databases/my_db
+---
+charset: utf8
+collation: utf8_general_ci
+etag: 6e733e8ea87a639bc729e63949877884d2e4a295453871efae35e72b9686ac00
+instance: la-sql
+kind: sql#database
+name: mysql
+project: managing-goo-51-3dfdb4e2
+selfLink: https://sqladmin.googleapis.com/sql/v1beta4/projects/managing-goo-51-3dfdb4e2/instances/la-sql/databases/mysql
+---
+charset: utf8
+collation: utf8_general_ci
+etag: c6e2f4aa527087e1b65c8e4a3d753296c193e11bc31af40a868ef97a7e734098
+instance: la-sql
+kind: sql#database
+name: performance_schema
+project: managing-goo-51-3dfdb4e2
+selfLink: https://sqladmin.googleapis.com/sql/v1beta4/projects/managing-goo-51-3dfdb4e2/instances/la-sql/databases/performance_schema
+---
+charset: utf8
+collation: utf8_general_ci
+etag: b982b606f78930077603df0316f0395f51cf0f068e3a135bdad663228f8cd81d
+instance: la-sql
+kind: sql#database
+name: sys
+project: managing-goo-51-3dfdb4e2
+selfLink: https://sqladmin.googleapis.com/sql/v1beta4/projects/managing-goo-51-3dfdb4e2/instances/la-sql/databases/sys
