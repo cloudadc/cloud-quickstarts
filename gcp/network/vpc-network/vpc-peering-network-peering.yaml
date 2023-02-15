@@ -1,0 +1,53 @@
+---
+autoCreateSubnetworks: false
+creationTimestamp: '2023-02-15T01:23:59.449-08:00'
+id: '5300054238452324928'
+kind: compute#network
+name: mynetwork
+networkFirewallPolicyEnforcementOrder: AFTER_CLASSIC_FIREWALL
+peerings:
+- autoCreateRoutes: true
+  exchangeSubnetRoutes: true
+  exportCustomRoutes: false
+  exportSubnetRoutesWithPublicIp: true
+  importCustomRoutes: false
+  importSubnetRoutesWithPublicIp: false
+  name: peering-1-2
+  network: https://www.googleapis.com/compute/v1/projects/qwiklabs-gcp-02-8704690e9417/global/networks/privatenet
+  source_network: https://www.googleapis.com/compute/v1/projects/qwiklabs-gcp-02-8704690e9417/global/networks/mynetwork
+  stackType: IPV4_ONLY
+  state: ACTIVE
+  stateDetails: '[2023-02-15T03:04:05.267-08:00]: Connected.'
+routingConfig:
+  routingMode: REGIONAL
+selfLink: https://www.googleapis.com/compute/v1/projects/qwiklabs-gcp-02-8704690e9417/global/networks/mynetwork
+selfLinkWithId: https://www.googleapis.com/compute/v1/projects/qwiklabs-gcp-02-8704690e9417/global/networks/5300054238452324928
+subnetworks:
+- https://www.googleapis.com/compute/v1/projects/qwiklabs-gcp-02-8704690e9417/regions/us-central1/subnetworks/mynetwork
+- https://www.googleapis.com/compute/v1/projects/qwiklabs-gcp-02-8704690e9417/regions/europe-west1/subnetworks/mynetwork
+---
+autoCreateSubnetworks: false
+creationTimestamp: '2023-02-15T01:23:59.001-08:00'
+id: '1476774424291121729'
+kind: compute#network
+name: privatenet
+networkFirewallPolicyEnforcementOrder: AFTER_CLASSIC_FIREWALL
+peerings:
+- autoCreateRoutes: true
+  exchangeSubnetRoutes: true
+  exportCustomRoutes: false
+  exportSubnetRoutesWithPublicIp: true
+  importCustomRoutes: false
+  importSubnetRoutesWithPublicIp: false
+  name: peering-2-1
+  network: https://www.googleapis.com/compute/v1/projects/qwiklabs-gcp-02-8704690e9417/global/networks/mynetwork
+  source_network: https://www.googleapis.com/compute/v1/projects/qwiklabs-gcp-02-8704690e9417/global/networks/privatenet
+  stackType: IPV4_ONLY
+  state: ACTIVE
+  stateDetails: '[2023-02-15T03:04:05.267-08:00]: Connected.'
+routingConfig:
+  routingMode: REGIONAL
+selfLink: https://www.googleapis.com/compute/v1/projects/qwiklabs-gcp-02-8704690e9417/global/networks/privatenet
+selfLinkWithId: https://www.googleapis.com/compute/v1/projects/qwiklabs-gcp-02-8704690e9417/global/networks/1476774424291121729
+subnetworks:
+- https://www.googleapis.com/compute/v1/projects/qwiklabs-gcp-02-8704690e9417/regions/us-central1/subnetworks/privatesubnet-us

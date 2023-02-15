@@ -1,0 +1,48 @@
+---
+creationTimestamp: '2023-02-15T01:24:08.200-08:00'
+fingerprint: VzxFmuRRXSI=
+gatewayAddress: 10.128.0.1
+id: '4411297420395223639'
+ipCidrRange: 10.128.0.0/20
+kind: compute#subnetwork
+name: mynetwork
+network: https://www.googleapis.com/compute/v1/projects/qwiklabs-gcp-02-8704690e9417/global/networks/mynetwork
+privateIpGoogleAccess: false
+privateIpv6GoogleAccess: DISABLE_GOOGLE_ACCESS
+purpose: PRIVATE
+region: https://www.googleapis.com/compute/v1/projects/qwiklabs-gcp-02-8704690e9417/regions/us-central1
+selfLink: https://www.googleapis.com/compute/v1/projects/qwiklabs-gcp-02-8704690e9417/regions/us-central1/subnetworks/mynetwork
+stackType: IPV4_ONLY
+---
+creationTimestamp: '2023-02-15T01:24:22.989-08:00'
+enableFlowLogs: false
+fingerprint: rJ7ts3gIT2c=
+gatewayAddress: 172.16.0.1
+id: '6846807442190309929'
+ipCidrRange: 172.16.0.0/24
+kind: compute#subnetwork
+logConfig:
+  enable: false
+name: privatesubnet-us
+network: https://www.googleapis.com/compute/v1/projects/qwiklabs-gcp-02-8704690e9417/global/networks/privatenet
+privateIpGoogleAccess: false
+privateIpv6GoogleAccess: DISABLE_GOOGLE_ACCESS
+purpose: PRIVATE
+region: https://www.googleapis.com/compute/v1/projects/qwiklabs-gcp-02-8704690e9417/regions/us-central1
+selfLink: https://www.googleapis.com/compute/v1/projects/qwiklabs-gcp-02-8704690e9417/regions/us-central1/subnetworks/privatesubnet-us
+stackType: IPV4_ONLY
+---
+creationTimestamp: '2023-02-15T01:24:08.347-08:00'
+fingerprint: xFQj6ZejEOA=
+gatewayAddress: 10.132.0.1
+id: '358156205002136151'
+ipCidrRange: 10.132.0.0/20
+kind: compute#subnetwork
+name: mynetwork
+network: https://www.googleapis.com/compute/v1/projects/qwiklabs-gcp-02-8704690e9417/global/networks/mynetwork
+privateIpGoogleAccess: false
+privateIpv6GoogleAccess: DISABLE_GOOGLE_ACCESS
+purpose: PRIVATE
+region: https://www.googleapis.com/compute/v1/projects/qwiklabs-gcp-02-8704690e9417/regions/europe-west1
+selfLink: https://www.googleapis.com/compute/v1/projects/qwiklabs-gcp-02-8704690e9417/regions/europe-west1/subnetworks/mynetwork
+stackType: IPV4_ONLY

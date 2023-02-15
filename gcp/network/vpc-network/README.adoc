@@ -1454,3 +1454,193 @@ rtt min/avg/max/mdev = 31.890/32.292/33.088/0.599 ms
 ----
 gcloud compute firewall-rules create allow-http-web-server --direction=INGRESS --priority=1000 --network=default --action=ALLOW --rules=tcp:80 --source-ranges=0.0.0.0/0 --target-tags=web-server
 ----
+
+== VPC network peering
+
+=== VPC network topology
+
+|===
+|ID |Network |Subnet |ipCidr |gatewayAddress |Region
+
+|1
+|mynetwork
+|mynetwork-us
+|10.128.0.0/20
+|10.128.0.1
+|us-central1
+
+|2
+|mynetwork
+|mynetwork-eu
+|10.132.0.0/20
+|10.132.0.1
+|europe-west1
+
+|3
+|privatenet
+|privatesubnet-us
+|172.16.0.0/24
+|172.16.0.1
+|us-central1
+
+|===
+
+[source, bash]
+----
+$ gcloud compute networks subnets list --format=yaml
+----
+
+* link:vpc-peering-network-topologies.yaml[vpc-peering-network-topologies.yaml]
+
+=== Default Route
+
+|===
+|Name |Network |destRange |nextHopGateway |nextHopNetwork |priority
+
+|default-route-4a55ed61d9a3ae8d
+|privatenet
+|0.0.0.0/0
+|default-internet-gateway
+|
+|1000
+
+|default-route-4c8396d18527806f
+|privatenet
+|172.16.0.0/24
+|
+|privatenet
+|0
+
+|default-route-91ceadd541d6caf8
+|mynetwork
+|0.0.0.0/0
+|default-internet-gateway
+|
+|1000
+
+|default-route-9e6b63a719576f3e
+|mynetwork
+|10.132.0.0/20
+|
+|mynetwork
+|0
+
+|default-route-d70b14d081c298ff
+|mynetwork
+|10.128.0.0/20
+|
+|mynetwork
+|0
+|===
+
+[source, bash]
+----
+$ gcloud compute routes list --format=yaml
+----
+
+* link:vpc-peering-network-routes.yaml[vpc-peering-network-routes.yaml]
+
+=== Create VPC Network Peering
+
+[source, bash]
+----
+gcloud compute networks peerings create peering-1-2 --network=mynetwork --peer-network=privatenet
+gcloud compute networks peerings create peering-2-1 --network=privatenet --peer-network=mynetwork
+----
+
+[source, bash]
+.*View the Peering*
+----
+$ gcloud compute networks peerings list --format=yaml
+----
+
+* link:vpc-peering-network-peering.yaml[vpc-peering-network-peering.yaml]
+
+=== Verify the Route Added
+
+|===
+|Name |Network |destRange |nextHopGateway |nextHopNetwork |nextHopPeering |priority
+
+|default-route-4a55ed61d9a3ae8d
+|privatenet
+|0.0.0.0/0
+|default-internet-gateway
+|
+|
+|1000
+
+|default-route-4c8396d18527806f
+|privatenet
+|172.16.0.0/24
+|
+|privatenet
+|
+|0
+
+|default-route-91ceadd541d6caf8
+|mynetwork
+|0.0.0.0/0
+|default-internet-gateway
+|
+|
+|1000
+
+|default-route-9e6b63a719576f3e
+|mynetwork
+|10.132.0.0/20
+|
+|mynetwork
+|
+|0
+
+|default-route-d70b14d081c298ff
+|mynetwork
+|10.128.0.0/20
+|
+|mynetwork
+|
+|0
+
+|peering-route-1972356771bdd51c
+|mynetwork
+|172.16.0.0/24
+|
+|
+|peering-1-2
+|0
+
+|peering-route-589e28fd6c6c268a
+|privatenet
+|10.128.0.0/20
+|
+|
+|peering-2-1
+|0
+
+|peering-route-883aa00ba0b49d3e
+|privatenet
+|10.132.0.0/20
+|
+|
+|peering-2-1
+|0
+|===
+
+
+[source, bash]
+----
+$ gcloud compute routes list --format=yaml
+----
+
+* link:vpc-peering-network-routes-peering.yaml[vpc-peering-network-routes-peering.yaml]
+
+
+[source, bash]
+----
+
+----
+
+[source, bash]
+----
+
+----

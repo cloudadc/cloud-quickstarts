@@ -1,0 +1,88 @@
+---
+creationTimestamp: '2023-02-15T01:24:03.730-08:00'
+description: Default route to the Internet.
+destRange: 0.0.0.0/0
+id: '8771788750347901532'
+kind: compute#route
+name: default-route-4a55ed61d9a3ae8d
+network: https://www.googleapis.com/compute/v1/projects/qwiklabs-gcp-02-8704690e9417/global/networks/privatenet
+nextHopGateway: https://www.googleapis.com/compute/v1/projects/qwiklabs-gcp-02-8704690e9417/global/gateways/default-internet-gateway
+priority: 1000
+selfLink: https://www.googleapis.com/compute/v1/projects/qwiklabs-gcp-02-8704690e9417/global/routes/default-route-4a55ed61d9a3ae8d
+---
+creationTimestamp: '2023-02-15T01:24:25.376-08:00'
+description: Default local route to the subnetwork 172.16.0.0/24.
+destRange: 172.16.0.0/24
+id: '5311238062708169254'
+kind: compute#route
+name: default-route-4c8396d18527806f
+network: https://www.googleapis.com/compute/v1/projects/qwiklabs-gcp-02-8704690e9417/global/networks/privatenet
+nextHopNetwork: https://www.googleapis.com/compute/v1/projects/qwiklabs-gcp-02-8704690e9417/global/networks/privatenet
+priority: 0
+selfLink: https://www.googleapis.com/compute/v1/projects/qwiklabs-gcp-02-8704690e9417/global/routes/default-route-4c8396d18527806f
+---
+creationTimestamp: '2023-02-15T01:24:04.490-08:00'
+description: Default route to the Internet.
+destRange: 0.0.0.0/0
+id: '8235863023210797659'
+kind: compute#route
+name: default-route-91ceadd541d6caf8
+network: https://www.googleapis.com/compute/v1/projects/qwiklabs-gcp-02-8704690e9417/global/networks/mynetwork
+nextHopGateway: https://www.googleapis.com/compute/v1/projects/qwiklabs-gcp-02-8704690e9417/global/gateways/default-internet-gateway
+priority: 1000
+selfLink: https://www.googleapis.com/compute/v1/projects/qwiklabs-gcp-02-8704690e9417/global/routes/default-route-91ceadd541d6caf8
+---
+creationTimestamp: '2023-02-15T01:24:11.010-08:00'
+description: Default local route to the subnetwork 10.132.0.0/20.
+destRange: 10.132.0.0/20
+id: '545951395161905748'
+kind: compute#route
+name: default-route-9e6b63a719576f3e
+network: https://www.googleapis.com/compute/v1/projects/qwiklabs-gcp-02-8704690e9417/global/networks/mynetwork
+nextHopNetwork: https://www.googleapis.com/compute/v1/projects/qwiklabs-gcp-02-8704690e9417/global/networks/mynetwork
+priority: 0
+selfLink: https://www.googleapis.com/compute/v1/projects/qwiklabs-gcp-02-8704690e9417/global/routes/default-route-9e6b63a719576f3e
+---
+creationTimestamp: '2023-02-15T01:24:10.197-08:00'
+description: Default local route to the subnetwork 10.128.0.0/20.
+destRange: 10.128.0.0/20
+id: '6410846322953362005'
+kind: compute#route
+name: default-route-d70b14d081c298ff
+network: https://www.googleapis.com/compute/v1/projects/qwiklabs-gcp-02-8704690e9417/global/networks/mynetwork
+nextHopNetwork: https://www.googleapis.com/compute/v1/projects/qwiklabs-gcp-02-8704690e9417/global/networks/mynetwork
+priority: 0
+selfLink: https://www.googleapis.com/compute/v1/projects/qwiklabs-gcp-02-8704690e9417/global/routes/default-route-d70b14d081c298ff
+---
+creationTimestamp: '2023-02-15T03:04:05.953-08:00'
+description: Auto generated route via peering [peering-1-2].
+destRange: 172.16.0.0/24
+id: '4284120024261657290'
+kind: compute#route
+name: peering-route-1972356771bdd51c
+network: https://www.googleapis.com/compute/v1/projects/qwiklabs-gcp-02-8704690e9417/global/networks/mynetwork
+nextHopPeering: peering-1-2
+priority: 0
+selfLink: https://www.googleapis.com/compute/v1/projects/qwiklabs-gcp-02-8704690e9417/global/routes/peering-route-1972356771bdd51c
+---
+creationTimestamp: '2023-02-15T03:04:06.050-08:00'
+description: Auto generated route via peering [peering-2-1].
+destRange: 10.128.0.0/20
+id: '4551993419366466249'
+kind: compute#route
+name: peering-route-589e28fd6c6c268a
+network: https://www.googleapis.com/compute/v1/projects/qwiklabs-gcp-02-8704690e9417/global/networks/privatenet
+nextHopPeering: peering-2-1
+priority: 0
+selfLink: https://www.googleapis.com/compute/v1/projects/qwiklabs-gcp-02-8704690e9417/global/routes/peering-route-589e28fd6c6c268a
+---
+creationTimestamp: '2023-02-15T03:04:06.001-08:00'
+description: Auto generated route via peering [peering-2-1].
+destRange: 10.132.0.0/20
+id: '5747231694847541962'
+kind: compute#route
+name: peering-route-883aa00ba0b49d3e
+network: https://www.googleapis.com/compute/v1/projects/qwiklabs-gcp-02-8704690e9417/global/networks/privatenet
+nextHopPeering: peering-2-1
+priority: 0
+selfLink: https://www.googleapis.com/compute/v1/projects/qwiklabs-gcp-02-8704690e9417/global/routes/peering-route-883aa00ba0b49d3e
