@@ -336,6 +336,47 @@ gcp> db.machinetypes.aggregate([{$group: {_id: {cpu: "$guestCpus", memory: "$mem
 ]
 ----
 
+== Create Image
+
+=== Create Image 
+
+[source, bash]
+.*1. Verify the instances are stopped*
+----
+$ gcloud compute instances list | grep STATUS
+STATUS: TERMINATED
+STATUS: TERMINATED
+----
+
+[source, bash]
+.*2. List the Disk*
+----
+$ gcloud compute instances list --format=yaml | grep disk | grep source
+  source: https://www.googleapis.com/compute/v1/projects/working-with-42-8a213833/zones/us-central1-a/disks/base-apache
+  source: https://www.googleapis.com/compute/v1/projects/working-with-42-8a213833/zones/us-central1-a/disks/custom-webpage
+----
+
+[source, bash]
+.*3. Create Images*
+----
+gcloud compute images create webserver-base --source-disk=base-apache --source-disk-zone=us-central1-a --family=webserver
+gcloud compute images create custom-webpage --source-disk=custom-webpage --source-disk-zone=us-central1-a --family=webserver
+----
+
+=== Deprecate Image
+
+[source, bash]
+----
+gcloud compute images deprecate webserver-base --state DEPRECATED
+----
+
+=== Create VM via Custom Image
+
+[source, bash]
+----
+gcloud compute instances create new-webpage --zone=us-east1-b --machine-type=e2-micro  --create-disk=auto-delete=yes,boot=yes,device-name=new-webpage,image=custom-webpage,mode=rw,size=10,type=pd-balanced
+----
+
 == Create VM
 
 === General-purpose Machine Series
