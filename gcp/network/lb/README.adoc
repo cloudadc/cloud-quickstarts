@@ -69,7 +69,7 @@ gcloud compute instances create webserver \
     --maintenance-policy=MIGRATE \
     --provisioning-model=STANDARD \
     --tags=allow-health-checks \
-    --create-disk=boot=yes,device-name=webserver,image=projects/debian-cloud/global/images/debian-11-bullseye-v20230206,mode=rw,size=10,type=pd-balanced \
+    --create-disk=auto-delete=no,boot=yes,device-name=webserver,image=projects/debian-cloud/global/images/debian-11-bullseye-v20230206,mode=rw,size=10,type=pd-balanced \
     --no-shielded-secure-boot \
     --shielded-vtpm \
     --shielded-integrity-monitoring \
@@ -84,10 +84,12 @@ gcloud compute instances create webserver \
 .*2. SSH to VM Instance setup Application*
 ----
 sudo apt-get update
-sudo apt-get install -y apache2
-sudo update-rc.d apache2 enable
-sudo service apache2 start
-sudo service apache2 status
+sudo apt-get install -y nginx
+sudo service nginx start
+sudo service nginx status
+sudo update-rc.d nginx enable
+
+sudo service nginx restart
 
 $ curl localhost -I
 HTTP/1.1 200 OK
