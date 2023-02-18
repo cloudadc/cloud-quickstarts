@@ -214,25 +214,95 @@ INSTANCES: 1
 
 === Configure the HTTP load balancer
 
-*Start create*
+*1. click `Network Services` > `Load balancingStart`, click `Create Load Balancer`*
 
 image:lb-start-config.png[]
 
-*Select From Internet to my VMs or serverless services and Global HTTP(S) Load Balancer*
+NOTE: There mainly 3 categories of Load Balancers.
+
+*2. Select `From Internet to my VMs or serverless services` and `Global HTTP(S) Load Balancer`*
 
 image:lb-create-options.png[]
 
-*Frontend*
+*3. Configure Frontend with both IPv4 and IPv6 address on port 80*
 
 image:lb-fronted.png[]
 
-*Backend*
+*4. Configure Backend reference with 2 instance groups*
 
-image:lb-bakcend.jpeg[]
+image:lb-bakcend.png[]
 
-*Observability*
+NOTE: the health check passed, both instance groups has one active vm instance.
+
+*5. Observability*
 
 image:lb-observe.png[]
+
+=== Test access the application via LB endpoint
+
+[source, bash]
+.*1. IPv4 access*
+----
+$ curl http://34.110.133.211/
+
+            request: GET / HTTP/1.1
+               host: 34.110.133.211
+           hostname: us-central1-mig-hj4h
+
+        client addr: 35.191.13.248:36374
+        server addr: 10.1.10.3:8080
+
+             cookie: 
+                xff: 
+         user agent: curl/7.64.1
+----
+
+[source, bash]
+.*2. IPv6 access*
+----
+$ curl http://[2600:1901:0:8a64::]/
+
+            request: GET / HTTP/1.1
+               host: [2600:1901:0:8a64::]
+           hostname: us-central1-mig-hj4h
+
+        client addr: 35.191.10.41:60452
+        server addr: 10.1.10.3:8080
+
+             cookie: 
+                xff: 
+         user agent: curl/7.64.1
+----
+
+[source, bash]
+.*3. Access 10 times. record client address*
+----
+$ for i in {1..10} ; do curl -s http://[2600:1901:0:8a64::]/ | grep client ; done
+        client addr: 35.191.19.137:59148
+        client addr: 35.191.23.243:36940
+        client addr: 35.191.17.70:53276
+        client addr: 35.191.13.251:37462
+        client addr: 35.191.19.172:37568
+        client addr: 35.191.17.147:35084
+        client addr: 35.191.10.45:41058
+        client addr: 35.191.19.138:48834
+        client addr: 35.191.17.144:34852
+        client addr: 35.191.23.80:55730
+----
+
+NOTE: the cloud load balancer use `35.191.0.0/16` as snat pool.
+
+*4. Review LB's health check packets*
+
+image:lb-tcp-health-check.png[]
+
+Note that the Load Balancer source also come from `35.191.0.0/16`, use one of member of snat pool.
+
+
+
+
+
+
 
 == Internal Load Balancer
 
