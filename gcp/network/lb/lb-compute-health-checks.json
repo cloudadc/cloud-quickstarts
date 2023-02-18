@@ -1,0 +1,19 @@
+[
+  {
+    "checkIntervalSec": 5,
+    "creationTimestamp": "2023-02-18T07:36:49.436-08:00",
+    "healthyThreshold": 2,
+    "id": "368762648216292990",
+    "kind": "compute#healthCheck",
+    "name": "http-health-check",
+    "selfLink": "https://www.googleapis.com/compute/v1/projects/playground-s-11-70e35456/global/healthChecks/http-health-check",
+    "tcpHealthCheck": {
+      "port": 8080,
+      "portSpecification": "USE_FIXED_PORT",
+      "proxyHeader": "NONE"
+    },
+    "timeoutSec": 5,
+    "type": "TCP",
+    "unhealthyThreshold": 2
+  }
+]

@@ -1,0 +1,148 @@
+[
+  {
+    "creationTimestamp": "2023-02-18T07:33:52.548-08:00",
+    "description": "",
+    "id": "3892022465422774543",
+    "kind": "compute#instanceTemplate",
+    "name": "eu-webserver-template",
+    "properties": {
+      "canIpForward": false,
+      "disks": [
+        {
+          "autoDelete": true,
+          "boot": true,
+          "deviceName": "testwebserver-template",
+          "index": 0,
+          "initializeParams": {
+            "diskSizeGb": "10",
+            "diskType": "pd-balanced",
+            "sourceImage": "https://compute.googleapis.com/compute/v1/projects/playground-s-11-70e35456/global/images/testwebserver"
+          },
+          "kind": "compute#attachedDisk",
+          "mode": "READ_WRITE",
+          "type": "PERSISTENT"
+        }
+      ],
+      "machineType": "f1-micro",
+      "metadata": {
+        "fingerprint": "ARu-C08LCHg=",
+        "kind": "compute#metadata"
+      },
+      "networkInterfaces": [
+        {
+          "kind": "compute#networkInterface",
+          "name": "nic0",
+          "network": "https://www.googleapis.com/compute/v1/projects/playground-s-11-70e35456/global/networks/test",
+          "subnetwork": "https://www.googleapis.com/compute/v1/projects/playground-s-11-70e35456/regions/europe-west1/subnetworks/test-europe-west1"
+        }
+      ],
+      "reservationAffinity": {
+        "consumeReservationType": "ANY_RESERVATION"
+      },
+      "scheduling": {
+        "automaticRestart": true,
+        "onHostMaintenance": "MIGRATE",
+        "preemptible": false,
+        "provisioningModel": "STANDARD"
+      },
+      "serviceAccounts": [
+        {
+          "email": "default",
+          "scopes": [
+            "https://www.googleapis.com/auth/devstorage.read_only",
+            "https://www.googleapis.com/auth/logging.write",
+            "https://www.googleapis.com/auth/monitoring.write",
+            "https://www.googleapis.com/auth/pubsub",
+            "https://www.googleapis.com/auth/service.management.readonly",
+            "https://www.googleapis.com/auth/servicecontrol",
+            "https://www.googleapis.com/auth/trace.append"
+          ]
+        }
+      ],
+      "shieldedInstanceConfig": {
+        "enableIntegrityMonitoring": true,
+        "enableSecureBoot": false,
+        "enableVtpm": true
+      },
+      "tags": {
+        "items": [
+          "allow-health-checks"
+        ]
+      }
+    },
+    "selfLink": "https://www.googleapis.com/compute/v1/projects/playground-s-11-70e35456/global/instanceTemplates/eu-webserver-template"
+  },
+  {
+    "creationTimestamp": "2023-02-18T07:33:22.746-08:00",
+    "description": "",
+    "id": "2177277504301912365",
+    "kind": "compute#instanceTemplate",
+    "name": "us-webserver-template",
+    "properties": {
+      "canIpForward": false,
+      "disks": [
+        {
+          "autoDelete": true,
+          "boot": true,
+          "deviceName": "testwebserver-template",
+          "index": 0,
+          "initializeParams": {
+            "diskSizeGb": "10",
+            "diskType": "pd-balanced",
+            "sourceImage": "https://compute.googleapis.com/compute/v1/projects/playground-s-11-70e35456/global/images/testwebserver"
+          },
+          "kind": "compute#attachedDisk",
+          "mode": "READ_WRITE",
+          "type": "PERSISTENT"
+        }
+      ],
+      "machineType": "f1-micro",
+      "metadata": {
+        "fingerprint": "ARu-C08LCHg=",
+        "kind": "compute#metadata"
+      },
+      "networkInterfaces": [
+        {
+          "kind": "compute#networkInterface",
+          "name": "nic0",
+          "network": "https://www.googleapis.com/compute/v1/projects/playground-s-11-70e35456/global/networks/test",
+          "subnetwork": "https://www.googleapis.com/compute/v1/projects/playground-s-11-70e35456/regions/us-central1/subnetworks/test-us-central1"
+        }
+      ],
+      "reservationAffinity": {
+        "consumeReservationType": "ANY_RESERVATION"
+      },
+      "scheduling": {
+        "automaticRestart": true,
+        "onHostMaintenance": "MIGRATE",
+        "preemptible": false,
+        "provisioningModel": "STANDARD"
+      },
+      "serviceAccounts": [
+        {
+          "email": "default",
+          "scopes": [
+            "https://www.googleapis.com/auth/devstorage.read_only",
+            "https://www.googleapis.com/auth/logging.write",
+            "https://www.googleapis.com/auth/monitoring.write",
+            "https://www.googleapis.com/auth/pubsub",
+            "https://www.googleapis.com/auth/service.management.readonly",
+            "https://www.googleapis.com/auth/servicecontrol",
+            "https://www.googleapis.com/auth/trace.append"
+          ]
+        }
+      ],
+      "shieldedInstanceConfig": {
+        "enableIntegrityMonitoring": true,
+        "enableSecureBoot": false,
+        "enableVtpm": true
+      },
+      "tags": {
+        "items": [
+          "allow-health-checks"
+        ]
+      }
+    },
+    "selfLink": "https://www.googleapis.com/compute/v1/projects/playground-s-11-70e35456/global/instanceTemplates/us-webserver-template"
+  }
+]

@@ -1,0 +1,32 @@
+[
+  {
+    "creationTimestamp": "2023-02-18T07:53:31.043-08:00",
+    "description": "This instance group is controlled by Regional Instance Group Manager 'us-central1-mig'. To modify instances in this group, use the Regional Instance Group Manager API: https://cloud.google.com/compute/docs/reference/latest/regionInstanceGroupManagers",
+    "fingerprint": "42WmSpB8rSM=",
+    "id": "2820998041461148308",
+    "instanceGroupManagerUri": "https://www.googleapis.com/compute/v1/projects/playground-s-11-70e35456/regions/us-central1/instanceGroupManagers/us-central1-mig",
+    "isManaged": "Yes",
+    "kind": "compute#instanceGroup",
+    "name": "us-central1-mig",
+    "network": "https://www.googleapis.com/compute/v1/projects/playground-s-11-70e35456/global/networks/test",
+    "region": "https://www.googleapis.com/compute/v1/projects/playground-s-11-70e35456/regions/us-central1",
+    "selfLink": "https://www.googleapis.com/compute/v1/projects/playground-s-11-70e35456/regions/us-central1/instanceGroups/us-central1-mig",
+    "size": 1,
+    "subnetwork": "https://www.googleapis.com/compute/v1/projects/playground-s-11-70e35456/regions/us-central1/subnetworks/test-us-central1"
+  },
+  {
+    "creationTimestamp": "2023-02-18T07:58:41.677-08:00",
+    "description": "This instance group is controlled by Regional Instance Group Manager 'europe-west1-mig'. To modify instances in this group, use the Regional Instance Group Manager API: https://cloud.google.com/compute/docs/reference/latest/regionInstanceGroupManagers",
+    "fingerprint": "42WmSpB8rSM=",
+    "id": "3065358736888253278",
+    "instanceGroupManagerUri": "https://www.googleapis.com/compute/v1/projects/playground-s-11-70e35456/regions/europe-west1/instanceGroupManagers/europe-west1-mig",
+    "isManaged": "Yes",
+    "kind": "compute#instanceGroup",
+    "name": "europe-west1-mig",
+    "network": "https://www.googleapis.com/compute/v1/projects/playground-s-11-70e35456/global/networks/test",
+    "region": "https://www.googleapis.com/compute/v1/projects/playground-s-11-70e35456/regions/europe-west1",
+    "selfLink": "https://www.googleapis.com/compute/v1/projects/playground-s-11-70e35456/regions/europe-west1/instanceGroups/europe-west1-mig",
+    "size": 1,
+    "subnetwork": "https://www.googleapis.com/compute/v1/projects/playground-s-11-70e35456/regions/europe-west1/subnetworks/test-europe-west1"
+  }
+]
