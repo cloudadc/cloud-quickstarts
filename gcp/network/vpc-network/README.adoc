@@ -1634,13 +1634,41 @@ $ gcloud compute routes list --format=yaml
 
 * link:vpc-peering-network-routes-peering.yaml[vpc-peering-network-routes-peering.yaml]
 
+== Access Control with Firewall Rules
 
 [source, bash]
+.*Create 2 networks, and 2 VM istances, use firewall rule to control access*
 ----
-
+gcloud compute networks create labnet --subnet-mode=custom
+gcloud compute networks subnets create labnet-sub --network=labnet --region=us-central1 --range=10.0.0.0/28
+gcloud compute networks list
+gcloud compute networks describe labnet
+gcloud compute networks subnets list
+gcloud compute firewall-rules create labnet-allow-internal --network=labnet --action=ALLOW --rules=icmp.tcp:22 --source-ranges=0.0.0.0/0
+gcloud compute firewall-rules create labnet-allow-internal --network=labnet --action=ALLOW --rules=icmp,tcp:22 --source-ranges=0.0.0.0/0
+gcloud compute firewall-rules describe labnet-allow-internal
+gcloud compute networks create privatenet --subnet-mode=custom
+gcloud compute networks subnets create private-sub --network=privatenet --region=us-central1 --range=10.1.0.0/28
+gcloud compute firewall-rules create privatenet-deny --network=privatenet --action=DENY --rules=icmp,tcp:22 --source-ranges=0.0.0.0/0
+gcloud compute firewall-rules list
+gcloud compute instances create pnet-vm --zone=us-central1-c --machine-type=n1-standard-1 --subnet=private-sub
+gcloud compute instances create lnet-vm --zone=us-central1-c --machine-type=n1-standard-1 --subnet=labnet-sub
 ----
 
 [source, bash]
+.*Test connectivity*
 ----
+$ for i in $(gcloud compute instances list | grep EXTERNAL_IP | awk '{print $2}'); do ping $i -c3 ; done
+PING 34.135.85.146 (34.135.85.146) 56(84) bytes of data.
+64 bytes from 34.135.85.146: icmp_seq=1 ttl=49 time=213 ms
+64 bytes from 34.135.85.146: icmp_seq=2 ttl=49 time=211 ms
+64 bytes from 34.135.85.146: icmp_seq=3 ttl=49 time=211 ms
 
+--- 34.135.85.146 ping statistics ---
+3 packets transmitted, 3 received, 0% packet loss, time 2000ms
+rtt min/avg/max/mdev = 211.338/211.968/213.110/0.808 ms
+PING 146.148.90.158 (146.148.90.158) 56(84) bytes of data.
+
+--- 146.148.90.158 ping statistics ---
+3 packets transmitted, 0 received, 100% packet loss, time 2054ms
 ----
