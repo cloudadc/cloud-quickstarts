@@ -19,35 +19,35 @@
 
 |01
 |link:https://www.coursera.org/learn/gcp-fundamentals/home/week/1[Google Cloud Fundamentals: Core Infrastructure]
-|September 9, 2022
+|Sep 9, 2022
 
 |02
 |link:https://www.coursera.org/learn/gcp-infrastructure-foundation/home/week/1[Essential Google Cloud Infrastructure: Foundation]
-|September 11, 2022
+|Sep 11, 2022
 
 |03
 |link:https://www.coursera.org/learn/gcp-infrastructure-core-services/home/week/1[Essential Google Cloud Infrastructure: Core Services]
-|September 15, 2022
+|Sep 15, 2022
 
 |04
 |link:https://www.coursera.org/learn/gcp-infrastructure-scaling-automation/home/week/1[Elastic Google Cloud Infrastructure: Scaling and Automation]
-|December 15, 2022
+|Dec 15, 2022
 
 |05
 |link:https://www.coursera.org/learn/cloud-infrastructure-design-process/home/week/1[Reliable Google Cloud Infrastructure: Design and Process]
-|December 19, 2022
+|Dec 19, 2022
 
 |06
 |link:https://www.coursera.org/learn/foundations-google-kubernetes-engine-gke/home/week/1[Architecting with Google Kubernetes Engine: Foundations]
-|December 20, 2022
+|Dec 20, 2022
 
 |07
 |link:https://www.coursera.org/learn/preparing-cloud-professional-cloud-architect-exam/home/week/1[Preparing for your Professional Cloud Architect Journey]
-|December 21, 2022
+|Dec 21, 2022
 
 |08
 |link:https://www.coursera.org/learn/preparing-cloud-associate-cloud-engineer-exam/home/week/1[Preparing for Your Associate Cloud Engineer Journey]
-|January 29, 2023
+|Jan 29, 2023
 
 |09
 |link:https://www.coursera.org/learn/networking-gcp-defining-implementing-networks/home/week/1[Networking in Google Cloud: Defining and Implementing Networks]
