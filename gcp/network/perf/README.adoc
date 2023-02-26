@@ -1,0 +1,113 @@
+= Network Performance
+:toc: manual
+
+== CPU Core and Internal/External IP address
+
+=== Using iperf to benchmark performance
+
+[source, bash]
+.*1. start server*
+----
+@instance-1:~$ iperf -s
+----
+
+[source, bash]
+.*2. start client*
+----
+@instance-2:~$ iperf -c 35.221.231.241
+------------------------------------------------------------
+Client connecting to 35.221.231.241, TCP port 5001
+TCP window size: 45.0 KByte (default)
+------------------------------------------------------------
+[  3] local 10.40.0.3 port 44360 connected with 35.221.231.241 port 5001
+[ ID] Interval       Transfer     Bandwidth
+[  3] 0.0000-10.0056 sec  2.27 GBytes  1.95 Gbits/sec
+----
+
+[source, bash]
+.*3. start server*
+----
+@instance-6:~$ iperf -s
+----
+
+[source, bash]
+.*4. start client*
+----
+@instance-2:~$ iperf -c 35.229.227.55
+------------------------------------------------------------
+Client connecting to 35.229.227.55, TCP port 5001
+TCP window size: 45.0 KByte (default)
+------------------------------------------------------------
+[  3] local 10.40.0.3 port 34044 connected with 35.229.227.55 port 5001
+[ ID] Interval       Transfer     Bandwidth
+[  3] 0.0000-10.0031 sec  2.28 GBytes  1.96 Gbits/sec
+----
+
+[source, bash]
+.*5. start server*
+----
+@instance-3:~$ iperf -s
+----
+
+[source, bash]
+.*6. start client*
+----
+@instance-4:~$ iperf -c 34.80.18.202
+------------------------------------------------------------
+Client connecting to 34.80.18.202, TCP port 5001
+TCP window size: 45.0 KByte (default)
+------------------------------------------------------------
+[  3] local 10.40.0.6 port 48438 connected with 34.80.18.202 port 5001
+[ ID] Interval       Transfer     Bandwidth
+[  3] 0.0000-10.0016 sec  7.47 GBytes  6.42 Gbits/sec
+
+@instance-4:~$ iperf -c 34.80.18.202 -P4
+[  5] local 10.40.0.6 port 51832 connected with 34.80.18.202 port 5001
+------------------------------------------------------------
+Client connecting to 34.80.18.202, TCP port 5001
+TCP window size: 45.0 KByte (default)
+------------------------------------------------------------
+[  6] local 10.40.0.6 port 51840 connected with 34.80.18.202 port 5001
+[  4] local 10.40.0.6 port 51816 connected with 34.80.18.202 port 5001
+[  3] local 10.40.0.6 port 51802 connected with 34.80.18.202 port 5001
+[ ID] Interval       Transfer     Bandwidth
+[  4] 0.0000-10.0012 sec  6.69 GBytes  5.75 Gbits/sec
+[  3] 0.0000-10.2819 sec   941 MBytes   768 Mbits/sec
+[  6] 0.0000-10.2735 sec   360 MBytes   294 Mbits/sec
+[  5] 0.0000-10.2769 sec  92.8 MBytes  75.8 Mbits/sec
+[SUM] 0.0000-10.2776 sec  8.05 GBytes  6.73 Gbits/sec
+[ CT] final connect times (min/avg/max/stdev) = 0.659/0.814/0.974/0.416 ms (tot/err) = 4/0
+
+@instance-4:~$ iperf -c 34.80.18.202 -P8
+[  5] local 10.40.0.6 port 45962 connected with 34.80.18.202 port 5001
+[  3] local 10.40.0.6 port 45950 connected with 34.80.18.202 port 5001
+[  8] local 10.40.0.6 port 45998 connected with 34.80.18.202 port 5001
+[  6] local 10.40.0.6 port 45974 connected with 34.80.18.202 port 5001
+[  4] local 10.40.0.6 port 45966 connected with 34.80.18.202 port 5001
+[  9] local 10.40.0.6 port 46014 connected with 34.80.18.202 port 5001
+------------------------------------------------------------
+Client connecting to 34.80.18.202, TCP port 5001
+TCP window size: 45.0 KByte (default)
+------------------------------------------------------------
+[  7] local 10.40.0.6 port 45990 connected with 34.80.18.202 port 5001
+[ 10] local 10.40.0.6 port 46022 connected with 34.80.18.202 port 5001
+[ ID] Interval       Transfer     Bandwidth
+[  3] 0.0000-10.0012 sec  6.89 GBytes  5.92 Gbits/sec
+[  4] 0.0000-10.2773 sec   279 MBytes   228 Mbits/sec
+[  9] 0.0000-10.2733 sec  48.2 MBytes  39.4 Mbits/sec
+[  8] 0.0000-10.2848 sec   190 MBytes   155 Mbits/sec
+[  7] 0.0000-10.2774 sec  46.1 MBytes  37.6 Mbits/sec
+[  5] 0.0000-10.2883 sec   142 MBytes   115 Mbits/sec
+[ 10] 0.0000-10.2894 sec   353 MBytes   288 Mbits/sec
+[  6] 0.0000-10.2890 sec   116 MBytes  94.9 Mbits/sec
+[SUM] 0.0000-10.2890 sec  8.04 GBytes  6.71 Gbits/sec
+[ CT] final connect times (min/avg/max/stdev) = 0.255/0.540/0.849/0.405 ms (tot/err) = 8/0
+----
+
+=== Conclusion
+
+1. The `CPU Core` is the key factor to bandwidth 
+2. The Internal IP addree has better network performance compare Ecxternal IP address
+
+
+
