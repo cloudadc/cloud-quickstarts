@@ -5,7 +5,7 @@
 
 TODO
 
-== Global HTTP Load Balancer + Autoscaling Instance Groups 
+== Global external HTTP Load Balancer
 
 Google Cloud HTTP(S) load balancing is implemented at the edge of Google's network in Google's points of presence (POP) around the world. User traffic directed to an HTTP(S) load balancer enters the POP closest to the user and is then load-balanced over Google's global network to the closest backend that has sufficient available capacity.
 
@@ -298,11 +298,323 @@ image:lb-tcp-health-check.png[]
 
 Note that the Load Balancer source also come from `35.191.0.0/16`, use one of member of snat pool.
 
+== Network load balancer  
+
+* Google Cloud external TCP/UDP Network Load Balancing is a regional, pass-through load balancer. A network load balancer distributes external traffic among virtual machine (VM) instances in the same region.
+
+=== Create web server VM instances
+
+[source, bash]
+.*1. create vm www1*
+----
+gcloud compute instances create www1 \
+    --zone=us-central1-a \
+    --tags=network-lb-tag \
+    --machine-type=e2-small \
+    --image-family=debian-11 \
+    --image-project=debian-cloud \
+    --metadata=startup-script='#!/bin/bash
+      apt-get update
+      apt-get install -y nginx
+      curl -k -s https://raw.githubusercontent.com/cloudadc/cloud-quickstarts/main/gcp/network/lb/app.conf -o /etc/nginx/conf.d/app.conf
+      update-rc.d nginx enable
+      service nginx restart'
+----
+
+[source, bash]
+.*2. create vm www2*
+----
+gcloud compute instances create www2 \
+    --zone=us-central1-a \
+    --tags=network-lb-tag \
+    --machine-type=e2-small \
+    --image-family=debian-11 \
+    --image-project=debian-cloud \
+    --metadata=startup-script='#!/bin/bash
+      apt-get update
+      apt-get install -y nginx
+      curl -k -s https://raw.githubusercontent.com/cloudadc/cloud-quickstarts/main/gcp/network/lb/app.conf -o /etc/nginx/conf.d/app.conf
+      update-rc.d nginx enable
+      service nginx restart'
+----
+
+[source, bash]
+.*3. create vm www3*
+----
+gcloud compute instances create www3 \
+    --zone=us-central1-a \
+    --tags=network-lb-tag \
+    --machine-type=e2-small \
+    --image-family=debian-11 \
+    --image-project=debian-cloud \
+    --metadata=startup-script='#!/bin/bash
+      apt-get update
+      apt-get install -y nginx
+      curl -k -s https://raw.githubusercontent.com/cloudadc/cloud-quickstarts/main/gcp/network/lb/app.conf -o /etc/nginx/conf.d/app.conf
+      update-rc.d nginx enable
+      service nginx restart'
+----
+
+[source, bash]
+.*4. create firewall to allow http request*
+----
+gcloud compute firewall-rules create www-firewall-network-lb --target-tags network-lb-tag --allow tcp:8080
+----
+
+[source, bash]
+.*5. test access www app*
+----
+$ for ip in $(gcloud compute instances list | grep EXTERNAL_IP | awk '{print $2}') ; do curl $ip:8080 ; done
+
+            request: GET / HTTP/1.1
+               host: 34.66.174.19
+           hostname: www1
+
+        client addr: 34.87.162.177:37952
+        server addr: 10.128.0.5:8080
+
+             cookie:
+                xff:
+         user agent: curl/7.74.0
 
 
+            request: GET / HTTP/1.1
+               host: 34.30.185.127
+           hostname: www2
+
+        client addr: 34.87.162.177:34504
+        server addr: 10.128.0.6:8080
+
+             cookie:
+                xff:
+         user agent: curl/7.74.0
 
 
+            request: GET / HTTP/1.1
+               host: 34.30.158.80
+           hostname: www3
 
+        client addr: 34.87.162.177:41204
+        server addr: 10.128.0.7:8080
+
+             cookie:
+                xff:
+         user agent: curl/7.74.0
+----
+
+=== Create Network load balancer
+
+[source, bash]
+.*1. Create a static external IP address*
+----
+gcloud compute addresses create network-lb-ip-1 --region=us-central1 
+----
+
+[source, bash]
+.*2. Create a HTTP health check*
+----
+gcloud compute http-health-checks create basic-check
+----
+
+[source, bash]
+.*3. Create a target pool*
+----
+gcloud compute target-pools create www-pool --region=us-central1 --http-health-check=basic-check
+----
+
+[source, bash]
+.*4. Add the instances to the pool*
+----
+gcloud compute target-pools add-instances www-pool --instances=www1,www2,www3 --instances-zone=us-central1-a --region=us-central1
+----
+
+[source, bash]
+.*5. Add a forwarding rule*
+----
+gcloud compute forwarding-rules create www-rule --region=us-central1 --ports=8080 --address=network-lb-ip-1 --target-pool=www-pool
+----
+
+=== Test to access application via LB VIP
+
+[source, bash]
+----
+$ IPADDRESS=$(gcloud compute forwarding-rules describe www-rule --region=us-central1 | grep IPAddress | awk '{print $2}') ; for i in 1 2 3 ; do curl $IPADDRESS:8080 ; done
+
+            request: GET / HTTP/1.1
+               host: 34.134.75.195
+           hostname: www2
+
+        client addr: 34.87.162.177:40456
+        server addr: 34.134.75.195:8080
+
+             cookie:
+                xff:
+         user agent: curl/7.74.0
+
+
+            request: GET / HTTP/1.1
+               host: 34.134.75.195
+           hostname: www3
+
+        client addr: 34.87.162.177:34026
+        server addr: 34.134.75.195:8080
+
+             cookie:
+                xff:
+         user agent: curl/7.74.0
+
+
+            request: GET / HTTP/1.1
+               host: 34.134.75.195
+           hostname: www2
+
+        client addr: 34.87.162.177:34038
+        server addr: 34.134.75.195:8080
+
+             cookie:
+                xff:
+         user agent: curl/7.74.0
+----
+
+== Global external HTTP(S) load balancer (classic)
+
+* External HTTP(S) Load Balancing is a proxy-based Layer 7 load balancer that enables you to run and scale your services behind a single external IP address. External HTTP(S) Load Balancing distributes HTTP and HTTPS traffic to backends hosted on a variety of Google Cloud platforms (such as Compute Engine, Google Kubernetes Engine (GKE), Cloud Storage, and so on), as well as external backends connected over the internet or via hybrid connectivity.
+
+=== Create Managed instance groups
+
+[source, bash]
+.*1. Create a instance template*
+----
+gcloud compute instance-templates create lb-backend-template \
+   --region=us-central1 \
+   --network=default \
+   --subnet=default \
+   --tags=allow-health-check \
+   --machine-type=e2-medium \
+   --image-family=debian-11 \
+   --image-project=debian-cloud \
+   --metadata=startup-script='#!/bin/bash
+      apt-get update
+      apt-get install -y nginx
+      curl -k -s https://raw.githubusercontent.com/cloudadc/cloud-quickstarts/main/gcp/network/lb/app.conf -o /etc/nginx/conf.d/app.conf
+      update-rc.d nginx enable
+      service nginx restart'
+----
+
+[source, bash]
+.*2. Create a managed instance group*
+----
+gcloud compute instance-groups managed create lb-backend-group --template=lb-backend-template --size=2 --zone=us-central1-a
+----
+
+[source, bash]
+.*3. Create firewall rule to allow health check and LB snat ingress request*
+----
+gcloud compute firewall-rules create fw-allow-health-check \
+  --network=default \
+  --action=allow \
+  --direction=ingress \
+  --source-ranges=130.211.0.0/22,35.191.0.0/16 \
+  --target-tags=allow-health-check \
+  --rules=tcp:8080
+----
+
+=== HTTP Load Balancer
+
+[source, bash]
+.*1. set up a global static external IP address*
+----
+gcloud compute addresses create lb-ipv4-1 --ip-version=IPV4 --global
+----
+
+[source, bash]
+.*2. create a health check*
+----
+gcloud compute health-checks create http http-basic-check --port 8080
+----
+
+[source, bash]
+.*3. Create a backend service*
+----
+gcloud compute backend-services create web-backend-service \
+  --protocol=HTTP \
+  --port-name=http \
+  --health-checks=http-basic-check \
+  --global
+----
+
+[source, bash]
+.*4. Add your instance group as the backend to the backend service*
+----
+gcloud compute backend-services add-backend web-backend-service \
+  --instance-group=lb-backend-group \
+  --instance-group-zone=us-central1-a \
+  --global
+----
+
+[source, bash]
+.*5. Create a URL map to route the incoming requests to the default backend service*
+----
+gcloud compute url-maps create web-map-http --default-service web-backend-service
+----
+
+[source, bash]
+.*6. Create a target HTTP proxy to route requests to your URL map*
+----
+gcloud compute target-http-proxies create http-lb-proxy --url-map web-map-http
+----
+
+[source, bash]
+.*7. Create a global forwarding rule to route incoming requests to the proxy*
+----
+gcloud compute forwarding-rules create http-content-rule \
+    --address=lb-ipv4-1\
+    --global \
+    --target-http-proxy=http-lb-proxy \
+    --ports=8080
+----
+
+=== Test to access application via LB VIP
+
+[source, bash]
+----
+$ IPAddress=$(gcloud compute forwarding-rules describe http-content-rule --global | grep IPAddress | awk '{print $2}') ; for i in 1 2 3  ; do curl $IPAddress:8080 ; done
+
+            request: GET / HTTP/1.1
+               host: 34.120.42.55
+           hostname: lb-backend-group-rjbv
+
+        client addr: 130.211.0.20:50629
+        server addr: 10.128.0.9:8080
+
+             cookie:
+                xff:
+         user agent: curl/7.74.0
+
+
+            request: GET / HTTP/1.1
+               host: 34.120.42.55
+           hostname: lb-backend-group-jgdf
+
+        client addr: 35.191.3.67:53351
+        server addr: 10.128.0.8:8080
+
+             cookie:
+                xff:
+         user agent: curl/7.74.0
+
+
+            request: GET / HTTP/1.1
+               host: 34.120.42.55
+           hostname: lb-backend-group-rjbv
+
+        client addr: 35.191.3.65:50702
+        server addr: 10.128.0.9:8080
+
+             cookie:
+                xff:
+         user agent: curl/7.74.0
+----
 
 == Internal Load Balancer
 
