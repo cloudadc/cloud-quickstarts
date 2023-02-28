@@ -1,0 +1,244 @@
+= Cloud Load Balancer Objects
+:toc: manual
+
+== compute instance-groups
+
+[source, json]
+----
+{
+  "baseInstanceName": "lb-backend-group",
+  "creationTimestamp": "2023-02-28T06:32:41.321-08:00",
+  "currentActions": {
+    "abandoning": 0,
+    "creating": 0,
+    "creatingWithoutRetries": 0,
+    "deleting": 0,
+    "none": 2,
+    "recreating": 0,
+    "refreshing": 0,
+    "restarting": 0,
+    "resuming": 0,
+    "starting": 0,
+    "stopping": 0,
+    "suspending": 0,
+    "verifying": 0
+  },
+  "fingerprint": "ZNjTmubX3iU=",
+  "id": "4133448216422362726",
+  "instanceGroup": "https://www.googleapis.com/compute/v1/projects/playground-s-11-fae8eab0/zones/us-central1-a/instanceGroups/lb-backend-group",
+  "instanceTemplate": "https://www.googleapis.com/compute/v1/projects/playground-s-11-fae8eab0/global/instanceTemplates/lb-backend-template",
+  "kind": "compute#instanceGroupManager",
+  "listManagedInstancesResults": "PAGELESS",
+  "name": "lb-backend-group",
+  "namedPorts": [
+    {
+      "name": "test-app",
+      "port": 8080
+    }
+  ],
+  "selfLink": "https://www.googleapis.com/compute/v1/projects/playground-s-11-fae8eab0/zones/us-central1-a/instanceGroupManagers/lb-backend-group",
+  "status": {
+    "isStable": true,
+    "stateful": {
+      "hasStatefulConfig": false,
+      "perInstanceConfigs": {
+        "allEffective": true
+      }
+    },
+    "versionTarget": {
+      "isReached": true
+    }
+  },
+  "targetSize": 2,
+  "updatePolicy": {
+    "maxSurge": {
+      "calculated": 1,
+      "fixed": 1
+    },
+    "maxUnavailable": {
+      "calculated": 1,
+      "fixed": 1
+    },
+    "minimalAction": "REPLACE",
+    "replacementMethod": "SUBSTITUTE",
+    "type": "OPPORTUNISTIC"
+  },
+  "versions": [
+    {
+      "instanceTemplate": "https://www.googleapis.com/compute/v1/projects/playground-s-11-fae8eab0/global/instanceTemplates/lb-backend-template",
+      "targetSize": {
+        "calculated": 2
+      }
+    }
+  ],
+  "zone": "https://www.googleapis.com/compute/v1/projects/playground-s-11-fae8eab0/zones/us-central1-a"
+}
+----
+
+== compute addresses
+
+[source, json]
+----
+{
+  "address": "34.111.231.147",
+  "addressType": "EXTERNAL",
+  "creationTimestamp": "2023-02-28T06:39:40.684-08:00",
+  "description": "",
+  "id": "231537476740820163",
+  "ipVersion": "IPV4",
+  "kind": "compute#address",
+  "name": "lb-ipv4-1",
+  "networkTier": "PREMIUM",
+  "selfLink": "https://www.googleapis.com/compute/v1/projects/playground-s-11-fae8eab0/global/addresses/lb-ipv4-1",
+  "status": "RESERVED"
+}
+----
+
+== compute health-checks
+
+[source, json]
+----
+{
+  "checkIntervalSec": 5,
+  "creationTimestamp": "2023-02-28T06:48:52.697-08:00",
+  "healthyThreshold": 2,
+  "httpHealthCheck": {
+    "port": 8080,
+    "portSpecification": "USE_FIXED_PORT",
+    "proxyHeader": "NONE",
+    "requestPath": "/"
+  },
+  "id": "4009655370482166459",
+  "kind": "compute#healthCheck",
+  "name": "http-basic-check",
+  "selfLink": "https://www.googleapis.com/compute/v1/projects/playground-s-11-fae8eab0/global/healthChecks/http-basic-check",
+  "timeoutSec": 5,
+  "type": "HTTP",
+  "unhealthyThreshold": 2
+}
+----
+
+== compute backend-services
+
+[source, json]
+----
+{
+  "affinityCookieTtlSec": 0,
+  "backends": [
+    {
+      "balancingMode": "UTILIZATION",
+      "capacityScaler": 1.0,
+      "group": "https://www.googleapis.com/compute/v1/projects/playground-s-11-fae8eab0/zones/us-central1-a/instanceGroups/lb-backend-group"
+    }
+  ],
+  "connectionDraining": {
+    "drainingTimeoutSec": 0
+  },
+  "creationTimestamp": "2023-02-28T07:13:58.222-08:00",
+  "description": "",
+  "enableCDN": false,
+  "fingerprint": "Dkhuos0nKEk=",
+  "healthChecks": [
+    "https://www.googleapis.com/compute/v1/projects/playground-s-11-fae8eab0/global/healthChecks/http-basic-check"
+  ],
+  "id": "7068150849533617369",
+  "kind": "compute#backendService",
+  "loadBalancingScheme": "EXTERNAL",
+  "name": "web-backend-service",
+  "port": 80,
+  "portName": "test-app",
+  "protocol": "HTTP",
+  "selfLink": "https://www.googleapis.com/compute/v1/projects/playground-s-11-fae8eab0/global/backendServices/web-backend-service",
+  "sessionAffinity": "NONE",
+  "timeoutSec": 30
+}
+----
+
+== compute url-maps 
+
+[source, json]
+----
+{
+  "creationTimestamp": "2023-02-28T07:25:43.148-08:00",
+  "defaultService": "https://www.googleapis.com/compute/v1/projects/playground-s-11-fae8eab0/global/backendServices/web-backend-service",
+  "fingerprint": "yub7cvc5tmU=",
+  "id": "7133585251813794328",
+  "kind": "compute#urlMap",
+  "name": "web-map-http",
+  "selfLink": "https://www.googleapis.com/compute/v1/projects/playground-s-11-fae8eab0/global/urlMaps/web-map-http"
+}
+----
+
+== compute target-http-proxies
+
+[source, json]
+----
+{
+  "creationTimestamp": "2023-02-28T07:31:09.951-08:00",
+  "fingerprint": "bqlK0LAtmi8=",
+  "id": "6191998029618454738",
+  "kind": "compute#targetHttpProxy",
+  "name": "http-lb-proxy",
+  "selfLink": "https://www.googleapis.com/compute/v1/projects/playground-s-11-fae8eab0/global/targetHttpProxies/http-lb-proxy",
+  "urlMap": "https://www.googleapis.com/compute/v1/projects/playground-s-11-fae8eab0/global/urlMaps/web-map-http"
+}
+----
+
+== compute forwarding-rules
+
+[source, json]
+----
+{
+  "IPAddress": "34.111.231.147",
+  "IPProtocol": "TCP",
+  "creationTimestamp": "2023-02-28T07:41:04.963-08:00",
+  "description": "",
+  "fingerprint": "0YMdqhEd2n0=",
+  "id": "6391186634143145599",
+  "kind": "compute#forwardingRule",
+  "labelFingerprint": "42WmSpB8rSM=",
+  "loadBalancingScheme": "EXTERNAL",
+  "name": "http-content-rule",
+  "networkTier": "PREMIUM",
+  "portRange": "80-80",
+  "selfLink": "https://www.googleapis.com/compute/v1/projects/playground-s-11-fae8eab0/global/forwardingRules/http-content-rule",
+  "target": "https://www.googleapis.com/compute/v1/projects/playground-s-11-fae8eab0/global/targetHttpProxies/http-lb-proxy"
+}
+----
+
+== compute firewall-rules
+
+[source, json]
+----
+{
+  "allowed": [
+    {
+      "IPProtocol": "tcp",
+      "ports": [
+        "8080"
+      ]
+    }
+  ],
+  "creationTimestamp": "2023-02-28T06:33:09.525-08:00",
+  "description": "",
+  "direction": "INGRESS",
+  "disabled": false,
+  "id": "3529961515552845386",
+  "kind": "compute#firewall",
+  "logConfig": {
+    "enable": false
+  },
+  "name": "fw-allow-health-check",
+  "network": "https://www.googleapis.com/compute/v1/projects/playground-s-11-fae8eab0/global/networks/default",
+  "priority": 1000,
+  "selfLink": "https://www.googleapis.com/compute/v1/projects/playground-s-11-fae8eab0/global/firewalls/fw-allow-health-check",
+  "sourceRanges": [
+    "130.211.0.0/22",
+    "35.191.0.0/16"
+  ],
+  "targetTags": [
+    "allow-health-check"
+  ]
+}
+----
+

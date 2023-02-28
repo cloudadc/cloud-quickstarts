@@ -3,7 +3,9 @@
 
 == Cloud Load Balancer
 
-TODO
+=== Related Objects
+
+link:LBObjects.adoc[Cloud Load Balancer Related Objects] 
 
 == Global external HTTP Load Balancer
 
@@ -434,7 +436,7 @@ gcloud compute target-pools add-instances www-pool --instances=www1,www2,www3 --
 gcloud compute forwarding-rules create www-rule --region=us-central1 --ports=8080 --address=network-lb-ip-1 --target-pool=www-pool
 ----
 
-=== Test to access application via LB VIP
+=== Test to access application
 
 [source, bash]
 ----
@@ -476,7 +478,7 @@ $ IPADDRESS=$(gcloud compute forwarding-rules describe www-rule --region=us-cent
          user agent: curl/7.74.0
 ----
 
-== Global external HTTP(S) load balancer (classic)
+== Global external HTTP load balancer (classic)
 
 * External HTTP(S) Load Balancing is a proxy-based Layer 7 load balancer that enables you to run and scale your services behind a single external IP address. External HTTP(S) Load Balancing distributes HTTP and HTTPS traffic to backends hosted on a variety of Google Cloud platforms (such as Compute Engine, Google Kubernetes Engine (GKE), Cloud Storage, and so on), as well as external backends connected over the internet or via hybrid connectivity.
 
@@ -505,7 +507,10 @@ gcloud compute instance-templates create lb-backend-template \
 .*2. Create a managed instance group*
 ----
 gcloud compute instance-groups managed create lb-backend-group --template=lb-backend-template --size=2 --zone=us-central1-a
+gcloud compute instance-groups set-named-ports lb-backend-group --named-ports=test-app:8080 --zone=us-central1-a
 ----
+
+NOTE: The named port `test-app:8080` are referenced in compute backend service.
 
 [source, bash]
 .*3. Create firewall rule to allow health check and LB snat ingress request*
@@ -538,7 +543,7 @@ gcloud compute health-checks create http http-basic-check --port 8080
 ----
 gcloud compute backend-services create web-backend-service \
   --protocol=HTTP \
-  --port-name=http \
+  --port-name=test-app \
   --health-checks=http-basic-check \
   --global
 ----
@@ -571,21 +576,21 @@ gcloud compute forwarding-rules create http-content-rule \
     --address=lb-ipv4-1\
     --global \
     --target-http-proxy=http-lb-proxy \
-    --ports=8080
+    --ports=80
 ----
 
-=== Test to access application via LB VIP
+=== Test to access application
 
 [source, bash]
 ----
-$ IPAddress=$(gcloud compute forwarding-rules describe http-content-rule --global | grep IPAddress | awk '{print $2}') ; for i in 1 2 3  ; do curl $IPAddress:8080 ; done
+$ IPAddress=$(gcloud compute forwarding-rules describe http-content-rule --global | grep IPAddress | awk '{print $2}') ; for i in 1 2 3  ; do curl $IPAddress ; done
 
             request: GET / HTTP/1.1
-               host: 34.120.42.55
-           hostname: lb-backend-group-rjbv
+               host: 34.111.231.147
+           hostname: lb-backend-group-s699
 
-        client addr: 130.211.0.20:50629
-        server addr: 10.128.0.9:8080
+        client addr: 35.191.8.83:57775
+        server addr: 10.128.0.2:8080
 
              cookie:
                 xff:
@@ -593,11 +598,11 @@ $ IPAddress=$(gcloud compute forwarding-rules describe http-content-rule --globa
 
 
             request: GET / HTTP/1.1
-               host: 34.120.42.55
-           hostname: lb-backend-group-jgdf
+               host: 34.111.231.147
+           hostname: lb-backend-group-s699
 
-        client addr: 35.191.3.67:53351
-        server addr: 10.128.0.8:8080
+        client addr: 35.191.1.236:49776
+        server addr: 10.128.0.2:8080
 
              cookie:
                 xff:
@@ -605,11 +610,11 @@ $ IPAddress=$(gcloud compute forwarding-rules describe http-content-rule --globa
 
 
             request: GET / HTTP/1.1
-               host: 34.120.42.55
-           hostname: lb-backend-group-rjbv
+               host: 34.111.231.147
+           hostname: lb-backend-group-g7b1
 
-        client addr: 35.191.3.65:50702
-        server addr: 10.128.0.9:8080
+        client addr: 130.211.0.93:57606
+        server addr: 10.128.0.3:8080
 
              cookie:
                 xff:
