@@ -73,30 +73,6 @@ gcloud compute instance-groups managed set-autoscaling mig-app-us \
 gcloud compute instance-groups set-named-ports mig-app-us --named-ports=webapp:8080 --zone=us-central1-a
 ----
 
-[source, bash]
-.**
-----
-
-----
-
-[source, bash]
-.**
-----
-
-----
-
-[source, bash]
-.**
-----
-
-----
-
-[source, bash]
-.**
-----
-
-----
-
 == Global external HTTP Load Balancer
 
 Google Cloud HTTP(S) load balancing is implemented at the edge of Google's network in Google's points of presence (POP) around the world. User traffic directed to an HTTP(S) load balancer enters the POP closest to the user and is then load-balanced over Google's global network to the closest backend that has sufficient available capacity.
@@ -155,17 +131,17 @@ NOTE: If VM instances without an external IP address, Cloud NAT service to allow
 .*1. Create VM Instance*
 ----
 gcloud compute instances create webserver \
-    --zone=us-central1-a \
-    --machine-type=e2-micro \
-    --network-interface=subnet=test-us-central1,no-address \
-    --maintenance-policy=MIGRATE \
-    --provisioning-model=STANDARD \
-    --tags=allow-health-checks \
-    --create-disk=auto-delete=no,boot=yes,device-name=webserver,image=projects/debian-cloud/global/images/debian-11-bullseye-v20230206,mode=rw,size=10,type=pd-balanced \
-    --no-shielded-secure-boot \
-    --shielded-vtpm \
-    --shielded-integrity-monitoring \
-    --reservation-affinity=any
+   --zone=us-central1-a \
+   --machine-type=e2-micro \
+   --network-interface=subnet=test-us-central1,no-address \
+   --tags=allow-health-checks \
+   --create-disk=auto-delete=no,boot=yes,device-name=webserver,image=projects/debian-cloud/global/images/debian-11-bullseye-v20230206,mode=rw,size=10,type=pd-balanced \
+   --metadata=startup-script='#!/bin/bash
+      apt-get update
+      apt-get install -y nginx
+      curl -k -s https://raw.githubusercontent.com/cloudadc/cloud-quickstarts/main/gcp/network/lb/app.conf -o /etc/nginx/conf.d/app.conf
+      update-rc.d nginx enable
+      service nginx restart'
 ----
 
 * `--network-interface` - the `no-address` hints no public IP address will be assigned
@@ -173,38 +149,13 @@ gcloud compute instances create webserver \
 * `--create-disk` - the `webserver` is the name of Disk, the `auto-delete=no` means Disk will keep even the Instance be deleted
 
 [source, bash]
-.*2. SSH to VM Instance setup Application*
-----
-sudo apt-get update
-sudo apt-get install -y nginx
-sudo service nginx start
-sudo service nginx status
-sudo update-rc.d nginx enable
-
-sudo service nginx restart
-
-$ curl localhost:8080
-
-            request: GET / HTTP/1.1
-               host: localhost
-           hostname: webserver
-
-        client addr: 127.0.0.1:36790
-        server addr: 127.0.0.1:8080
-
-             cookie: 
-                xff: 
-         user agent: curl/7.74.0
-----
-
-[source, bash]
-.*3. Delete the VM Instance*
+.*2. Delete the VM Instance*
 ----
 gcloud compute instances delete webserver --zone=us-central1-a
 ----
 
 [source, bash]
-.*4. Verify the Disk Still Exist*
+.*3. Verify the Disk Still Exist*
 ----
 $ gcloud compute disks list
 NAME: webserver
@@ -216,7 +167,7 @@ STATUS: READY
 ----
 
 [source, bash]
-.*5. Create VM Image*
+.*4. Create VM Image*
 ----
 gcloud compute images create testwebserver --source-disk=webserver --source-disk-zone=us-central1-a --storage-location=us --family=webserver
 ----
@@ -226,9 +177,9 @@ gcloud compute images create testwebserver --source-disk=webserver --source-disk
 [source, bash]
 .*1. configure the instance template*
 ----
-gcloud compute instance-templates create us-webserver-template --machine-type=f1-micro --network-interface=subnet=test-us-central1,no-address --maintenance-policy=MIGRATE --provisioning-model=STANDARD --tags=allow-health-checks --create-disk=auto-delete=yes,boot=yes,device-name=testwebserver-template,image=testwebserver,mode=rw,size=10,type=pd-balanced --no-shielded-secure-boot --shielded-vtpm --shielded-integrity-monitoring --reservation-affinity=any
+gcloud compute instance-templates create us-webserver-template --machine-type=f1-micro --network-interface=subnet=test-us-central1,no-address --tags=allow-health-checks --create-disk=auto-delete=yes,boot=yes,device-name=testwebserver-template,image=testwebserver,mode=rw,size=10,type=pd-balanced --region=us-central1
 
-gcloud compute instance-templates create eu-webserver-template --machine-type=f1-micro --network-interface=subnet=test-europe-west1,no-address --maintenance-policy=MIGRATE --provisioning-model=STANDARD --tags=allow-health-checks --create-disk=auto-delete=yes,boot=yes,device-name=testwebserver-template,image=testwebserver,mode=rw,size=10,type=pd-balanced --no-shielded-secure-boot --shielded-vtpm --shielded-integrity-monitoring --reservation-affinity=any
+gcloud compute instance-templates create eu-webserver-template --machine-type=f1-micro --network-interface=subnet=test-europe-west1,no-address --tags=allow-health-checks --create-disk=auto-delete=yes,boot=yes,device-name=testwebserver-template,image=testwebserver,mode=rw,size=10,type=pd-balanced --region=europe-west1
 ----
 
 [source, bash]
@@ -238,12 +189,12 @@ $ gcloud compute instance-templates list
 NAME: eu-webserver-template
 MACHINE_TYPE: f1-micro
 PREEMPTIBLE:
-CREATION_TIMESTAMP: 2023-02-18T07:33:52.548-08:00
+CREATION_TIMESTAMP: 2023-03-03T03:39:16.194-08:00
 
 NAME: us-webserver-template
 MACHINE_TYPE: f1-micro
 PREEMPTIBLE:
-CREATION_TIMESTAMP: 2023-02-18T07:33:22.746-08:00
+CREATION_TIMESTAMP: 2023-03-03T03:38:12.977-08:00
 ----
 
 * link:lb-compute-instance-templates.json[lb-compute-instance-templates.json]
@@ -273,14 +224,22 @@ PROTOCOL: TCP
 .*1. create instance group us-central1-mig*
 ----
 gcloud compute instance-groups managed create us-central1-mig --base-instance-name=us-central1-mig --size=1 --template=us-webserver-template --zones=us-central1-c,us-central1-f,us-central1-b --target-distribution-shape=EVEN --instance-redistribution-type=PROACTIVE --list-managed-instances-results=PAGELESS --health-check=http-health-check --initial-delay=60
+
 gcloud compute instance-groups managed set-autoscaling us-central1-mig --region=us-central1 --cool-down-period=60 --max-num-replicas=2 --min-num-replicas=1 --mode=on --target-load-balancing-utilization=0.8
+
+gcloud compute instance-groups set-named-ports us-central1-mig --named-ports=webapp:8080 --region=us-central1
 ----
+
+* `--instance-redistribution-type`
 
 [source, bash]
 .*2. create instance group europe-west1-mig*
 ----
 gcloud compute instance-groups managed create europe-west1-mig --base-instance-name=europe-west1-mig --size=1 --template=eu-webserver-template --zones=europe-west1-b,europe-west1-d,europe-west1-c --target-distribution-shape=EVEN --instance-redistribution-type=PROACTIVE --list-managed-instances-results=PAGELESS --health-check=http-health-check --initial-delay=60
+
 gcloud compute instance-groups managed set-autoscaling europe-west1-mig --region=europe-west1 --cool-down-period=60 --max-num-replicas=2 --min-num-replicas=1 --mode=on --target-load-balancing-utilization=0.8
+
+gcloud compute instance-groups set-named-ports europe-west1-mig --named-ports=webapp:8080 --region=europe-west1
 ----
 
 [source, bash]
@@ -329,6 +288,16 @@ NOTE: the health check passed, both instance groups has one active vm instance.
 *5. Observability*
 
 image:lb-observe.png[]
+
+[source, bash]
+.*Scripts used in this section*
+----
+gcloud compute addresses create lb-ipv4-1 --ip-version=IPV4 --global
+gcloud compute addresses create lb-ipv6-1 --ip-version=IPV6 --global
+gcloud compute backend-services create http-backend --protocol=HTTP --port-name=webapp --health-checks=http-health-check --timeout=30 --global
+gcloud compute backend-services add-backend http-backend --instance-group=us-central1-mig --instance-group-region=us-central1 --balancing-mode=UTILIZATION --max-utilization=0.8 --capacity-scaler=1.0 --global
+gcloud compute backend-services add-backend http-backend --instance-group=europe-west1-mig --instance-group-region=europe-west1  --balancing-mode=RATE --max-rate-per-instance=0.8 --capacity-scaler=1.0 --global
+----
 
 === Test access the application via LB endpoint
 
