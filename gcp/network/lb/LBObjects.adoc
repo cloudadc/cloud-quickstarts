@@ -1,6 +1,89 @@
 = Cloud Load Balancer Objects
 :toc: manual
 
+== compute instance-templates
+
+[source, json]
+----
+{
+  "creationTimestamp": "2023-03-02T19:59:40.852-08:00",
+  "description": "",
+  "id": "8862361140901760579",
+  "kind": "compute#instanceTemplate",
+  "name": "lb-backend-template",
+  "properties": {
+    "canIpForward": false,
+    "disks": [
+      {
+        "autoDelete": true,
+        "boot": true,
+        "deviceName": "persistent-disk-0",
+        "index": 0,
+        "initializeParams": {
+          "sourceImage": "https://compute.googleapis.com/compute/v1/projects/debian-cloud/global/images/family/debian-11"
+        },
+        "kind": "compute#attachedDisk",
+        "mode": "READ_WRITE",
+        "type": "PERSISTENT"
+      }
+    ],
+    "machineType": "e2-micro",
+    "metadata": {
+      "fingerprint": "Zvm_X29QQdI=",
+      "items": [
+        {
+          "key": "startup-script",
+          "value": "#!/bin/bash\n      apt-get update\n      apt-get install -y nginx\n      curl -k -s https://raw.githubusercontent.com/cloudadc/cloud-quickstarts/main/gcp/network/lb/app.conf -o /etc/nginx/conf.d/app.conf\n      update-rc.d nginx enable\n      service nginx restart"
+        }
+      ],
+      "kind": "compute#metadata"
+    },
+    "networkInterfaces": [
+      {
+        "accessConfigs": [
+          {
+            "kind": "compute#accessConfig",
+            "name": "external-nat",
+            "networkTier": "PREMIUM",
+            "type": "ONE_TO_ONE_NAT"
+          }
+        ],
+        "kind": "compute#networkInterface",
+        "name": "nic0",
+        "network": "https://www.googleapis.com/compute/v1/projects/playground-s-11-17be262b/global/networks/default",
+        "subnetwork": "https://www.googleapis.com/compute/v1/projects/playground-s-11-17be262b/regions/us-central1/subnetworks/default"
+      }
+    ],
+    "scheduling": {
+      "automaticRestart": true,
+      "onHostMaintenance": "MIGRATE",
+      "preemptible": false,
+      "provisioningModel": "STANDARD"
+    },
+    "serviceAccounts": [
+      {
+        "email": "default",
+        "scopes": [
+          "https://www.googleapis.com/auth/devstorage.read_only",
+          "https://www.googleapis.com/auth/logging.write",
+          "https://www.googleapis.com/auth/monitoring.write",
+          "https://www.googleapis.com/auth/pubsub",
+          "https://www.googleapis.com/auth/service.management.readonly",
+          "https://www.googleapis.com/auth/servicecontrol",
+          "https://www.googleapis.com/auth/trace.append"
+        ]
+      }
+    ],
+    "tags": {
+      "items": [
+        "allow-health-check"
+      ]
+    }
+  },
+  "selfLink": "https://www.googleapis.com/compute/v1/projects/playground-s-11-17be262b/global/instanceTemplates/lb-backend-template"
+}
+----
+
 == compute instance-groups
 
 [source, json]
@@ -94,7 +177,30 @@
 }
 ----
 
-== compute health-checks
+== compute health-checks tcp
+
+[source, json]
+----
+{
+  "checkIntervalSec": 5,
+  "creationTimestamp": "2023-03-02T20:12:24.475-08:00",
+  "healthyThreshold": 1,
+  "id": "4667230673229892935",
+  "kind": "compute#healthCheck",
+  "name": "tcp-health-check",
+  "selfLink": "https://www.googleapis.com/compute/v1/projects/playground-s-11-17be262b/global/healthChecks/tcp-health-check",
+  "tcpHealthCheck": {
+    "port": 8080,
+    "portSpecification": "USE_FIXED_PORT",
+    "proxyHeader": "NONE"
+  },
+  "timeoutSec": 5,
+  "type": "TCP",
+  "unhealthyThreshold": 3
+}
+----
+
+== compute health-checks http
 
 [source, json]
 ----

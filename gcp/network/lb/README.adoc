@@ -1,11 +1,101 @@
 = Cloud Load Balancer
 :toc: manual
 
-== Cloud Load Balancer
+== Prerequisites
 
 === Related Objects
 
 link:LBObjects.adoc[Cloud Load Balancer Related Objects] 
+
+=== health checks
+
+[source, bash]
+.*tcp health checks*
+----
+gcloud compute health-checks create tcp tcp-health-check --port=8080 --proxy-header=NONE --check-interval=5 --timeout=5 --unhealthy-threshold=3 --healthy-threshold=1
+----
+
+[source, bash]
+.*http basic health checks*
+----
+gcloud compute health-checks create http http-basic-check --port 8080 --request-path=/ --proxy-header=NONE --check-interval=5 --timeout=5 --healthy-threshold=1 --unhealthy-threshold=3
+----
+
+[source, bash]
+.*http advanced health checks*
+----
+gcloud compute health-checks create http http-advanced-check --port 8080 --request-path=/health-check --response=health --host=probe.example.com --proxy-header=NONE --check-interval=5 --timeout=5 --healthy-threshold=1 --unhealthy-threshold=3
+----
+
+=== instance template*
+
+[source, bash]
+.*instance template(internet)*
+----
+gcloud compute instance-templates create lb-backend-template \
+   --region=us-central1 \
+   --network=default \
+   --subnet=default \
+   --tags=allow-health-check \
+   --machine-type=e2-micro \
+   --image-family=debian-11 \
+   --image-project=debian-cloud \
+   --metadata=startup-script='#!/bin/bash
+      apt-get update
+      apt-get install -y nginx
+      curl -k -s https://raw.githubusercontent.com/cloudadc/cloud-quickstarts/main/gcp/network/lb/app.conf -o /etc/nginx/conf.d/app.conf
+      update-rc.d nginx enable
+      service nginx restart'
+----
+
+=== instance group(managed, zonal, internet)
+
+[source, bash]
+.*instance group*
+----
+gcloud compute instance-groups managed create mig-app-us \
+   --base-instance-name=mig-app-us \
+   --size=1 \
+   --template=lb-backend-template  \
+   --zone=us-central1-a  \
+   --list-managed-instances-results=PAGELESS \
+   --health-check=tcp-health-check  \
+   --initial-delay=60
+
+gcloud compute instance-groups managed set-autoscaling mig-app-us \
+   --zone=us-central1-a  \ 
+   --cool-down-period=60  \
+   --max-num-replicas=3  \ 
+   --min-num-replicas=1  \ 
+   --mode=on  \
+   --target-cpu-utilization=0.5
+
+gcloud compute instance-groups set-named-ports mig-app-us --named-ports=webapp:8080 --zone=us-central1-a
+----
+
+[source, bash]
+.**
+----
+
+----
+
+[source, bash]
+.**
+----
+
+----
+
+[source, bash]
+.**
+----
+
+----
+
+[source, bash]
+.**
+----
+
+----
 
 == Global external HTTP Load Balancer
 
@@ -302,7 +392,9 @@ Note that the Load Balancer source also come from `35.191.0.0/16`, use one of me
 
 == Network load balancer  
 
-* Google Cloud external TCP/UDP Network Load Balancing is a regional, pass-through load balancer. A network load balancer distributes external traffic among virtual machine (VM) instances in the same region.
+Google Cloud external TCP/UDP Network Load Balancing is a regional, pass-through load balancer. A network load balancer distributes external traffic among virtual machine (VM) instances in the same region.
+
+image:gcp-nlb-arch.png[]
 
 === Create web server VM instances
 

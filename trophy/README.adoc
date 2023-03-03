@@ -63,6 +63,6 @@
 
 |12
 |link:https://www.coursera.org/learn/google-kubernetes-engine/home/week/1[Getting Started with Google Kubernetes Engine]
-|Mar 5, 2023
+|Mar 2, 2023
 
 |===
