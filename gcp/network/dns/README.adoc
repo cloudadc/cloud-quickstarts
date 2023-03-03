@@ -1,3 +1,478 @@
 = Cloud DNS
 :toc: manual
 
+== Prerequisites
+
+=== Enable DNS API
+
+[source, bash]
+.*Enable Cloud DNS API*
+----
+gcloud services enable dns.googleapis.com
+----
+
+[source, bash]
+.*Verify that the APIs are enabled*
+----
+$ gcloud services list | grep dns.googleapis.com
+NAME: dns.googleapis.com
+----
+
+=== Setup Firewall Rule 
+
+[source, bash]
+.*Allow SSH traffic from Identity Aware Proxies (IAP)*
+----
+gcloud compute firewall-rules create fw-default-iapproxy --direction=INGRESS --priority=1000 --network=default --action=ALLOW --rules=tcp:22,icmp --source-ranges=35.235.240.0/20
+----
+
+[source, bash]
+.*Allow External HTTP traffic*
+----
+gcloud compute firewall-rules create allow-http-traffic --direction=INGRESS --priority=1000 --network=default --action=ALLOW --rules=tcp:80 --source-ranges=0.0.0.0/0 --target-tags=http-server
+----
+
+=== Setup Application
+
+[source, bash]
+.*app-us*
+----
+gcloud compute instances create app-us \
+    --zone=us-east1-b \
+    --tags=http-server \
+    --machine-type=e2-micro \
+    --image-family=debian-11 \
+    --image-project=debian-cloud \
+    --metadata=startup-script='#!/bin/bash
+      apt-get update
+      apt-get install -y nginx
+      curl -k -s https://raw.githubusercontent.com/cloudadc/cloud-quickstarts/main/gcp/network/lb/app.conf -o /etc/nginx/conf.d/app.conf
+      update-rc.d nginx enable
+      service nginx restart'
+----
+
+[source, bash]
+.*app-eu*
+----
+gcloud compute instances create app-eu \
+    --zone=europe-west1-b \
+    --tags=http-server \
+    --machine-type=e2-micro \
+    --image-family=debian-11 \
+    --image-project=debian-cloud \
+    --metadata=startup-script='#!/bin/bash
+      apt-get update
+      apt-get install -y nginx
+      curl -k -s https://raw.githubusercontent.com/cloudadc/cloud-quickstarts/main/gcp/network/lb/app.conf -o /etc/nginx/conf.d/app.conf
+      update-rc.d nginx enable
+      service nginx restart'
+----
+
+=== Setup Client VMs
+
+[source, bash]
+.*Setup 3 client vms in 3 regions*
+----
+gcloud compute instances create us-client-vm --machine-type e2-micro --zone us-east1-b
+gcloud compute instances create eu-client-vm --machine-type e2-micro --zone europe-west1-b
+gcloud compute instances create ap-client-vm --machine-type e2-micro --zone=australia-southeast1-b 
+----
+
+== Google Domains
+
+[source, bash]
+.*NS Lookup*
+----
+@ap-client-vm:~$ nslookup -type=NS  googledomains.com
+Server:         169.254.169.254
+Address:        169.254.169.254#53
+
+Non-authoritative answer:
+googledomains.com       nameserver = ns7.googledomains.com.
+googledomains.com       nameserver = ns5.googledomains.com.
+googledomains.com       nameserver = ns8.googledomains.com.
+googledomains.com       nameserver = ns6.googledomains.com.
+----
+
+[source, bash]
+.*NS's A Loopup*
+----
+@ap-client-vm:~$ for i in $(nslookup -type=NS  googledomains.com | grep nameserver | awk '{print $4}') ; do nslookup -type=A $i | tail -n 3 | head -n 3; done
+Name:   ns8.googledomains.com
+Address: 216.239.38.10
+
+Name:   ns5.googledomains.com
+Address: 216.239.32.10
+
+Name:   ns7.googledomains.com
+Address: 216.239.36.10
+
+Name:   ns6.googledomains.com
+Address: 216.239.34.10
+----
+
+[source, bash]
+.*NS's AAAA Loopup*
+----
+@ap-client-vm:~$ for i in $(nslookup -type=NS  googledomains.com | grep nameserver | awk '{print $4}') ; do nslookup -type=AAAA $i | tail -n 3 | head -n 3; done
+Name:   ns5.googledomains.com
+Address: 2001:4860:4802:32::a
+
+Name:   ns8.googledomains.com
+Address: 2001:4860:4802:38::a
+
+Name:   ns6.googledomains.com
+Address: 2001:4860:4802:34::a
+
+Name:   ns7.googledomains.com
+Address: 2001:4860:4802:36::a
+----
+
+[source, bash]
+.*SOA Loopup*
+----
+@ap-client-vm:~$ nslookup -type=SOA googledomains.com
+Server:         169.254.169.254
+Address:        169.254.169.254#53
+
+Non-authoritative answer:
+googledomains.com
+        origin = ns5.googledomains.com
+        mail addr = dns-admin.google.com
+        serial = 513489231
+        refresh = 900
+        retry = 900
+        expire = 1800
+        minimum = 60
+----
+
+== Internal DNS NS
+
+[source, bash]
+----
+@ap-client-vm:~$ nslookup -type=A ns-gcp-private.googledomains.com.
+Server:         169.254.169.254
+Address:        169.254.169.254#53
+
+Non-authoritative answer:
+Name:   ns-gcp-private.googledomains.com
+Address: 169.254.169.254
+----
+
+[source, bash]
+----
+@ap-client-vm:~$ nslookup -type=PTR 169.254.169.254
+Server:         169.254.169.254
+Address:        169.254.169.254#53
+
+Non-authoritative answer:
+254.169.254.169.in-addr.arpa    name = metadata.google.internal.
+----
+
+[source, bash]
+----
+@ap-client-vm:~$ for i in ns-gcp-private.googledomains.com metadata.google.internal. ; do dig +short $i ; done
+169.254.169.254
+169.254.169.254
+----
+
+== Internal IP Host Mapping
+
+[source, bash]
+.*SSH to Asia Client VM*
+----
+gcloud compute ssh ap-client-vm --zone=australia-southeast1-b --tunnel-through-iap
+----
+
+=== A & PTR
+
+[source, bash]
+.*A*
+----
+@ap-client-vm:~$ for i in app-us.us-east1-b app-eu.europe-west1-b us-client-vm.us-east1-b eu-client-vm.europe-west1-b ap-client-vm.australia-southeast1-b ; do dig +short $i.c.$PROJECT_ID.internal. ; done
+10.142.0.2
+10.132.0.2
+10.142.0.3
+10.132.0.3
+10.152.0.2
+----
+
+[source, bash]
+.*PTR*
+----
+@ap-client-vm:~$ for ip in $(for i in app-us.us-east1-b app-eu.europe-west1-b us-client-vm.us-east1-b eu-client-vm.europe-west1-b ap-client-vm.australia-southeast1-b ; do dig +short $i.c.$PROJECT_ID.internal. ; done) ; do nslookup -type=PTR $ip | grep arpa; done
+2.0.142.10.in-addr.arpa name = app-us.us-east1-b.c.playground-s-11-1da5f88e.internal.
+2.0.132.10.in-addr.arpa name = app-eu.europe-west1-b.c.playground-s-11-1da5f88e.internal.
+3.0.142.10.in-addr.arpa name = us-client-vm.us-east1-b.c.playground-s-11-1da5f88e.internal.
+3.0.132.10.in-addr.arpa name = eu-client-vm.europe-west1-b.c.playground-s-11-1da5f88e.internal.
+2.0.152.10.in-addr.arpa name = ap-client-vm.australia-southeast1-b.c.playground-s-11-1da5f88e.internal.
+----
+
+=== SOA & NS
+
+[source, bash]
+----
+@ap-client-vm:~$ for j in $(for ip in $(for i in app-us.us-east1-b app-eu.europe-west1-b us-client-vm.us-east1-b eu-client-vm.europe-west1-b ap-client-vm.australia-southeast1-b ; do dig +short $i.c.$PROJECT_ID.internal. ; done) ; do nslookup -type=PTR $ip | grep arpa | awk '{print $4}'; done) ; do nslookup -type=SOA $j ; done
+
+Authoritative answers can be found from:
+internal
+        origin = ns.us-east1.gcedns-prod.internal
+        mail addr = cloud-dns-hostmaster.google.com
+        serial = 2015030600
+        refresh = 7200
+        retry = 3600
+        expire = 24796800
+        minimum = 5
+
+Authoritative answers can be found from:
+internal
+        origin = ns.europe-west1.gcedns-prod.internal
+        mail addr = cloud-dns-hostmaster.google.com
+        serial = 2015030600
+        refresh = 7200
+        retry = 3600
+        expire = 24796800
+        minimum = 5
+
+Authoritative answers can be found from:
+internal
+        origin = ns.us-east1.gcedns-prod.internal
+        mail addr = cloud-dns-hostmaster.google.com
+        serial = 2015030600
+        refresh = 7200
+        retry = 3600
+        expire = 24796800
+        minimum = 5
+
+Authoritative answers can be found from:
+internal
+        origin = ns.europe-west1.gcedns-prod.internal
+        mail addr = cloud-dns-hostmaster.google.com
+        serial = 2015030600
+        refresh = 7200
+        retry = 3600
+        expire = 24796800
+        minimum = 5
+
+Authoritative answers can be found from:
+internal
+        origin = ns.australia-southeast1.gcedns-prod.internal
+        mail addr = cloud-dns-hostmaster.google.com
+        serial = 2015030600
+        refresh = 7200
+        retry = 3600
+        expire = 24796800
+        minimum = 5
+----
+
+== Create Private Zone
+
+[source, bash]
+.*1. create a private zone*
+----
+gcloud dns managed-zones create example --description=test --dns-name=example.com --networks=default --visibility=private
+----
+
+[source, bash]
+.*2. SOA of example.com*
+----
+@ap-client-vm:~$ nslookup -type=SOA example.com
+Server:         169.254.169.254
+Address:        169.254.169.254#53
+
+Non-authoritative answer:
+example.com
+        origin = ns-gcp-private.googledomains.com
+        mail addr = cloud-dns-hostmaster.google.com
+        serial = 1
+        refresh = 21600
+        retry = 3600
+        expire = 259200
+        minimum = 300
+
+Authoritative answers can be found from:
+----
+
+[source, bash]
+.*3. NS of example.com*
+----
+@ap-client-vm:~$ nslookup -type=NS example.com
+Server:         169.254.169.254
+Address:        169.254.169.254#53
+
+Non-authoritative answer:
+example.com     nameserver = ns-gcp-private.googledomains.com.
+
+Authoritative answers can be found from:
+----
+
+== Create A record
+
+[source, bash]
+----
+gcloud dns record-sets create test.example.com. --zone=example --type=A --ttl=5 --rrdatas=10.142.0.2,10.132.0.2
+----
+
+=== DNS Lookup
+
+[source, bash]
+----
+@ap-client-vm:~$ nslookup test.example.com
+Server:         169.254.169.254
+Address:        169.254.169.254#53
+
+Non-authoritative answer:
+Name:   test.example.com
+Address: 10.132.0.2
+Name:   test.example.com
+Address: 10.142.0.2
+----
+
+=== Test Access Application 
+
+[source, bash]
+----
+@ap-client-vm:~$ for i in {1..5} ; do curl -s http://test.example.com:8080 | head -n 4 ; sleep 6 ; done
+
+            request: GET / HTTP/1.1
+               host: test.example.com
+           hostname: app-us
+
+            request: GET / HTTP/1.1
+               host: test.example.com
+           hostname: app-eu
+
+            request: GET / HTTP/1.1
+               host: test.example.com
+           hostname: app-us
+
+            request: GET / HTTP/1.1
+               host: test.example.com
+           hostname: app-eu
+
+            request: GET / HTTP/1.1
+               host: test.example.com
+           hostname: app-eu
+----
+
+== Create A record with Geolocation policy
+
+[source, bash]
+----
+gcloud dns record-sets create geo.example.com --ttl=5 --type=A --zone=example --routing-policy-type=GEO --routing-policy-data="us-east1=10.142.0.2;europe-west1=10.132.0.2"
+----
+
+=== DNS Lookup
+
+[source, bash]
+----
+@ap-client-vm:~$ nslookup geo.example.com.
+Server:         169.254.169.254
+Address:        169.254.169.254#53
+
+Non-authoritative answer:
+Name:   geo.example.com
+Address: 10.142.0.2
+----
+
+=== Test Access Application
+
+[source, bash]
+.*us-client-vm*
+----
+@us-client-vm:~$ for i in {1..5} ; do curl -s http://geo.example.com:8080 | head -n 4 ; sleep 6 ; done
+
+            request: GET / HTTP/1.1
+               host: geo.example.com
+           hostname: app-us
+
+            request: GET / HTTP/1.1
+               host: geo.example.com
+           hostname: app-us
+
+            request: GET / HTTP/1.1
+               host: geo.example.com
+           hostname: app-us
+
+            request: GET / HTTP/1.1
+               host: geo.example.com
+           hostname: app-us
+
+            request: GET / HTTP/1.1
+               host: geo.example.com
+           hostname: app-us
+----
+
+[source, bash]
+.*eu-client-vm*
+----
+@eu-client-vm:~$ for i in {1..5} ; do curl -s http://geo.example.com:8080 | head -n 4 ; sleep 6 ; done
+
+            request: GET / HTTP/1.1
+               host: geo.example.com
+           hostname: app-eu
+
+            request: GET / HTTP/1.1
+               host: geo.example.com
+           hostname: app-eu
+
+            request: GET / HTTP/1.1
+               host: geo.example.com
+           hostname: app-eu
+
+            request: GET / HTTP/1.1
+               host: geo.example.com
+           hostname: app-eu
+
+            request: GET / HTTP/1.1
+               host: geo.example.com
+           hostname: app-eu
+----
+
+== Create A record with Weighted round robin policy
+
+[source, bash]
+----
+gcloud dns record-sets create wrr.example.com --ttl=5 --type=A --zone=example --routing-policy-type=WRR --routing-policy-data="4.0=10.142.0.2;1.0=10.132.0.2"
+----
+
+=== DNS Lookup
+
+[source, bash]
+----
+@ap-client-vm:~$ nslookup wrr.example.com
+Server:         169.254.169.254
+Address:        169.254.169.254#53
+
+Non-authoritative answer:
+Name:   wrr.example.com
+Address: 10.142.0.2
+----
+
+=== Test Access Application
+
+[source, bash]
+----
+c@ap-client-vm:~$ for i in {1..5} ; do curl -s http://wrr.example.com:8080 | head -n 4 ; sleep 6 ; done
+
+            request: GET / HTTP/1.1
+               host: wrr.example.com
+           hostname: app-us
+
+            request: GET / HTTP/1.1
+               host: wrr.example.com
+           hostname: app-us
+
+            request: GET / HTTP/1.1
+               host: wrr.example.com
+           hostname: app-us
+
+            request: GET / HTTP/1.1
+               host: wrr.example.com
+           hostname: app-us
+
+            request: GET / HTTP/1.1
+               host: wrr.example.com
+           hostname: app-eu
+----
+
