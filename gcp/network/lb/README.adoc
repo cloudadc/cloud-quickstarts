@@ -412,15 +412,15 @@ image:gcp-network-lb-http-classic.png[]
 
 Refer to link:#instance-template[instance template] and link:#instance-groupmanaged-zonal-internet[instance group(managed, zonal, internet)] to create a Managed Instance Group.
 
-Create firewall rule to allow health check and LB snat ingress request:
+=== Create firewall rule to allow health check
 
 [source, bash]
-.*3. Create firewall rule to allow health check and LB snat ingress request*
+.*Create firewall rule to allow health check and LB snat ingress request*
 ----
 gcloud compute firewall-rules create fw-allow-health-check --network=default --action=allow --direction=ingress --source-ranges=130.211.0.0/22,35.191.0.0/16 --target-tags=allow-health-check --rules=tcp:8080
 ----
 
-=== HTTP Load Balancer
+=== Reserve an external IP address
 
 [source, bash]
 .*1. set up a global static external IP address*
@@ -428,36 +428,46 @@ gcloud compute firewall-rules create fw-allow-health-check --network=default --a
 gcloud compute addresses create lb-ipv4-1 --ip-version=IPV4 --global
 ----
 
-*2. Create a HTTP health check*
+[source, bash]
+.*2. overview the reserved external IP address*
+----
+gcloud compute addresses describe lb-ipv4-1 --format="get(address)" --global
+----
+
+=== Set up the load balancer
+
+*1. Create a HTTP health check*
 
 Refer to link:#health-checks[health checks] to create a `http-basic-check` health check.
 
 [source, bash]
-.*3. Create a backend service*
+.*2. Create a backend service*
 ----
-gcloud compute backend-services create web-backend-service --protocol=HTTP --port-name=webapp --health-checks=http-basic-check --global
+gcloud compute backend-services create web-backend-service --load-balancing-scheme=EXTERNAL --protocol=HTTP --port-name=webapp --health-checks=http-basic-check --global
 ----
 
 [source, bash]
-.*4. Add instance group to the backend service*
+.*3. Add instance group to the backend service*
 ----
 gcloud compute backend-services add-backend web-backend-service --instance-group=mig-app-us --instance-group-zone=us-central1-a --global
 ----
 
 [source, bash]
-.*5. Create a URL map to route the incoming requests to the default backend service*
+.*4. Create a URL map to route the incoming requests to the default backend service*
 ----
 gcloud compute url-maps create web-map-http --default-service web-backend-service
 ----
 
+=== Setting up an HTTP frontend
+
 [source, bash]
-.*6. Create a target HTTP proxy to route requests to your URL map*
+.*1. Create a target HTTP proxy to route requests to your URL map*
 ----
 gcloud compute target-http-proxies create http-lb-proxy --url-map web-map-http
 ----
 
 [source, bash]
-.*7. Create a global forwarding rule to route incoming requests to the proxy*
+.*2. Create a global forwarding rule to route incoming requests to the proxy*
 ----
 gcloud compute forwarding-rules create http-content-rule --address=lb-ipv4-1 --global --target-http-proxy=http-lb-proxy --ports=80
 ----
@@ -466,45 +476,31 @@ gcloud compute forwarding-rules create http-content-rule --address=lb-ipv4-1 --g
 
 [source, bash]
 ----
-$ IPAddress=$(gcloud compute forwarding-rules describe http-content-rule --global | grep IPAddress | awk '{print $2}') ; for i in 1 2 3  ; do curl $IPAddress ; done
+$ IPAddress=$(gcloud compute forwarding-rules describe http-content-rule --global | grep IPAddress | awk '{print $2}') ; for i in 1 2 3  ; do curl -s $IPAddress | head -n 7; done
 
             request: GET / HTTP/1.1
-               host: 34.111.231.147
-           hostname: lb-backend-group-s699
+               host: 34.111.28.110
+           hostname: mig-app-us-g1mj
 
-        client addr: 35.191.8.83:57775
+        client addr: 35.191.3.144:52559
         server addr: 10.128.0.2:8080
 
-             cookie:
-                xff:
-         user agent: curl/7.74.0
-
-
             request: GET / HTTP/1.1
-               host: 34.111.231.147
-           hostname: lb-backend-group-s699
+               host: 34.111.28.110
+           hostname: mig-app-us-g1mj
 
-        client addr: 35.191.1.236:49776
+        client addr: 130.211.0.85:50134
         server addr: 10.128.0.2:8080
 
-             cookie:
-                xff:
-         user agent: curl/7.74.0
-
-
             request: GET / HTTP/1.1
-               host: 34.111.231.147
-           hostname: lb-backend-group-g7b1
+               host: 34.111.28.110
+           hostname: mig-app-us-g1mj
 
-        client addr: 130.211.0.93:57606
-        server addr: 10.128.0.3:8080
-
-             cookie:
-                xff:
-         user agent: curl/7.74.0
+        client addr: 35.191.15.168:59259
+        server addr: 10.128.0.2:8080
 ----
 
-== Network load balancer
+== External TCP/UDP Network load balancer
 
 Google Cloud external TCP/UDP Network Load Balancing is a regional, pass-through load balancer. A network load balancer distributes external traffic among virtual machine (VM) instances in the same region.
 
@@ -686,7 +682,7 @@ $ IPADDRESS=$(gcloud compute forwarding-rules describe www-rule --region=us-cent
          user agent: curl/7.74.0
 ----
 
-== Internal TCP/UDP
+== Internal TCP/UDP Load Balancing
 
 Google Cloud offers Internal Load Balancing for your TCP/UDP-based traffic. Internal Load Balancing enables you to run and scale your services behind a private load balancing IP address that is accessible only to your internal virtual machine instances.
 
