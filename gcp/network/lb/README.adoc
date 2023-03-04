@@ -195,21 +195,9 @@ gcloud compute firewall-rules create test-allow-health-checks --network=test --a
 
 NOTE: Health checks determine which instances of a load balancer can receive new connections. For HTTP load balancing, the health check probes to your load-balanced instances come from addresses in the ranges `130.211.0.0/22` and `35.191.0.0/16`.
 
-=== Create a NAT to allow VM outbound traffic and load balancer inbound traffic
+=== Prepare backend application VM image
 
-[source, bash]
-.*1. create cloud router*
-----
-gcloud compute routers create nat-router-us-central1 --region=us-central1  --network=test
-----
-
-[source, bash]
-.*2. create cloud nat*
-----
-gcloud compute routers nats create nat-config --router=nat-router-us-central1 --router-region=us-central1 --auto-allocate-nat-external-ips --nat-all-subnet-ip-ranges
-----
-
-NOTE: If VM instances without an external IP address, Cloud NAT service to allow those VM instances to send outbound traffic only through the Cloud NAT, and receive inbound traffic through the load balancer.
+Refer to link:#prepare-application-vm-image[Prepare Application VM Image] create applcation vm image. The `--network-interface=network-tier=PREMIUM,subnet=test-us-central1` should be added while creating the VM instance with external ip address.
 
 === Create instance template
 
@@ -304,7 +292,69 @@ INSTANCES: 1
 
 * link:lb-compute-instance-groups.json[lb-compute-instance-groups.json]
 
-=== Configure the HTTP load balancer
+=== Reserve an external IP address
+
+[source, bash]
+.*1. set up a global static external IPv4 address*
+----
+gcloud compute addresses create lb-ipv4-1 --ip-version=IPV4 --global
+----
+
+[source, bash]
+.*2. set up a global static external IPv6 address*
+----
+gcloud compute addresses create lb-ipv6-1 --ip-version=IPV6 --global
+----
+
+[source, bash]
+.*3. Overview the ip address*
+----
+$ for i in 4 6 ; do gcloud compute addresses describe lb-ipv$i-1 --format="get(address)" --global ; done
+34.149.94.6
+2600:1901:0:e738::
+----
+
+=== Set up the load balancer
+
+*1. Create a HTTP health check*
+
+Refer to link:#health-checks[health checks] to create a `http-basic-check` health check.
+
+[source, bash]
+.*2. Create a backend service*
+----
+gcloud compute backend-services create http-backend --load-balancing-scheme=EXTERNAL_MANAGED --protocol=HTTP --port-name=webapp --health-checks=http-basic-check --global
+----
+
+[source, bash]
+.*3. Add instance group to the backend service*
+----
+gcloud compute backend-services add-backend http-backend --instance-group=us-central1-mig --instance-group-region=us-central1 --balancing-mode=UTILIZATION --max-utilization=0.8 --capacity-scaler=1.0 --global
+gcloud compute backend-services add-backend http-backend --instance-group=europe-west1-mig --instance-group-region=europe-west1 --balancing-mode=RATE --max-rate-per-instance=0.8 --capacity-scaler=1.0 --global
+----
+
+[source, bash]
+.*4. Create a URL map to route the incoming requests to the default backend service*
+----
+gcloud compute url-maps create http-lb --default-service http-backend
+----
+
+=== Setting up an HTTP frontend
+
+[source, bash]
+.*1. Create a target HTTP proxy to route requests to your URL map*
+----
+gcloud compute target-http-proxies create http-lb-proxy --url-map=http-lb
+----
+
+[source, bash]
+.*2. Create a global forwarding rule to route incoming requests to the proxy*
+----
+gcloud compute forwarding-rules create fr-web-ipv4 --load-balancing-scheme=EXTERNAL_MANAGED --target-http-proxy=http-lb-proxy --address=lb-ipv4-1 --ports=80 --global
+gcloud compute forwarding-rules create fr-web-ipv6 --load-balancing-scheme=EXTERNAL_MANAGED --target-http-proxy=http-lb-proxy --address=lb-ipv6-1 --ports=80 --global
+----
+
+=== Diagram from GCP UI Console
 
 *1. click `Network Services` > `Load balancingStart`, click `Create Load Balancer`*
 
@@ -330,39 +380,68 @@ NOTE: the health check passed, both instance groups has one active vm instance.
 
 image:lb-observe.png[]
 
-[source, bash]
-.*Scripts used in this section*
-----
-gcloud compute addresses create lb-ipv4-1 --ip-version=IPV4 --global
-gcloud compute addresses create lb-ipv6-1 --ip-version=IPV6 --global
-gcloud compute backend-services create http-backend --protocol=HTTP --port-name=webapp --health-checks=http-health-check --timeout=30 --global
-gcloud compute backend-services add-backend http-backend --instance-group=us-central1-mig --instance-group-region=us-central1 --balancing-mode=UTILIZATION --max-utilization=0.8 --capacity-scaler=1.0 --global
-gcloud compute backend-services add-backend http-backend --instance-group=europe-west1-mig --instance-group-region=europe-west1  --balancing-mode=RATE --max-rate-per-instance=0.8 --capacity-scaler=1.0 --global
-----
+=== Test access the application
 
-=== Test access the application via LB endpoint
+The commands `for i in 4 6 ; do gcloud compute addresses describe lb-ipv$i-1 --format="get(address)" --global ; done` can be used to retrive the both IPv4 and IPv6 address.
 
 [source, bash]
-.*1. IPv4 access*
+.*1. Access the application many time from us client, all request be route to us-central1-mig*
 ----
-$ curl http://34.110.133.211/
+us-client:~$ for i in 1 2 3 ; do curl -s http://34.149.94.6 | head -n 7 ; done
 
             request: GET / HTTP/1.1
-               host: 34.110.133.211
-           hostname: us-central1-mig-hj4h
+               host: 34.149.94.6
+           hostname: us-central1-mig-5dn3
 
-        client addr: 35.191.13.248:36374
+        client addr: 35.191.19.247:39436
         server addr: 10.1.10.3:8080
 
-             cookie: 
-                xff: 
-         user agent: curl/7.64.1
+            request: GET / HTTP/1.1
+               host: 34.149.94.6
+           hostname: us-central1-mig-5dn3
+
+        client addr: 35.191.24.231:39560
+        server addr: 10.1.10.3:8080
+
+            request: GET / HTTP/1.1
+               host: 34.149.94.6
+           hostname: us-central1-mig-5dn3
+
+        client addr: 35.191.23.136:60574
+        server addr: 10.1.10.3:8080
 ----
 
 [source, bash]
-.*2. IPv6 access*
+.*2. Access the application many time from europe client, all request be route to europe-west1-mig*
 ----
-$ curl http://[2600:1901:0:8a64::]/
+eu-client:~$ for i in 1 2 3 ; do curl -s http://34.149.94.6 | head -n 7 ; done
+
+            request: GET / HTTP/1.1
+               host: 34.149.94.6
+           hostname: europe-west1-mig-sb2h
+
+        client addr: 35.191.23.217:48854
+        server addr: 10.1.10.18:8080
+
+            request: GET / HTTP/1.1
+               host: 34.149.94.6
+           hostname: europe-west1-mig-sb2h
+
+        client addr: 35.191.24.154:48254
+        server addr: 10.1.10.18:8080
+
+            request: GET / HTTP/1.1
+               host: 34.149.94.6
+           hostname: europe-west1-mig-sb2h
+
+        client addr: 35.191.13.77:44342
+        server addr: 10.1.10.18:8080
+----
+
+[source, bash]
+.*3. Access application via IPv6 address*
+----
+$ curl http://[2600:1901:0:e738::]/
 
             request: GET / HTTP/1.1
                host: [2600:1901:0:8a64::]
@@ -377,9 +456,9 @@ $ curl http://[2600:1901:0:8a64::]/
 ----
 
 [source, bash]
-.*3. Access 10 times. record client address*
+.*4. Access 10 times. record client address*
 ----
-$ for i in {1..10} ; do curl -s http://[2600:1901:0:8a64::]/ | grep client ; done
+$ for i in {1..10} ; do curl -s http://34.149.94.6/ | grep client ; done
         client addr: 35.191.19.137:59148
         client addr: 35.191.23.243:36940
         client addr: 35.191.17.70:53276
@@ -394,11 +473,11 @@ $ for i in {1..10} ; do curl -s http://[2600:1901:0:8a64::]/ | grep client ; don
 
 NOTE: the cloud load balancer use `35.191.0.0/16` as snat pool.
 
-*4. Review LB's health check packets*
+*5. Review LB's health check packets*
 
 image:lb-tcp-health-check.png[]
 
-Note that the Load Balancer source also come from `35.191.0.0/16`, use one of member of snat pool.
+NOTE: The Load Balancer source also come from `35.191.0.0/16`, use one of member of snat pool.
 
 == Global external HTTP load balancer
 
