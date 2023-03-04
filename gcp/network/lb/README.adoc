@@ -161,6 +161,8 @@ gcloud compute images create testwebserver --source-disk=webserver --source-disk
 }
 ----
 
+== Global external HTTP Load Balancer
+
 === Prepare the Network
 
 [source, bash]
@@ -684,38 +686,289 @@ $ IPADDRESS=$(gcloud compute forwarding-rules describe www-rule --region=us-cent
          user agent: curl/7.74.0
 ----
 
-
-
-
-
-== Internal Load Balancer
+== Internal TCP/UDP
 
 Google Cloud offers Internal Load Balancing for your TCP/UDP-based traffic. Internal Load Balancing enables you to run and scale your services behind a private load balancing IP address that is accessible only to your internal virtual machine instances.
 
-=== Configure internal traffic and health check firewall rules
+* https://cloud.google.com/load-balancing/docs/internal/setting-up-internal
+
+*The Topology:*
+
+image:itlb-topology[]
+
+=== Prepare the Network
 
 [source, bash]
+.*1. create internal network and subnets*
 ----
-gcloud compute firewall-rules create fw-allow-health-checks --network my-internal-app --allow tcp:80 --source-ranges 130.211.0.0/22,35.191.0.0/16 --target-tags backend-service
-gcloud compute firewall-rules create fw-allow-lb-access --network my-internal-app --allow all --source-ranges 10.10.0.0/16 --target-tags backend-service
+gcloud compute networks create internal --subnet-mode=custom
+gcloud compute networks subnets create internal-a --network=internal --range=10.1.10.0/24 --region=us-central1
+gcloud compute networks subnets create internal-b --network=internal --range=10.1.20.0/24 --region=us-central1
+gcloud compute networks subnets create internal-lb --network=internal --range=10.1.30.0/24 --region=us-central1
 ----
 
-NOTE: Configure firewall rules to allow internal traffic connectivity from sources in the 10.10.0.0/16 range. This rule allows incoming traffic from any client located in the subnet. Health checks determine which instances of a load balancer can receive new connections. For HTTP load balancing, the health check probes to your load-balanced instances come from addresses in the ranges 130.211.0.0/22 and 35.191.0.0/16. Your firewall rules must allow these connections.
+[source, bash]
+.*2. create firewall rule allow icmp, ssh from any source*
+----
+gcloud compute firewall-rules create app-allow-icmp-ssh --direction=INGRESS --priority=1000 --network=internal --action=ALLOW --rules=tcp:22,icmp --source-ranges=0.0.0.0/0 --target-tags=backend-service
+----
 
-=== Create a NAT configuration using Cloud Router
+[source, bash]
+.*3. create firewall rule allow IAP to utility VM*
+----
+gcloud compute firewall-rules create allow-iap-to-utility-vm --direction=INGRESS --priority=1000 --network=internal --action=ALLOW --rules=tcp:22,icmp --source-ranges=35.235.240.0/20 --target-tags=utility-vm
+----
+
+[source, bash]
+.*4. create firewall rule allow application internal access*
+----
+gcloud compute firewall-rules create allow-app-access-from-internal --direction=INGRESS --priority=1000 --network=internal --action=ALLOW --rules=tcp:8080 --source-ranges=10.1.10.0/24,10.1.20.0/24,10.1.30.0/24 --target-tags=backend-service
+----
+
+[source, bash]
+.*5. create firewall rule allow health check*
+----
+gcloud compute firewall-rules create allow-health-checks --direction=INGRESS --priority=1000 --network=internal --action=ALLOW --rules=tcp:8080 --source-ranges=130.211.0.0/22,35.191.0.0/16 --target-tags=backend-service
+----
+
+=== Create instance group
+
+[source, bash]
+.*1. create instance template*
+----
+gcloud compute instance-templates create webserver-a --machine-type=e2-micro --network-interface=subnet=internal-a,no-address --region=us-central1 --tags=backend-service --create-disk=auto-delete=yes,boot=yes,device-name=webserver-a,image=testwebserver,mode=rw,size=10,type=pd-balanced
+
+gcloud compute instance-templates create webserver-b --machine-type=e2-micro --network-interface=subnet=internal-b,no-address --region=us-central1 --tags=backend-service --create-disk=auto-delete=yes,boot=yes,device-name=webserver-b,image=testwebserver,mode=rw,size=10,type=pd-balanced
+----
+
+*2. create http health check*
+
+Refer to link:#health-checks[health checks] section to create a `http-basic-check` health check.
+
+[source, bash]
+.*3. create instance groups*
+----
+gcloud compute instance-groups managed create ig1 --base-instance-name=ig1 --size=1 --template=webserver-a --zone=us-central1-a --list-managed-instances-results=pageless --health-check=http-basic-check --initial-delay=60
+
+gcloud compute instance-groups managed set-autoscaling ig1 --max-num-replicas=2 --min-num-replicas=1 --target-load-balancing-utilization=0.8 --mode=on --cool-down-period=60 --zone=us-central1-a
+
+gcloud compute instance-groups managed set-named-ports ig1 --named-ports=webapp:8080 --zone=us-central1-a
+
+gcloud compute instance-groups managed create ig2 --size=1 --base-instance-name=ig2 --template=webserver-b --zone=us-central1-b --list-managed-instances-results=pageless --health-check=http-basic-check --initial-delay=60
+
+gcloud compute instance-groups managed set-autoscaling ig2 --max-num-replicas=2 --min-num-replicas=1 --target-load-balancing-utilization=0.8 --mode=on --cool-down-period=60 --zone=us-central1-b
+
+gcloud compute instance-groups managed set-named-ports ig2 --named-ports=webapp:8080 --zone=us-central1-b
+----
+
+=== Crate utility vm test backend services
+
+[source, bash]
+.*1. create utility vm*
+----
+gcloud compute instances create utility-vm \
+    --zone=us-central1-c \
+    --tags=utility-vm \
+    --machine-type=e2-micro \
+    --image-family=debian-11 \
+    --image-project=debian-cloud \
+    --network-interface=private-network-ip=10.1.10.50,subnet=internal-a,no-address
+----
+
+[source, bash]
+.*2. ssh to utility vm*
+----
+gcloud compute ssh utility-vm --zone=us-central1-c --tunnel-through-iap
+----
+
+[source, bash]
+.*3. access application in ig1*
+----
+utility-vm:~$ curl 10.1.10.2:8080
+
+            request: GET / HTTP/1.1
+               host: 10.1.10.2
+           hostname: ig1-dd93
+
+        client addr: 10.1.10.50:45812
+        server addr: 10.1.10.2:8080
+
+             cookie:
+                xff:
+         user agent: curl/7.74.0
+----
+
+[source, bash]
+.*4. access application in ig2*
+----
+utility-vm:~$ curl 10.1.20.2:8080
+
+            request: GET / HTTP/1.1
+               host: 10.1.20.2
+           hostname: ig2-gjr1
+
+        client addr: 10.1.10.50:33274
+        server addr: 10.1.20.2:8080
+
+             cookie:
+                xff:
+         user agent: curl/7.74.0
+----
+
+=== Create backend services
+
+[source, bash]
+.*1. create regional health check*
+----
+gcloud compute health-checks create http hc-http-8080 --region=us-central1 --port=8080
+----
+
+[source, bash]
+.*2. create internal backend service*
+----
+gcloud compute backend-services create itlb-backend --load-balancing-scheme=INTERNAL --protocol=tcp --region=us-central1 --health-checks=hc-http-8080 --health-checks-region=us-central1
+----
+
+[source, bash]
+.*3. add instance groups to backend service*
+----
+gcloud compute backend-services add-backend itlb-backend --region=us-central1 --instance-group=ig1 --instance-group-zone=us-central1-a
+gcloud compute backend-services add-backend itlb-backend --region=us-central1 --instance-group=ig2 --instance-group-zone=us-central1-b
+----
+
+=== Create forwarding rule
+
+[source, bash]
+.*creat forwarding rule*
+----
+gcloud compute forwarding-rules create fr-itlb --region=us-central1 --load-balancing-scheme=INTERNAL --network=internal --subnet=internal-lb --address=10.1.30.30 --ip-protocol=TCP --ports=8080 --backend-service=itlb-backend --backend-service-region=us-central1
+----
+
+=== Test access the application via LB endpoint
+
+[source, bash]
+.*In utility vm curl the application several times*
+----
+utility-vm:~$ for i in {1..3} ; do curl -s 10.1.30.30:8080 | head -n 7 ; done
+
+            request: GET / HTTP/1.1
+               host: 10.1.30.30
+           hostname: ig2-gjr1
+
+        client addr: 10.1.10.50:45614
+        server addr: 10.1.30.30:8080
+
+            request: GET / HTTP/1.1
+               host: 10.1.30.30
+           hostname: ig1-dd93
+
+        client addr: 10.1.10.50:45624
+        server addr: 10.1.30.30:8080
+
+            request: GET / HTTP/1.1
+               host: 10.1.30.30
+           hostname: ig2-gjr1
+
+        client addr: 10.1.10.50:45638
+        server addr: 10.1.30.30:8080
+----
+
+=== Packet Flow Deep Dive
+
+This section will install tcpdump on both ig1 and ig2's vm, capture the packet flow, due to the vm are internal, to install tcpdump need set up nat firstly.
 
 [source, bash]
 .*1. create cloud router*
 ----
-gcloud compute routers create nat-router-us-central1 --region us-central1 --network my-internal-app
+gcloud compute routers create nat-router-us-central1 --region=us-central1 --network=internal --advertisement-mode=CUSTOM --set-advertisement-ranges=10.1.10.0/24,10.1.20.0/24
 ----
 
 [source, bash]
 .*2. create cloud nat*
 ----
-gcloud compute routers nats create nat-config --router=nat-router-us-central1 --router-region=us-central1 --auto-allocate-nat-external-ips --nat-all-subnet-ip-ranges
+gcloud compute routers nats create nat-us-central1 --router=nat-router-us-central1 --router-region=us-central1 --auto-allocate-nat-external-ips --nat-custom-subnet-ip-ranges=internal-a,internal-b
 ----
 
-NOTE: If VM instances without an external IP address, Cloud NAT service to allow these VM instances to send outbound traffic only through the Cloud NAT, and receive inbound traffic through the load balancer.
+[source, bash]
+.*3. install tcpdump either on ig1 vm, or ig2 vm*
+----
+sudo apt-get install tcpdump -y
+----
+
+[source, bash]
+.*4. Capture health check packet*
+----
+sudo tcpdump -nni ens4 port 8080 -w itlb-health-check.pcap
+sudo tcpdump -nni ens4 port 8080 -w itlb-client-server.pcap
+sudo tcpdump -nni ens4 port 8080 -w itlb-client-lb-server.pcap
+----
+
+* link:pcap/itlb-health-check.pcap[itlb-health-check.pcap] - health check packet flow
+* link:pcap/itlb-client-server.pcap[itlb-client-server.pcap] - client access server directly packet flow
+* link:pcap/itlb-client-lb-server.pcap[itlb-client-lb-server.pcap] - client access server via lb packet flow
+
+*5. Health Check*
+
+image:img/itlb-health-check.png[]
+
+* There are two health check, one from LB, another from MIG
+* Both Health Check extract SNAT address from `35.191.0.0/16`
+* Health Check from LB Hidden the real server IP
+
+*6. Client Server directly Access*
+
+image:img/itlb-client-server.png[]
+
+* Client access server directly the real server IP address `10.1.10.2` not hidden
+
+*7. Client access server via LB*
+
+image:img/itlb-client-lb-server.png[]
+
+* Client access server via LB, the real ip address be hiden.
+
+== TD
+
+[source, bash]
+.**
+----
+
+----
+
+[source, bash]
+.**
+----
+
+----
+
+[source, bash]
+.**
+----
+
+----
+
+[source, bash]
+.**
+----
+
+----
+
+[source, bash]
+.**
+----
+
+----
+
+[source, bash]
+.**
+----
+
+----
+
+[source, bash]
+.**
+----
+
+----
 
 
