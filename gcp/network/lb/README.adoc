@@ -400,6 +400,106 @@ image:lb-tcp-health-check.png[]
 
 Note that the Load Balancer source also come from `35.191.0.0/16`, use one of member of snat pool.
 
+== Global external HTTP load balancer
+
+External HTTP(S) Load Balancing is a proxy-based Layer 7 load balancer that enables you to run and scale your services behind a single external IP address. External HTTP(S) Load Balancing distributes HTTP and HTTPS traffic to backends hosted on a variety of Google Cloud platforms (such as Compute Engine, Google Kubernetes Engine (GKE), Cloud Storage, and so on), as well as external backends connected over the internet or via hybrid connectivity.
+
+The Topology as below figure:
+
+image:gcp-network-lb-http-classic.png[]
+
+=== Prepare NGINX Application
+
+Refer to link:#instance-template[instance template] and link:#instance-groupmanaged-zonal-internet[instance group(managed, zonal, internet)] to create a Managed Instance Group.
+
+=== Create firewall rule to allow health check
+
+[source, bash]
+.*Create firewall rule to allow health check and LB snat ingress request*
+----
+gcloud compute firewall-rules create fw-allow-health-check --network=default --action=allow --direction=ingress --source-ranges=130.211.0.0/22,35.191.0.0/16 --target-tags=allow-health-check --rules=tcp:8080
+----
+
+=== Reserve an external IP address
+
+[source, bash]
+.*1. set up a global static external IP address*
+----
+gcloud compute addresses create lb-ipv4-1 --ip-version=IPV4 --global
+----
+
+[source, bash]
+.*2. overview the reserved external IP address*
+----
+gcloud compute addresses describe lb-ipv4-1 --format="get(address)" --global
+----
+
+=== Set up the load balancer
+
+*1. Create a HTTP health check*
+
+Refer to link:#health-checks[health checks] to create a `http-basic-check` health check.
+
+[source, bash]
+.*2. Create a backend service*
+----
+gcloud compute backend-services create web-backend-service --load-balancing-scheme=EXTERNAL_MANAGED --protocol=HTTP --port-name=webapp --health-checks=http-basic-check --global
+----
+
+[source, bash]
+.*3. Add instance group to the backend service*
+----
+gcloud compute backend-services add-backend web-backend-service --instance-group=mig-app-us --instance-group-zone=us-central1-a --global
+----
+
+[source, bash]
+.*4. Create a URL map to route the incoming requests to the default backend service*
+----
+gcloud compute url-maps create web-map-http --default-service web-backend-service
+----
+
+=== Setting up an HTTP frontend
+
+[source, bash]
+.*1. Create a target HTTP proxy to route requests to your URL map*
+----
+gcloud compute target-http-proxies create http-lb-proxy --url-map web-map-http
+----
+
+[source, bash]
+.*2. Create a global forwarding rule to route incoming requests to the proxy*
+----
+gcloud compute forwarding-rules create http-content-rule --load-balancing-scheme=EXTERNAL_MANAGED --address=lb-ipv4-1 --target-http-proxy=http-lb-proxy --ports=80 --global
+----
+
+=== Test to access application
+
+[source, bash]
+----
+$ IPAddress=$(gcloud compute forwarding-rules describe http-content-rule --global | grep IPAddress | awk '{print $2}') ; for i in 1 2 3  ; do curl -s $IPAddress | head -n 7; done
+
+            request: GET / HTTP/1.1
+               host: 34.111.28.110
+           hostname: mig-app-us-g1mj
+
+        client addr: 35.191.19.137:37950
+        server addr: 10.128.0.2:8080
+
+            request: GET / HTTP/1.1
+               host: 34.111.28.110
+           hostname: mig-app-us-g1mj
+
+        client addr: 35.191.19.212:35892
+        server addr: 10.128.0.2:8080
+
+            request: GET / HTTP/1.1
+               host: 34.111.28.110
+           hostname: mig-app-us-g1mj
+
+        client addr: 35.191.19.255:52306
+        server addr: 10.128.0.2:8080
+----
+
 == Global external HTTP load balancer (classic)
 
 External HTTP(S) Load Balancing is a proxy-based Layer 7 load balancer that enables you to run and scale your services behind a single external IP address. External HTTP(S) Load Balancing distributes HTTP and HTTPS traffic to backends hosted on a variety of Google Cloud platforms (such as Compute Engine, Google Kubernetes Engine (GKE), Cloud Storage, and so on), as well as external backends connected over the internet or via hybrid connectivity.
@@ -682,7 +782,7 @@ $ IPADDRESS=$(gcloud compute forwarding-rules describe www-rule --region=us-cent
          user agent: curl/7.74.0
 ----
 
-== Internal TCP/UDP Load Balancing
+== Internal TCP/UDP Network load balancer
 
 Google Cloud offers Internal Load Balancing for your TCP/UDP-based traffic. Internal Load Balancing enables you to run and scale your services behind a private load balancing IP address that is accessible only to your internal virtual machine instances.
 
