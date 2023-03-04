@@ -147,7 +147,9 @@ $ curl -k -s  https://fruits-ue5j36phfa-de.a.run.app/fruits/
 [source, bash]
 .*Deploying fruits to Cloud Engine*
 ----
-$ gcloud compute instances create-with-container fruits --project=$GOOGLE_CLOUD_PROJECT --zone=asia-east1-b --machine-type=e2-small --network-interface=network-tier=PREMIUM,subnet=default --maintenance-policy=MIGRATE --provisioning-model=STANDARD --service-account=$GOOGLE_CLOUD_SA --scopes=https://www.googleapis.com/auth/devstorage.read_only,https://www.googleapis.com/auth/logging.write,https://www.googleapis.com/auth/monitoring.write,https://www.googleapis.com/auth/servicecontrol,https://www.googleapis.com/auth/service.management.readonly,https://www.googleapis.com/auth/trace.append --image=projects/cos-cloud/global/images/cos-stable-101-17162-40-42 --boot-disk-size=10GB --boot-disk-type=pd-balanced --boot-disk-device-name=fruits --container-image=cloudadc/fruits:0.0.1 --container-restart-policy=always --no-shielded-secure-boot --shielded-vtpm --shielded-integrity-monitoring --labels=container-vm=cos-stable-101-17162-40-42
+gcloud compute instances create-with-container fruits --zone=us-central1-a --machine-type=e2-medium --network-interface=network-tier=PREMIUM,subnet=default --image=projects/cos-cloud/global/images/cos-stable-101-17162-127-8 --boot-disk-size=10GB --boot-disk-type=pd-balanced --boot-disk-device-name=fruits --container-image=cloudadc/fruits:0.0.1 --container-restart-policy=always --labels=container-vm=cos-stable-101-17162-127-8
+
+gcloud compute firewall-rules create allow-http-8080a --direction=INGRESS --priority=1000 --network=default --action=ALLOW --rules=tcp:8080 --source-ranges=0.0.0.0/0
 ----
 
 [source, bash]
