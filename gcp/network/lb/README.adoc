@@ -73,9 +73,93 @@ gcloud compute instance-groups managed set-autoscaling mig-app-us \
 gcloud compute instance-groups set-named-ports mig-app-us --named-ports=webapp:8080 --zone=us-central1-a
 ----
 
-== Global external HTTP Load Balancer
+=== Prepare Application VM Image
 
-Google Cloud HTTP(S) load balancing is implemented at the edge of Google's network in Google's points of presence (POP) around the world. User traffic directed to an HTTP(S) load balancer enters the POP closest to the user and is then load-balanced over Google's global network to the closest backend that has sufficient available capacity.
+Prepare Application VM Image can used to create instance template or VM instance in internat.
+
+[source, bash]
+.*1. Create VM Instance*
+----
+gcloud compute instances create webserver \
+   --zone=us-central1-a \
+   --machine-type=e2-micro \
+   --tags=allow-health-checks \
+   --create-disk=auto-delete=no,boot=yes,device-name=webserver,image=projects/debian-cloud/global/images/debian-11-bullseye-v20230206,mode=rw,size=10,type=pd-balanced \
+   --metadata=startup-script='#!/bin/bash
+      apt-get update
+      apt-get install -y nginx
+      curl -k -s https://raw.githubusercontent.com/cloudadc/cloud-quickstarts/main/gcp/network/lb/app.conf -o /etc/nginx/conf.d/app.conf
+      update-rc.d nginx enable
+      service nginx restart'
+----
+
+* `--tags` - the `allow-health-checks` hints the firewall rules will filter traffic via tag `allow-health-checks`
+* `--create-disk` - the `webserver` is the name of Disk, the `auto-delete=no` means Disk will keep even the Instance be deleted
+
+[source, bash]
+.*2. Delete the VM Instance*
+----
+gcloud compute instances delete webserver --zone=us-central1-a
+----
+
+[source, bash]
+.*3. Verify the Disk Still Exist*
+----
+$ gcloud compute disks list
+NAME: webserver
+LOCATION: us-central1-a
+LOCATION_SCOPE: zone
+SIZE_GB: 10
+TYPE: pd-balanced
+STATUS: READY
+----
+
+[source, bash]
+.*4. Create VM Image*
+----
+gcloud compute images create testwebserver --source-disk=webserver --source-disk-zone=us-central1-a --storage-location=us --family=webserver
+----
+
+[source, json]
+.*5. Overview of VM Image*
+----
+{
+  "architecture": "X86_64",
+  "archiveSizeBytes": "603495488",
+  "creationTimestamp": "2023-03-03T18:18:44.944-08:00",
+  "diskSizeGb": "10",
+  "family": "webserver",
+  "guestOsFeatures": [
+    {
+      "type": "UEFI_COMPATIBLE"
+    },
+    {
+      "type": "VIRTIO_SCSI_MULTIQUEUE"
+    },
+    {
+      "type": "GVNIC"
+    }
+  ],
+  "id": "9119815172979889259",
+  "kind": "compute#image",
+  "labelFingerprint": "42WmSpB8rSM=",
+  "licenseCodes": [
+    "3853522013536123851"
+  ],
+  "licenses": [
+    "https://www.googleapis.com/compute/v1/projects/debian-cloud/global/licenses/debian-11-bullseye"
+  ],
+  "name": "testwebserver",
+  "selfLink": "https://www.googleapis.com/compute/v1/projects/playground-s-11-9d5aa8e6/global/images/testwebserver",
+  "sourceDisk": "https://www.googleapis.com/compute/v1/projects/playground-s-11-9d5aa8e6/zones/us-central1-a/disks/webserver",
+  "sourceDiskId": "868007293016283134",
+  "sourceType": "RAW",
+  "status": "READY",
+  "storageLocations": [
+    "us"
+  ]
+}
+----
 
 === Prepare the Network
 
@@ -125,53 +209,6 @@ gcloud compute routers nats create nat-config --router=nat-router-us-central1 --
 
 NOTE: If VM instances without an external IP address, Cloud NAT service to allow those VM instances to send outbound traffic only through the Cloud NAT, and receive inbound traffic through the load balancer.
 
-=== Prepare Application as VM Image
-
-[source, bash]
-.*1. Create VM Instance*
-----
-gcloud compute instances create webserver \
-   --zone=us-central1-a \
-   --machine-type=e2-micro \
-   --network-interface=subnet=test-us-central1,no-address \
-   --tags=allow-health-checks \
-   --create-disk=auto-delete=no,boot=yes,device-name=webserver,image=projects/debian-cloud/global/images/debian-11-bullseye-v20230206,mode=rw,size=10,type=pd-balanced \
-   --metadata=startup-script='#!/bin/bash
-      apt-get update
-      apt-get install -y nginx
-      curl -k -s https://raw.githubusercontent.com/cloudadc/cloud-quickstarts/main/gcp/network/lb/app.conf -o /etc/nginx/conf.d/app.conf
-      update-rc.d nginx enable
-      service nginx restart'
-----
-
-* `--network-interface` - the `no-address` hints no public IP address will be assigned
-* `--tags` - the `allow-health-checks` hints the firewall rules will filter traffic via tag `allow-health-checks`
-* `--create-disk` - the `webserver` is the name of Disk, the `auto-delete=no` means Disk will keep even the Instance be deleted
-
-[source, bash]
-.*2. Delete the VM Instance*
-----
-gcloud compute instances delete webserver --zone=us-central1-a
-----
-
-[source, bash]
-.*3. Verify the Disk Still Exist*
-----
-$ gcloud compute disks list
-NAME: webserver
-LOCATION: us-central1-a
-LOCATION_SCOPE: zone
-SIZE_GB: 10
-TYPE: pd-balanced
-STATUS: READY
-----
-
-[source, bash]
-.*4. Create VM Image*
-----
-gcloud compute images create testwebserver --source-disk=webserver --source-disk-zone=us-central1-a --storage-location=us --family=webserver
-----
-
 === Create instance template
 
 [source, bash]
@@ -181,6 +218,8 @@ gcloud compute instance-templates create us-webserver-template --machine-type=f1
 
 gcloud compute instance-templates create eu-webserver-template --machine-type=f1-micro --network-interface=subnet=test-europe-west1,no-address --tags=allow-health-checks --create-disk=auto-delete=yes,boot=yes,device-name=testwebserver-template,image=testwebserver,mode=rw,size=10,type=pd-balanced --region=europe-west1
 ----
+
+NOTE: The `testwebserver` is created in link:#prepare-application-vm-image[Prepare Application VM Image].
 
 [source, bash]
 .*2. verify the instance template*
