@@ -161,7 +161,13 @@ gcloud compute images create testwebserver --source-disk=webserver --source-disk
 }
 ----
 
-== Global external HTTP Load Balancer
+== Global external HTTP Load Balancer(multi-region)
+
+The Global external HTTP load Balancer topology looks as below:
+
+image:img/ehlb-mr-topology.png[]
+
+There are 2 instances groups in different regions, the Global external HTTP load Balancer diftributed the HTTP traffic to these instances groups, there are 2 forwarding rules and reference 2 addresses, IPv4 and IPv6 accordingly. For client request from US, the HTTP Load Balancer dispatch the request to instance group in `us-central1`, for the client request from europe, the HTTP Load Balancer dispatch the request to instance group in `europe-west1`.
 
 === Prepare the Network
 
@@ -679,7 +685,7 @@ $ IPAddress=$(gcloud compute forwarding-rules describe http-content-rule --globa
         server addr: 10.128.0.2:8080
 ----
 
-== External TCP/UDP Network load balancer
+== External TCP/UDP Network load balancer(target-pools)
 
 Google Cloud external TCP/UDP Network Load Balancing is a regional, pass-through load balancer. A network load balancer distributes external traffic among virtual machine (VM) instances in the same region.
 
