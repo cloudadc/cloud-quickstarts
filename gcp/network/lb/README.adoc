@@ -875,7 +875,7 @@ Google Cloud offers Internal Load Balancing for your TCP/UDP-based traffic. Inte
 
 *The Topology:*
 
-image:itlb-topology[]
+image:itlb-topology.png[]
 
 === Prepare the Network
 
@@ -1108,19 +1108,239 @@ image:img/itlb-client-lb-server.png[]
 
 * Client access server via LB, the real ip address be hiden.
 
-== TD
+== Internal HTTP load balancer
+
+image:img/e.png[]
+
+=== Prepare the Network
 
 [source, bash]
-.**
+.*1. create internal network and subnets*
 ----
-
+gcloud compute networks create internal --subnet-mode=custom
+gcloud compute networks subnets create internal-a --network=internal --range=10.1.10.0/24 --region=us-central1
+gcloud compute networks subnets create internal-b --network=internal --range=10.1.20.0/24 --region=us-central1
+gcloud compute networks subnets create internal-lb --network=internal --range=10.1.30.0/24 --region=us-central1
+gcloud compute networks subnets create internal-proxy --purpose=REGIONAL_MANAGED_PROXY --role=ACTIVE --network=internal --range=10.1.40.0/24 --region=us-central1
 ----
 
 [source, bash]
-.**
+.*2. create firewall rule allow icmp, ssh from any source*
+----
+gcloud compute firewall-rules create app-allow-icmp-ssh --direction=INGRESS --priority=1000 --network=internal --action=ALLOW --rules=tcp:22,icmp --source-ranges=0.0.0.0/0 --target-tags=backend-service
 ----
 
+[source, bash]
+.*3. create firewall rule allow IAP to utility VM*
 ----
+gcloud compute firewall-rules create allow-iap-to-utility-vm --direction=INGRESS --priority=1000 --network=internal --action=ALLOW --rules=tcp:22,icmp --source-ranges=35.235.240.0/20 --target-tags=utility-vm
+----
+
+[source, bash]
+.*4. create firewall rule allow application internal access*
+----
+gcloud compute firewall-rules create allow-app-access-from-internal --direction=INGRESS --priority=1000 --network=internal --action=ALLOW --rules=tcp:8080 --source-ranges=10.1.10.0/24,10.1.20.0/24,10.1.30.0/24,10.1.40.0/24 --target-tags=backend-service
+----
+
+[source, bash]
+.*5. create firewall rule allow health check*
+----
+gcloud compute firewall-rules create allow-health-checks --direction=INGRESS --priority=1000 --network=internal --action=ALLOW --rules=tcp:8080 --source-ranges=130.211.0.0/22,35.191.0.0/16 --target-tags=backend-service
+----
+
+=== Prepare backend application VM image
+
+Refer to link:#prepare-application-vm-image[Prepare Application VM Image] create applcation vm image. The --network-interface=network-tier=PREMIUM,subnet=internal-a should be added while creating the VM instance with external ip address.
+
+=== Create instance group blue
+
+[source, bash]
+.*1. create instance template*
+----
+gcloud compute instance-templates create blue --machine-type=e2-micro --network-interface=subnet=internal-a,no-address --region=us-central1 --tags=backend-service --create-disk=auto-delete=yes,boot=yes,device-name=blue,image=testwebserver,mode=rw,size=10,type=pd-balanced
+----
+
+[source, bash]
+.*2. create instance groups*
+----
+gcloud compute instance-groups managed create ig-blue --base-instance-name=blue --size=2 --template=blue --region=us-central1 --list-managed-instances-results=pageless
+----
+
+[source, bash]
+.*3. set named ports*
+----
+gcloud compute instance-groups managed set-named-ports ig-blue --named-ports=webapp:8080 --region=us-central1
+----
+
+=== Create instance group green
+
+[source, bash]
+.*1. create instance template*
+----
+gcloud compute instance-templates create green --machine-type=e2-micro --network-interface=subnet=internal-b,no-address --region=us-central1 --tags=backend-service --create-disk=auto-delete=yes,boot=yes,device-name=green,image=testwebserver,mode=rw,size=10,type=pd-balanced
+----
+
+[source, bash]
+.*2. create instance groups*
+----
+gcloud compute instance-groups managed create ig-green --base-instance-name=green --size=2 --template=green --region=us-central1 --list-managed-instances-results=pageless
+----
+
+[source, bash]
+.*3. set named ports*
+----
+gcloud compute instance-groups managed set-named-ports ig-green --named-ports=webapp:8080 --region=us-central1
+----
+
+[source, bash]
+.*1. create utility vm*
+----
+gcloud compute instances create utility-vm \
+    --zone=us-central1-c \
+    --tags=utility-vm \
+    --machine-type=e2-micro \
+    --image-family=debian-11 \
+    --image-project=debian-cloud \
+    --network-interface=private-network-ip=10.1.10.50,subnet=internal-a,no-address
+----
+
+[source, bash]
+.*2. ssh to utility vm*
+----
+gcloud compute ssh utility-vm --zone=us-central1-c --tunnel-through-iap
+----
+
+[source, bash]
+.*3. access application in blue instance group*
+----
+$ curl 10.1.10.3:8080/blue
+
+            request: GET /blue HTTP/1.1
+               host: 10.1.10.3
+           hostname: blue-cw0k
+
+        client addr: 10.1.10.50:58236
+        server addr: 10.1.10.3:8080
+
+$ curl 10.1.10.4:8080/blue
+
+            request: GET /blue HTTP/1.1
+               host: 10.1.10.4
+           hostname: blue-9prw
+
+        client addr: 10.1.10.50:46862
+        server addr: 10.1.10.4:8080
+----
+
+[source, bash]
+.*4. access application in green instance group*
+----
+$ curl 10.1.20.2:8080/blue
+
+            request: GET /blue HTTP/1.1
+               host: 10.1.20.2
+           hostname: green-qjvg
+
+        client addr: 10.1.10.50:38730
+        server addr: 10.1.20.2:8080
+
+$ curl 10.1.20.3:8080/blue
+
+            request: GET /blue HTTP/1.1
+               host: 10.1.20.3
+           hostname: green-6xz5
+
+        client addr: 10.1.10.50:60046
+        server addr: 10.1.20.3:8080
+----
+
+=== Create blue-service backend
+
+[source, bash]
+.*1. create regional health check*
+----
+gcloud compute health-checks create http blue-heatlh-check --region=us-central1 --port=8080 --check-interval=10 --timeout=5 --healthy-threshold=2 --unhealthy-threshold=3
+----
+
+[source, bash]
+.*2. create internal backend service*
+----
+gcloud compute backend-services create blue-service --load-balancing-scheme=INTERNAL_MANAGED --protocol=HTTP --port-name=webapp --health-checks=blue-heatlh-check --health-checks-region=us-central1 --region=us-central1
+----
+
+[source, bash]
+.*3. add instance groups to backend service*
+----
+gcloud compute backend-services add-backend blue-service --region=us-central1 --instance-group=ig-blue --instance-group-region=us-central1 --balancing-mode=UTILIZATION --max-utilization=0.8 --capacity-scaler=1.0 
+----
+
+=== Create green-service backend
+
+[source, bash]
+.*1. create regional health check*
+----
+gcloud compute health-checks create http green-heatlh-check --region=us-central1 --port=8080 --check-interval=10 --timeout=5 --healthy-threshold=2 --unhealthy-threshold=3
+----
+
+[source, bash]
+.*2. create internal backend service*
+----
+gcloud compute backend-services create green-service --load-balancing-scheme=INTERNAL_MANAGED --protocol=HTTP --port-name=webapp --health-checks=green-heatlh-check --health-checks-region=us-central1 --region=us-central1
+----
+
+[source, bash]
+.*3. add instance groups to backend service*
+----
+gcloud compute backend-services add-backend green-service --region=us-central1 --instance-group=ig-green --instance-group-region=us-central1 --balancing-mode=UTILIZATION --max-utilization=0.8 --capacity-scaler=1.0 
+----
+
+=== Set up traffic management(blue/green)
+
+[source, bash]
+.*1. create ihlb-bule-green.yaml content as the following*
+----
+name: ihlb-bule-green
+defaultService: regions/us-central1/backendServices/green-service
+hostRules:
+- hosts:
+  - '*'
+  pathMatcher: matcher1
+pathMatchers:
+- defaultService: regions/us-central1/backendServices/green-service
+  name: matcher1
+  routeRules:
+  - priority: 2
+    matchRules:
+      - prefixMatch: /
+    routeAction:
+      weightedBackendServices:
+        - backendService: regions/us-central1/backendServices/green-service
+          weight: 95
+        - backendService: regions/us-central1/backendServices/blue-service
+          weight: 5
+----
+
+[source, bash]
+.*2. Create the URL map*
+----
+gcloud compute url-maps import ihlb-bule-green --region=us-central1 --source=ihlb-bule-green.yaml
+----
+
+=== Setting up an HTTP frontend
+
+[source, bash]
+.*1. Create a target HTTP proxy to route requests to blue/green URL map*
+----
+gcloud compute target-http-proxies create ihlb-thp-bule-green --url-map=ihlb-bule-green --url-map-region=us-central1 --region=us-central1
+----
+
+[source, bash]
+.*2. Create forwarding rules reference with blue/green http proxy*
+----
+gcloud compute forwarding-rules create ihlb-fr-blue-green --load-balancing-scheme=INTERNAL_MANAGED --target-http-proxy=ihlb-thp-bule-green --target-http-proxy-region=us-central1 --network=internal --subnet=internal-lb --address=10.1.30.5 --ports=80 --region=us-central1
+----
+
+=== Test access the application via LB endpoint
 
 [source, bash]
 .**
