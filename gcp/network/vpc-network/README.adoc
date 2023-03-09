@@ -1634,6 +1634,230 @@ $ gcloud compute routes list --format=yaml
 
 * link:vpc-peering-network-routes-peering.yaml[vpc-peering-network-routes-peering.yaml]
 
+== VPC network peering Performance Benchmark
+
+=== Prepare VPC
+
+[source, bash]
+.*network-1*
+----
+gcloud compute networks create network-1 --subnet-mode=custom --mtu=1460 --bgp-routing-mode=regional
+
+gcloud compute networks subnets create subnet-a --range=10.1.10.0/24 --stack-type=IPV4_ONLY --network=network-1 --region=us-central1 --enable-flow-logs --logging-aggregation-interval=interval-5-sec --logging-flow-sampling=0.5 --logging-metadata=include-all
+
+gcloud compute networks subnets create subnet-b --range=10.1.20.0/24 --stack-type=IPV4_ONLY --network=network-1 --region=us-central1 --enable-flow-logs --logging-aggregation-interval=interval-5-sec --logging-flow-sampling=0.5 --logging-metadata=include-all
+
+gcloud compute firewall-rules create network-1-allow-custom --network=network-1 --direction=INGRESS --priority=65534 --source-ranges=10.1.10.0/24,10.1.20.0/24,192.168.1.0/24 --action=ALLOW --rules=all
+
+gcloud compute firewall-rules create network-1-allow-icmp --network=network-1 --direction=INGRESS --priority=65534 --source-ranges=0.0.0.0/0 --action=ALLOW --rules=icmp
+
+gcloud compute firewall-rules create network-1-allow-ssh --network=network-1 --direction=INGRESS --priority=65534 --source-ranges=0.0.0.0/0 --action=ALLOW --rules=tcp:22
+----
+
+[source, bash]
+.*network-2*
+----
+gcloud compute networks create network-2 --subnet-mode=custom --mtu=1460 --bgp-routing-mode=regional
+
+gcloud compute networks subnets create subnet-c --range=192.168.1.0/24 --stack-type=IPV4_ONLY --network=network-2 --region=us-central1 --enable-flow-logs --logging-aggregation-interval=interval-5-sec --logging-flow-sampling=0.5 --logging-metadata=include-all
+
+gcloud compute firewall-rules create network-2-allow-custom --network=network-2 --direction=INGRESS --priority=65534 --source-ranges=192.168.1.0/24 --action=ALLOW --rules=all
+
+gcloud compute firewall-rules create network-2-allow-icmp --network=network-2 --direction=INGRESS --priority=65534 --source-ranges=0.0.0.0/0 --action=ALLOW --rules=icmp
+
+gcloud compute firewall-rules create network-2-allow-ssh --network=network-2 --direction=INGRESS --priority=65534 --source-ranges=0.0.0.0/0 --action=ALLOW --rules=tcp:22
+----
+
+=== Create VM Image
+
+[source, bash]
+.*1. create vm*
+----
+gcloud compute instances create ttcp \
+   --zone=us-central1-a \
+   --machine-type=e2-micro \
+   --network-interface=network-tier=PREMIUM,subnet=subnet-a \
+   --create-disk=auto-delete=no,boot=yes,device-name=ttcp,image=projects/centos-cloud/global/images/centos-7-v20230306,mode=rw,size=20,type=pd-balanced \
+   --metadata=startup-script='#!/bin/bash
+      curl -k -s https://github.com/kylinsoong/ttcp/releases/download/1.13-3/ttcp-1.13-3.x86_64.rpm -o /tmp/ttcp-1.13-3.x86_64.rpm
+      rpm -ivh /tmp/ttcp-1.13-3.x86_64.rpm'
+----
+
+[source, bash]
+.*2. delete vm*
+----
+gcloud compute instances delete ttcp --zone=us-central1-a
+----
+
+[source, bash]
+.*3. list disk*
+----
+gcloud compute disks list
+----
+
+[source, bash]
+.*4. create vm image*
+----
+gcloud compute images create ttcpserver --source-disk=ttcp --source-disk-zone=us-central1-a --storage-location=us --family=ttcp
+----
+
+=== Create VMs
+
+[source, bash]
+----
+gcloud compute instances create vm-1 \
+    --zone=us-central1-a \
+    --machine-type=e2-small \
+    --network-interface=private-network-ip=10.1.10.8,subnet=subnet-a,no-address \
+    --create-disk=auto-delete=yes,boot=yes,device-name=vm-1,image=ttcpserver,mode=rw,size=20,type=pd-balanced
+
+gcloud compute instances create vm-2 \
+    --zone=us-central1-a \
+    --machine-type=e2-small \
+    --network-interface=private-network-ip=10.1.10.9,subnet=subnet-a,no-address \
+    --create-disk=auto-delete=yes,boot=yes,device-name=vm-2,image=ttcpserver,mode=rw,size=20,type=pd-balanced 
+
+gcloud compute instances create vm-3 \
+    --zone=us-central1-a \
+    --machine-type=e2-small \
+    --network-interface=private-network-ip=10.1.20.5,subnet=subnet-b,no-address \
+    --create-disk=auto-delete=yes,boot=yes,device-name=vm-3,image=ttcpserver,mode=rw,size=20,type=pd-balanced 
+
+gcloud compute instances create vm-4 \
+    --zone=us-central1-a \
+    --machine-type=e2-small \
+    --network-interface=private-network-ip=192.168.1.5,subnet=subnet-c,no-address \
+    --create-disk=auto-delete=yes,boot=yes,device-name=vm-4,image=ttcpserver,mode=rw,size=20,type=pd-balanced 
+----
+
+|===
+|VS Name |Zone |Network |Subnet |IP
+
+|vm-1
+|us-central1-a
+|network-1
+|subnet-a
+|10.1.10.8
+
+|vm-2
+|us-central1-a 
+|network-1
+|subnet-a
+|10.1.10.9
+
+|vm-3
+|us-central1-a 
+|network-1
+|subnet-b
+|10.1.20.5
+
+|vm-4
+|us-central1-a
+|network-2
+|subnet-c
+|192.168.1.5
+|===
+
+=== Create VPC Network Peering
+
+[source, bash]
+.*peering-1-2*
+----
+gcloud compute networks peerings create peering-1-2 --network=network-1 --peer-network=network-2
+----
+
+[source, bash]
+.*peering-2-1*
+----
+gcloud compute networks peerings create peering-2-1 --network=network-2 --peer-network=network-1
+----
+
+*Routes added for VPC peering*
+
+image:img/vpc-peering-routes-added.png[]
+
+=== Test Connectivity
+
+[source, bash]
+.*on instance 1 ping other 3 instances*
+----
+$ for i in 10.1.10.9 10.1.20.5 192.168.1.5 ; do ping $i -c2 ; done
+PING 10.1.10.9 (10.1.10.9) 56(84) bytes of data.
+64 bytes from 10.1.10.9: icmp_seq=1 ttl=64 time=1.78 ms
+64 bytes from 10.1.10.9: icmp_seq=2 ttl=64 time=0.350 ms
+
+--- 10.1.10.9 ping statistics ---
+2 packets transmitted, 2 received, 0% packet loss, time 1002ms
+rtt min/avg/max/mdev = 0.350/1.065/1.780/0.715 ms
+PING 10.1.20.5 (10.1.20.5) 56(84) bytes of data.
+64 bytes from 10.1.20.5: icmp_seq=1 ttl=64 time=1.82 ms
+64 bytes from 10.1.20.5: icmp_seq=2 ttl=64 time=0.361 ms
+
+--- 10.1.20.5 ping statistics ---
+2 packets transmitted, 2 received, 0% packet loss, time 1002ms
+rtt min/avg/max/mdev = 0.361/1.092/1.823/0.731 ms
+PING 192.168.1.5 (192.168.1.5) 56(84) bytes of data.
+64 bytes from 192.168.1.5: icmp_seq=1 ttl=64 time=2.17 ms
+64 bytes from 192.168.1.5: icmp_seq=2 ttl=64 time=0.400 ms
+
+--- 192.168.1.5 ping statistics ---
+2 packets transmitted, 2 received, 0% packet loss, time 1001ms
+rtt min/avg/max/mdev = 0.400/1.289/2.179/0.890 ms
+----
+
+=== Performance Benchmark
+
+[source, bash]
+.*start ttcp r on vm-1*
+----
+ttcp -r
+----
+
+[source, bash]
+.*start ttcp t on vm-2, vm-3, vm-4 accordingly*
+----
+ttcp -t 10.1.10.8 -n 10240
+----
+
+[source, bash]
+.*logs from ttcp r*
+----
+ttcp-r: accept from 10.1.10.9:36856
+ttcp-r: worker 1322 start
+ttcp-r: worker 1322, stats of 10.1.10.9:36856
+        10737418240 bytes in 87.71 real seconds = 116.75 MB/sec +++
+        10737418240 bytes in 11.09 CPU seconds = 923.74 MB/cpu sec
+        250648 I/O calls, msec/call = 0.36, calls/sec = 2857.82
+        0.3user 10.7sys 1:27real 12% 0i+0d 554maxrss 0+260pf 248329+16csw
+        buffer address 0x7f35361ec000
+ttcp-r: worker 1322 terminated
+
+ttcp-r: accept from 10.1.20.5:55000
+ttcp-r: worker 1341 start
+ttcp-r: worker 1341, stats of 10.1.20.5:55000
+        10737418240 bytes in 87.17 real seconds = 117.47 MB/sec +++
+        10737418240 bytes in 10.70 CPU seconds = 957.40 MB/cpu sec
+        252531 I/O calls, msec/call = 0.35, calls/sec = 2896.99
+        0.3user 10.3sys 1:27real 12% 0i+0d 554maxrss 0+260pf 249668+3csw
+        buffer address 0x7f35361ec000
+ttcp-r: worker 1341 terminated
+
+ttcp-r: worker 1345 start
+ttcp-r: worker 1345, stats of 192.168.1.5:35384
+        10737418240 bytes in 87.23 real seconds = 117.39 MB/sec +++
+        10737418240 bytes in 10.59 CPU seconds = 966.65 MB/cpu sec
+        252526 I/O calls, msec/call = 0.35, calls/sec = 2894.99
+        0.3user 10.2sys 1:27real 12% 0i+0d 554maxrss 0+260pf 249555+1csw
+        buffer address 0x7f35361ec000
+ttcp-r: worker 1345 terminated
+----
+
+NOTE: 10 GB data be transferred between vms in same subnet, vms in different subnet, vms in different vpc(peering).
+
+*Conclusion*
+
+VPC Peering do not has network performance lost.
+
 == Access Control with Firewall Rules
 
 [source, bash]
@@ -1671,4 +1895,19 @@ PING 146.148.90.158 (146.148.90.158) 56(84) bytes of data.
 
 --- 146.148.90.158 ping statistics ---
 3 packets transmitted, 0 received, 100% packet loss, time 2054ms
+----
+
+== Subnet with secondary IP range
+
+[source, bash]
+----
+gcloud compute networks create demo-vpc --subnet-mode=custom --mtu=1460 --bgp-routing-mode=regional
+
+gcloud compute networks subnets create subnet-a --range=192.168.17.0/24 --stack-type=IPV4_ONLY --network=demo-vpc --region=us-central1 --secondary-range=alias-ip=172.16.24.0/24 --enable-private-ip-google-access --enable-flow-logs --logging-aggregation-interval=interval-5-sec --logging-flow-sampling=0.5 --logging-metadata=include-all
+
+gcloud compute firewall-rules create demo-vpc-allow-custom --network=demo-vpc --direction=INGRESS --priority=65534 --source-ranges=192.168.17.0/24 --action=ALLOW --rules=all
+
+gcloud compute firewall-rules create demo-vpc-allow-icmp --network=demo-vpc --direction=INGRESS --priority=65534 --source-ranges=0.0.0.0/0 --action=ALLOW --rules=icmp
+
+gcloud compute firewall-rules create demo-vpc-allow-ssh --network=demo-vpc --direction=INGRESS --priority=65534 --source-ranges=0.0.0.0/0 --action=ALLOW --rules=tcp:22
 ----
