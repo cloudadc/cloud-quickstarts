@@ -2148,3 +2148,112 @@ logName:(projects/playground-s-11-3f23c395/logs/compute.googleapis.com%2Ffirewal
 }
 ----
 
+== Private Google Access
+
+=== Create an application
+
+[source, bash]
+.*1. create application*
+----
+gcloud compute instances create webserver \
+   --zone=us-central1-a \
+   --machine-type=e2-micro \
+   --tags=web-app \
+   --create-disk=auto-delete=no,boot=yes,device-name=webserver,image=projects/debian-cloud/global/images/debian-11-bullseye-v20230206,mode=rw,size=10,type=pd-balanced \
+   --metadata=startup-script='#!/bin/bash
+      apt-get update
+      apt-get install -y nginx
+      curl -k -s https://raw.githubusercontent.com/cloudadc/cloud-quickstarts/main/gcp/network/lb/app.conf -o /etc/nginx/conf.d/app.conf
+      update-rc.d nginx enable
+      service nginx restart'
+----
+
+[source, bash]
+.*2. create firewall*
+----
+gcloud compute firewall-rules create default-allow-8080 --direction=INGRESS --priority=1000 --network=default --action=ALLOW --rules=tcp:8080 --source-ranges=0.0.0.0/0 --target-tags=web-app
+----
+
+[source, bash]
+.*3. access application via external ip*
+----
+$ curl http://34.122.40.216:8080
+
+            request: GET / HTTP/1.1
+               host: 34.122.40.216
+           hostname: webserver
+
+        client addr: 111.223.104.76:49954
+        server addr: 10.128.0.3:8080
+
+             cookie: 
+                xff: 
+         user agent: curl/7.64.1
+----
+
+=== Create VPC and subnet with Private Google Access
+
+[source, bash]
+.*1. create vpc and subnet*
+----
+gcloud compute networks create vpc-1 --subnet-mode=custom --mtu=1460 --bgp-routing-mode=regional
+gcloud compute networks subnets create subnet-a --range=10.1.10.0/24 --stack-type=IPV4_ONLY --network=vpc-1 --region=us-central1 --enable-private-ip-google-access
+----
+
+[source, bash]
+.*2. create client vm*
+----
+gcloud compute instances create client \
+   --zone=us-central1-a \
+   --machine-type=e2-micro \
+   --tags=client-vm \
+   --network-interface=network-tier=PREMIUM,subnet=subnet-a,no-address \
+   --create-disk=auto-delete=yes,boot=yes,device-name=client,image=projects/debian-cloud/global/images/debian-11-bullseye-v20230206,mode=rw,size=10,type=pd-balanced
+----
+
+[source, bash]
+.*3. create firewall rule*
+----
+gcloud compute firewall-rules create allow-iap-to-utility-vm --direction=INGRESS --priority=1000 --network=vpc-1 --action=ALLOW --rules=tcp:22,icmp --source-ranges=35.235.240.0/20 --target-tags=client-vm
+----
+
+=== Test Private Google Access
+
+[source, bash]
+.*1. ssh to client vm*
+----
+gcloud compute ssh client --zone=us-central1-a --tunnel-through-iap
+----
+
+[source, bash]
+.*2. access application via webserver external ip*
+----
+client:~$ curl http://34.122.40.216:8080 -m 15
+curl: (28) Connection timed out after 15001 milliseconds
+----
+
+NOTE: access external failed.
+
+[source, bash]
+.**
+----
+
+----
+
+[source, bash]
+.**
+----
+
+----
+
+[source, bash]
+.**
+----
+
+----
+
+[source, bash]
+.**
+----
+
+----
