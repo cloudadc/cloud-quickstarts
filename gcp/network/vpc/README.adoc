@@ -1911,3 +1911,240 @@ gcloud compute firewall-rules create demo-vpc-allow-icmp --network=demo-vpc --di
 
 gcloud compute firewall-rules create demo-vpc-allow-ssh --network=demo-vpc --direction=INGRESS --priority=65534 --source-ranges=0.0.0.0/0 --action=ALLOW --rules=tcp:22
 ----
+
+== VPC Network Monitor
+
+=== Prepre VPC network
+
+[source, bash]
+.*1. create nework*
+----
+gcloud compute networks create vpc-1 --subnet-mode=custom --mtu=1460 --bgp-routing-mode=regional
+
+gcloud compute networks subnets create subnet-a --range=10.0.10.0/24 --stack-type=IPV4_ONLY --network=vpc-1 --region=us-central1
+----
+
+[source, bash]
+.*2. create firewall to allow ingress 8080/22*
+----
+gcloud compute firewall-rules create allow-8080-22 --direction=INGRESS --priority=1000 --network=vpc-1 --action=ALLOW --rules=tcp:8080,tcp:22 --source-ranges=0.0.0.0/0 --target-tags=web-server
+----
+
+=== Prepare Application
+
+[source, bash]
+.*1. create vm*
+----
+gcloud compute instances create webserver \
+   --zone=us-central1-a \
+   --machine-type=e2-micro \
+   --network-interface=network-tier=PREMIUM,subnet=subnet-a \
+   --tags=web-server \
+   --create-disk=auto-delete=no,boot=yes,device-name=webserver,image=projects/debian-cloud/global/images/debian-11-bullseye-v20230206,mode=rw,size=10,type=pd-balanced \
+   --metadata=startup-script='#!/bin/bash
+      apt-get update
+      apt-get install -y nginx
+      curl -k -s https://raw.githubusercontent.com/cloudadc/cloud-quickstarts/main/gcp/network/lb/app.conf -o /etc/nginx/conf.d/app.conf
+      update-rc.d nginx enable
+      service nginx restart'
+----
+
+[source, bash]
+.*2. view application*
+----
+$ IP=$(gcloud compute instances list | grep EXTERNAL_IP | awk '{print $2}') ; curl $IP:8080
+
+            request: GET / HTTP/1.1
+               host: 35.238.219.147
+           hostname: webserver
+
+        client addr: 34.87.154.81:33902
+        server addr: 10.0.10.2:8080
+
+             cookie:
+                xff:
+         user agent: curl/7.74.0
+----
+
+=== VPC Flow Logs
+
+[source, bash]
+.*1. enable VPC Flow Logs*
+----
+gcloud compute networks subnets update subnet-a --region=us-central1  --enable-flow-logs --logging-aggregation-interval=interval-5-sec --logging-flow-sampling=0.5 --logging-metadata=include-all
+----
+
+[source, bash]
+.*2. access the application again*
+----
+$ curl http://35.238.219.147:8080/test/vpc/flows/logs
+
+            request: GET /test/vpc/flows/logs HTTP/1.1
+               host: 35.238.219.147
+           hostname: webserver
+
+        client addr: 111.223.104.76:55851
+        server addr: 10.0.10.2:8080
+
+             cookie: 
+                xff: 
+         user agent: curl/7.64.1
+----
+
+[source, bash]
+.*3. use the following to filter vpc flow logs*
+----
+resource.type="gce_subnetwork"
+resource.labels.subnetwork_name="subnet-a"
+jsonPayload.src_instance.vm_name="webserver"
+----
+
+[source, json]
+.*4. view vpc flow logs*
+----
+{
+  "insertId": "1iod2r1fbnb8om",
+  "jsonPayload": {
+    "connection": {
+      "src_port": 8080,
+      "dest_port": 55851,
+      "dest_ip": "42.61.112.56",
+      "src_ip": "10.0.10.2",
+      "protocol": 6
+    },
+    "packets_sent": "128",
+    "end_time": "2023-03-10T00:42:34.701799620Z",
+    "reporter": "SRC",
+    "src_vpc": {
+      "vpc_name": "vpc-1",
+      "subnetwork_name": "subnet-a",
+      "project_id": "playground-s-11-3f23c395"
+    },
+    "dest_location": {
+      "city": "Singapore",
+      "country": "sgp",
+      "continent": "Asia",
+      "asn": 3758
+    },
+    "start_time": "2023-03-10T00:42:34.701799620Z",
+    "src_instance": {
+      "region": "us-central1",
+      "project_id": "playground-s-11-3f23c395",
+      "vm_name": "webserver",
+      "zone": "us-central1-a"
+    },
+    "bytes_sent": "55808"
+  },
+  "resource": {
+    "type": "gce_subnetwork",
+    "labels": {
+      "location": "us-central1-a",
+      "subnetwork_id": "5585028118817000072",
+      "subnetwork_name": "subnet-a",
+      "project_id": "playground-s-11-3f23c395"
+    }
+  },
+  "timestamp": "2023-03-10T00:42:44.357241344Z",
+  "logName": "projects/playground-s-11-3f23c395/logs/compute.googleapis.com%2Fvpc_flows",
+  "receiveTimestamp": "2023-03-10T00:42:44.357241344Z"
+}
+----
+
+=== Firewall Rules Logging
+
+[source, bash]
+.*1. enable firewall rules logging*
+----
+gcloud compute firewall-rules update allow-8080-22 --enable-logging --logging-metadata=include-all
+----
+
+[source, bash]
+.*2. access the application*
+----
+$ curl http://35.238.219.147:8080/test/vpc/firewall-rules/logs
+
+            request: GET /test/vpc/firewall-rules/logs HTTP/1.1
+               host: 35.238.219.147
+           hostname: webserver
+
+        client addr: 111.223.104.76:58720
+        server addr: 10.0.10.2:8080
+
+             cookie: 
+                xff: 
+         user agent: curl/7.64.1
+----
+
+[source, bash]
+.*3. use the following to query logs*
+----
+logName:(projects/playground-s-11-3f23c395/logs/compute.googleapis.com%2Ffirewall) AND jsonPayload.rule_details.reference:("network:vpc-1/firewall:allow-8080-22") AND jsonPayload.connection.src_port=58720
+----
+
+[source, json]
+.*4. view the forewall rules logging*
+----
+{
+  "insertId": "1847ry4f1jx6xm",
+  "jsonPayload": {
+    "vpc": {
+      "subnetwork_name": "subnet-a",
+      "vpc_name": "vpc-1",
+      "project_id": "playground-s-11-3f23c395"
+    },
+    "disposition": "ALLOWED",
+    "rule_details": {
+      "target_tag": [
+        "web-server"
+      ],
+      "source_range": [
+        "0.0.0.0/0"
+      ],
+      "action": "ALLOW",
+      "ip_port_info": [
+        {
+          "ip_protocol": "TCP",
+          "port_range": [
+            "8080",
+            "22"
+          ]
+        }
+      ],
+      "priority": 1000,
+      "direction": "INGRESS",
+      "reference": "network:vpc-1/firewall:allow-8080-22"
+    },
+    "instance": {
+      "zone": "us-central1-a",
+      "project_id": "playground-s-11-3f23c395",
+      "region": "us-central1",
+      "vm_name": "webserver"
+    },
+    "remote_location": {
+      "country": "sgp",
+      "continent": "Asia",
+      "city": "Singapore"
+    },
+    "connection": {
+      "src_port": 58720,
+      "protocol": 6,
+      "src_ip": "111.223.104.76",
+      "dest_port": 8080,
+      "dest_ip": "10.0.10.2"
+    }
+  },
+  "resource": {
+    "type": "gce_subnetwork",
+    "labels": {
+      "subnetwork_id": "5585028118817000072",
+      "subnetwork_name": "subnet-a",
+      "location": "us-central1-a",
+      "project_id": "playground-s-11-3f23c395"
+    }
+  },
+  "timestamp": "2023-03-10T00:54:24.939140489Z",
+  "logName": "projects/playground-s-11-3f23c395/logs/compute.googleapis.com%2Ffirewall",
+  "receiveTimestamp": "2023-03-10T00:54:30.247650674Z"
+}
+----
+
