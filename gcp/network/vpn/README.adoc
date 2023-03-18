@@ -65,9 +65,9 @@ gcloud compute firewall-rules create on-prem-allow-ssh-icmp --network on-prem --
 gcloud compute instances create on-prem-instance1 --zone us-central1-a --subnet on-prem-subnet1
 ----
 
-== HA VPN Setting up
+== HA VPN Setting up on vpc network
 
-=== Create HA VPN gateway on `vpc-demo network`
+=== Create HA VPN gateway 
 
 [source, bash]
 .*1. create vpn gateway*
@@ -102,318 +102,654 @@ $ gcloud compute vpn-gateways describe vpc-demo-vpn-gw1 --region us-central1 --f
 }
 ----
 
-* link:vpc-demo-vpn-gw1.json[vpc-demo-vpn-gw1.json]
-
-=== Create HA VPN gateway on `on-prem network`
-
-[source, bash]
-.*1. create vpn gateway*
-----
-gcloud compute vpn-gateways create on-prem-vpn-gw1 --network on-prem --region us-central1
-----
-
-[source, json]
-.*2. view the details of vpn gateway*
-----
-$ gcloud compute vpn-gateways describe on-prem-vpn-gw1 --region us-central1 --format=json
-{
-  "creationTimestamp": "2023-01-24T01:03:13.960-08:00",
-  "id": "7443166657719181374",
-  "kind": "compute#vpnGateway",
-  "labelFingerprint": "42WmSpB8rSM=",
-  "name": "on-prem-vpn-gw1",
-  "network": "https://www.googleapis.com/compute/v1/projects/qwiklabs-gcp-01-0e4b3b1f8f92/global/networks/on-prem",
-  "region": "https://www.googleapis.com/compute/v1/projects/qwiklabs-gcp-01-0e4b3b1f8f92/regions/us-central1",
-  "selfLink": "https://www.googleapis.com/compute/v1/projects/qwiklabs-gcp-01-0e4b3b1f8f92/regions/us-central1/vpnGateways/on-prem-vpn-gw1",
-  "stackType": "IPV4_ONLY",
-  "vpnInterfaces": [
-    {
-      "id": 0,
-      "ipAddress": "34.157.85.34"
-    },
-    {
-      "id": 1,
-      "ipAddress": "35.220.88.184"
-    }
-  ]
-}
-----
-
-* link:on-prem-vpn-gw1.json[on-prem-vpn-gw1.json]
-
-=== Create cloud router on `vpc-demo network`
+=== Create cloud router
 
 [source, bash]
 .*1. create cloud router*
 ----
-gcloud compute routers create vpc-demo-router1 --region us-central1 --network vpc-demo --asn 65001
+gcloud compute routers create vpc-demo-router1 --network=vpc-demo --asn=65001 --region=us-central1
 ----
 
 [source, json]
 .*2. view the details of cloud router*
 ----
-$ gcloud compute routers describe vpc-demo-router1 --region=us-central1 --format=json
 {
   "bgp": {
     "advertiseMode": "DEFAULT",
     "asn": 65001,
     "keepaliveInterval": 20
   },
-  "creationTimestamp": "2023-01-24T01:12:22.219-08:00",
-  "id": "5276357984759455257",
+  "creationTimestamp": "2023-03-18T08:05:50.210-07:00",
+  "encryptedInterconnectRouter": false,
+  "id": "8540647100926946721",
   "kind": "compute#router",
   "name": "vpc-demo-router1",
-  "network": "https://www.googleapis.com/compute/v1/projects/qwiklabs-gcp-01-0e4b3b1f8f92/global/networks/vpc-demo",
-  "region": "https://www.googleapis.com/compute/v1/projects/qwiklabs-gcp-01-0e4b3b1f8f92/regions/us-central1",
-  "selfLink": "https://www.googleapis.com/compute/v1/projects/qwiklabs-gcp-01-0e4b3b1f8f92/regions/us-central1/routers/vpc-demo-router1"
+  "network": "https://www.googleapis.com/compute/v1/projects/playground-s-11-226f57f4/global/networks/vpc-demo",
+  "region": "https://www.googleapis.com/compute/v1/projects/playground-s-11-226f57f4/regions/us-central1",
+  "selfLink": "https://www.googleapis.com/compute/v1/projects/playground-s-11-226f57f4/regions/us-central1/routers/vpc-demo-router1"
 }
 ----
 
-* link:vpc-demo-router1.json[vpc-demo-router1.json]
+== HA VPN Setting up on on-prem 
 
-=== Create cloud router on `on-prem network`
+=== Create HA VPN gateway
+
+[source, bash]
+.*1. create vpn gateway*
+----
+gcloud compute vpn-gateways create on-prem-vpn-gw1 --network=on-prem --region=us-central1 
+----
+
+[source, json]
+.*2. view the details of vpn gateway*
+----
+{
+  "creationTimestamp": "2023-03-18T08:12:11.802-07:00",
+  "id": "7181549694185138724",
+  "kind": "compute#vpnGateway",
+  "labelFingerprint": "42WmSpB8rSM=",
+  "name": "on-prem-vpn-gw1",
+  "network": "https://www.googleapis.com/compute/v1/projects/playground-s-11-226f57f4/global/networks/on-prem",
+  "region": "https://www.googleapis.com/compute/v1/projects/playground-s-11-226f57f4/regions/us-central1",
+  "selfLink": "https://www.googleapis.com/compute/v1/projects/playground-s-11-226f57f4/regions/us-central1/vpnGateways/on-prem-vpn-gw1",
+  "stackType": "IPV4_ONLY",
+  "vpnInterfaces": [
+    {
+      "id": 0,
+      "ipAddress": "35.242.115.23"
+    },
+    {
+      "id": 1,
+      "ipAddress": "34.157.224.167"
+    }
+  ]
+}
+----
+
+=== Create cloud router 
 
 [source, bash]
 .*1. create cloud router*
 ----
-gcloud compute routers create on-prem-router1 --region us-central1 --network on-prem --asn 65002
+gcloud compute routers create on-prem-router1 --network=on-prem --asn=65002 --region=us-central1
 ----
 
 [source, json]
 .*2. view the details of cloud router*
 ----
-$ gcloud compute routers describe on-prem-router1 --region=us-central1 --format=json
 {
   "bgp": {
     "advertiseMode": "DEFAULT",
     "asn": 65002,
     "keepaliveInterval": 20
   },
-  "creationTimestamp": "2023-01-24T01:14:56.616-08:00",
-  "id": "1096972188589891455",
+  "creationTimestamp": "2023-03-18T08:15:56.131-07:00",
+  "encryptedInterconnectRouter": false,
+  "id": "6213271535167761219",
   "kind": "compute#router",
   "name": "on-prem-router1",
-  "network": "https://www.googleapis.com/compute/v1/projects/qwiklabs-gcp-01-0e4b3b1f8f92/global/networks/on-prem",
-  "region": "https://www.googleapis.com/compute/v1/projects/qwiklabs-gcp-01-0e4b3b1f8f92/regions/us-central1",
-  "selfLink": "https://www.googleapis.com/compute/v1/projects/qwiklabs-gcp-01-0e4b3b1f8f92/regions/us-central1/routers/on-prem-router1"
+  "network": "https://www.googleapis.com/compute/v1/projects/playground-s-11-226f57f4/global/networks/on-prem",
+  "region": "https://www.googleapis.com/compute/v1/projects/playground-s-11-226f57f4/regions/us-central1",
+  "selfLink": "https://www.googleapis.com/compute/v1/projects/playground-s-11-226f57f4/regions/us-central1/routers/on-prem-router1"
 }
 ----
 
-* link:on-prem-router1.json[on-prem-router1.json]
+== Create VPN Tunnels
 
 === Create VPN tunnels on `vpc-demo network`
 
 [source, bash]
 .*1. create 1st tunnel*
 ----
-gcloud compute vpn-tunnels create vpc-demo-tunnel0 --peer-gcp-gateway on-prem-vpn-gw1 --region us-central1 --ike-version 2 --shared-secret [SHARED_SECRET] --router vpc-demo-router1 --vpn-gateway vpc-demo-vpn-gw1 --interface 0
+gcloud compute vpn-tunnels create vpc-demo-tunnel0 --peer-gcp-gateway=on-prem-vpn-gw1 --ike-version=2  --shared-secret=shared_secret --router=vpc-demo-router1 --vpn-gateway=vpc-demo-vpn-gw1 --interface=0 --region=us-central1
 ----
 
 [source, bash]
 .*2. create 2nd tunnel*
 ----
-gcloud compute vpn-tunnels create vpc-demo-tunnel1 --peer-gcp-gateway on-prem-vpn-gw1 --region us-central1 --ike-version 2 --shared-secret [SHARED_SECRET] --router vpc-demo-router1 --vpn-gateway vpc-demo-vpn-gw1 --interface 1
+gcloud compute vpn-tunnels create vpc-demo-tunnel1 --peer-gcp-gateway=on-prem-vpn-gw1 --ike-version=2  --shared-secret=shared_secret --router=vpc-demo-router1 --vpn-gateway=vpc-demo-vpn-gw1 --interface=1 --region=us-central1
 ----
 
-[source, bash]
-.*3. overview two tunnels*
+[source, json]
+.*3. overview of tunnel vpc-demo-tunnel0*
 ----
-$ gcloud compute vpn-tunnels list
-NAME: vpc-demo-tunnel0
-REGION: us-central1
-GATEWAY: vpc-demo-vpn-gw1
-PEER_ADDRESS: 34.157.85.34
-
-NAME: vpc-demo-tunnel1
-REGION: us-central1
-GATEWAY: vpc-demo-vpn-gw1
-PEER_ADDRESS: 35.220.88.184
+{
+  "creationTimestamp": "2023-03-18T08:32:05.982-07:00",
+  "description": "",
+  "detailedStatus": "No incoming packets from peer",
+  "id": "2660682271060158362",
+  "ikeVersion": 2,
+  "kind": "compute#vpnTunnel",
+  "localTrafficSelector": [
+    "0.0.0.0/0"
+  ],
+  "name": "vpc-demo-tunnel0",
+  "peerGcpGateway": "https://www.googleapis.com/compute/v1/projects/playground-s-11-226f57f4/regions/us-central1/vpnGateways/on-prem-vpn-gw1",
+  "peerIp": "35.242.115.23",
+  "region": "https://www.googleapis.com/compute/v1/projects/playground-s-11-226f57f4/regions/us-central1",
+  "remoteTrafficSelector": [
+    "0.0.0.0/0"
+  ],
+  "router": "https://www.googleapis.com/compute/v1/projects/playground-s-11-226f57f4/regions/us-central1/routers/vpc-demo-router1",
+  "selfLink": "https://www.googleapis.com/compute/v1/projects/playground-s-11-226f57f4/regions/us-central1/vpnTunnels/vpc-demo-tunnel0",
+  "sharedSecret": "*************",
+  "sharedSecretHash": "ijpaUsV2tTyjw0a-mof9fFJG5UNv",
+  "status": "NO_INCOMING_PACKETS",
+  "vpnGateway": "https://www.googleapis.com/compute/v1/projects/playground-s-11-226f57f4/regions/us-central1/vpnGateways/vpc-demo-vpn-gw1",
+  "vpnGatewayInterface": 0
+}
 ----
 
-* link:vpn-tunnels.json[vpn-tunnels.json]
+[source, json]
+.*4. overview of tunnel vpc-demo-tunnel1*
+----
+{
+  "creationTimestamp": "2023-03-18T08:34:29.798-07:00",
+  "description": "",
+  "detailedStatus": "No incoming packets from peer",
+  "id": "2733471186359444714",
+  "ikeVersion": 2,
+  "kind": "compute#vpnTunnel",
+  "localTrafficSelector": [
+    "0.0.0.0/0"
+  ],
+  "name": "vpc-demo-tunnel1",
+  "peerGcpGateway": "https://www.googleapis.com/compute/v1/projects/playground-s-11-226f57f4/regions/us-central1/vpnGateways/on-prem-vpn-gw1",
+  "peerIp": "34.157.224.167",
+  "region": "https://www.googleapis.com/compute/v1/projects/playground-s-11-226f57f4/regions/us-central1",
+  "remoteTrafficSelector": [
+    "0.0.0.0/0"
+  ],
+  "router": "https://www.googleapis.com/compute/v1/projects/playground-s-11-226f57f4/regions/us-central1/routers/vpc-demo-router1",
+  "selfLink": "https://www.googleapis.com/compute/v1/projects/playground-s-11-226f57f4/regions/us-central1/vpnTunnels/vpc-demo-tunnel1",
+  "sharedSecret": "*************",
+  "sharedSecretHash": "wXZs2kCivy8XkUD_xLcUVzw_UrDb",
+  "status": "NO_INCOMING_PACKETS",
+  "vpnGateway": "https://www.googleapis.com/compute/v1/projects/playground-s-11-226f57f4/regions/us-central1/vpnGateways/vpc-demo-vpn-gw1",
+  "vpnGatewayInterface": 1
+}
+----
 
 === Create VPN tunnels on `on-prem network`
 
 [source, bash]
 .*1. create 1st tunnel*
 ----
-gcloud compute vpn-tunnels create on-prem-tunnel0 --peer-gcp-gateway vpc-demo-vpn-gw1 --region us-central1 --ike-version 2 --shared-secret [SHARED_SECRET] --router on-prem-router1 --vpn-gateway on-prem-vpn-gw1 --interface 0
+gcloud compute vpn-tunnels create on-prem-tunnel0 --peer-gcp-gateway=vpc-demo-vpn-gw1 --ike-version=2 --shared-secret=shared_secret --router=on-prem-router1 --vpn-gateway=on-prem-vpn-gw1 --interface=0 --region=us-central1
 ----
 
 [source, bash]
 .*2. create 2nd tunnel*
 ----
-gcloud compute vpn-tunnels create on-prem-tunnel1 --peer-gcp-gateway vpc-demo-vpn-gw1 --region us-central1 --ike-version 2 --shared-secret [SHARED_SECRET] --router on-prem-router1 --vpn-gateway on-prem-vpn-gw1 --interface 1
+gcloud compute vpn-tunnels create on-prem-tunnel1 --peer-gcp-gateway=vpc-demo-vpn-gw1 --ike-version=2 --shared-secret=shared_secret --router=on-prem-router1 --vpn-gateway=on-prem-vpn-gw1 --interface=1 --region=us-central1
 ----
+
+[source, json]
+.*3. overview of tunnel on-prem-tunnel0*
+----
+{
+  "creationTimestamp": "2023-03-18T08:42:37.462-07:00",
+  "description": "",
+  "detailedStatus": "Tunnel is up and running.",
+  "id": "6824639715773801730",
+  "ikeVersion": 2,
+  "kind": "compute#vpnTunnel",
+  "localTrafficSelector": [
+    "0.0.0.0/0"
+  ],
+  "name": "on-prem-tunnel0",
+  "peerGcpGateway": "https://www.googleapis.com/compute/v1/projects/playground-s-11-226f57f4/regions/us-central1/vpnGateways/vpc-demo-vpn-gw1",
+  "peerIp": "34.157.104.109",
+  "region": "https://www.googleapis.com/compute/v1/projects/playground-s-11-226f57f4/regions/us-central1",
+  "remoteTrafficSelector": [
+    "0.0.0.0/0"
+  ],
+  "router": "https://www.googleapis.com/compute/v1/projects/playground-s-11-226f57f4/regions/us-central1/routers/on-prem-router1",
+  "selfLink": "https://www.googleapis.com/compute/v1/projects/playground-s-11-226f57f4/regions/us-central1/vpnTunnels/on-prem-tunnel0",
+  "sharedSecret": "*************",
+  "sharedSecretHash": "RGtD_bSFR-qLzmhrJEdJ2Fi-XVL0",
+  "status": "ESTABLISHED",
+  "vpnGateway": "https://www.googleapis.com/compute/v1/projects/playground-s-11-226f57f4/regions/us-central1/vpnGateways/on-prem-vpn-gw1",
+  "vpnGatewayInterface": 0
+}
+----
+
+[source, json]
+.*4. overview of tunnel on-prem-tunnel1*
+----
+{
+  "creationTimestamp": "2023-03-18T08:43:49.034-07:00",
+  "description": "",
+  "detailedStatus": "Tunnel is up and running.",
+  "id": "5123307482251813594",
+  "ikeVersion": 2,
+  "kind": "compute#vpnTunnel",
+  "localTrafficSelector": [
+    "0.0.0.0/0"
+  ],
+  "name": "on-prem-tunnel1",
+  "peerGcpGateway": "https://www.googleapis.com/compute/v1/projects/playground-s-11-226f57f4/regions/us-central1/vpnGateways/vpc-demo-vpn-gw1",
+  "peerIp": "35.220.77.49",
+  "region": "https://www.googleapis.com/compute/v1/projects/playground-s-11-226f57f4/regions/us-central1",
+  "remoteTrafficSelector": [
+    "0.0.0.0/0"
+  ],
+  "router": "https://www.googleapis.com/compute/v1/projects/playground-s-11-226f57f4/regions/us-central1/routers/on-prem-router1",
+  "selfLink": "https://www.googleapis.com/compute/v1/projects/playground-s-11-226f57f4/regions/us-central1/vpnTunnels/on-prem-tunnel1",
+  "sharedSecret": "*************",
+  "sharedSecretHash": "-2jx_uPNpdINyv0oFJw15Ovh49SJ",
+  "status": "ESTABLISHED",
+  "vpnGateway": "https://www.googleapis.com/compute/v1/projects/playground-s-11-226f57f4/regions/us-central1/vpnGateways/on-prem-vpn-gw1",
+  "vpnGatewayInterface": 1
+}
+----
+
+=== Check all VPC Tunnel Status are established
 
 [source, bash]
-.*3. overview two tunnels*
 ----
-$ gcloud compute vpn-tunnels list
-NAME: on-prem-tunnel0
-REGION: us-central1
-GATEWAY: on-prem-vpn-gw1
-PEER_ADDRESS: 34.157.109.112
-
-NAME: on-prem-tunnel1
-REGION: us-central1
-GATEWAY: on-prem-vpn-gw1
-PEER_ADDRESS: 35.220.92.201
+$ gcloud compute vpn-tunnels list --format=json | grep status
+    "status": "ESTABLISHED",
+    "status": "ESTABLISHED",
+    "status": "ESTABLISHED",
+    "status": "ESTABLISHED",
 ----
 
-* link:vpn-tunnels.json[vpn-tunnels.json]
+== Create BGP peering 
 
-=== Create BGP peering for each tunnel
+=== BGP peering on vpc-demo-tunnel0
 
 [source, bash]
 .*1. Create the router interface for tunnel0 in network vpc-demo*
 ----
-gcloud compute routers add-interface vpc-demo-router1 --interface-name if-tunnel0-to-on-prem --ip-address 169.254.0.1 --mask-length 30 --vpn-tunnel vpc-demo-tunnel0 --region us-central1
+gcloud compute routers add-interface vpc-demo-router1 --interface-name=if-tunnel0-to-on-prem --ip-address=169.254.0.1 --mask-length=30 --vpn-tunnel=vpc-demo-tunnel0 --region=us-central1
 ----
 
 [source, bash]
 .*2. Create the BGP peer for tunnel0 in network vpc-demo*
 ----
-gcloud compute routers add-bgp-peer vpc-demo-router1 --peer-name bgp-on-prem-tunnel0 --interface if-tunnel0-to-on-prem --peer-ip-address 169.254.0.2 --peer-asn 65002 --region us-central1
+gcloud compute routers add-bgp-peer vpc-demo-router1 --peer-name=bgp-on-prem-tunnel0 --interface=if-tunnel0-to-on-prem --peer-ip-address=169.254.0.2 --peer-asn=65002 --region=us-central1
+----
+
+[source, json]
+.*3. View the router information(sessionInitializationMode is diabled, BGP neighboring not done)*
+----
+{
+  "bgp": {
+    "advertiseMode": "DEFAULT",
+    "asn": 65001,
+    "keepaliveInterval": 20
+  },
+  "bgpPeers": [
+    {
+      "bfd": {
+        "minReceiveInterval": 1000,
+        "minTransmitInterval": 1000,
+        "multiplier": 5,
+        "sessionInitializationMode": "DISABLED"
+      },
+      "enable": "TRUE",
+      "enableIpv6": false,
+      "interfaceName": "if-tunnel0-to-on-prem",
+      "ipAddress": "169.254.0.1",
+      "name": "bgp-on-prem-tunnel0",
+      "peerAsn": 65002,
+      "peerIpAddress": "169.254.0.2"
+    }
+  ],
+  "creationTimestamp": "2023-03-18T08:05:50.210-07:00",
+  "encryptedInterconnectRouter": false,
+  "id": "8540647100926946721",
+  "interfaces": [
+    {
+      "ipRange": "169.254.0.1/30",
+      "linkedVpnTunnel": "https://www.googleapis.com/compute/v1/projects/playground-s-11-226f57f4/regions/us-central1/vpnTunnels/vpc-demo-tunnel0",
+      "name": "if-tunnel0-to-on-prem"
+    }
+  ],
+  "kind": "compute#router",
+  "name": "vpc-demo-router1",
+  "network": "https://www.googleapis.com/compute/v1/projects/playground-s-11-226f57f4/global/networks/vpc-demo",
+  "region": "https://www.googleapis.com/compute/v1/projects/playground-s-11-226f57f4/regions/us-central1",
+  "selfLink": "https://www.googleapis.com/compute/v1/projects/playground-s-11-226f57f4/regions/us-central1/routers/vpc-demo-router1"
+}
+----
+
+[source, json]
+.*4. view the tunnel*
+----
+{
+  "creationTimestamp": "2023-03-18T08:32:05.982-07:00",
+  "description": "",
+  "detailedStatus": "Tunnel is up and running.",
+  "id": "2660682271060158362",
+  "ikeVersion": 2,
+  "kind": "compute#vpnTunnel",
+  "localTrafficSelector": [
+    "0.0.0.0/0"
+  ],
+  "name": "vpc-demo-tunnel0",
+  "peerGcpGateway": "https://www.googleapis.com/compute/v1/projects/playground-s-11-226f57f4/regions/us-central1/vpnGateways/on-prem-vpn-gw1",
+  "peerIp": "35.242.115.23",
+  "region": "https://www.googleapis.com/compute/v1/projects/playground-s-11-226f57f4/regions/us-central1",
+  "remoteTrafficSelector": [
+    "0.0.0.0/0"
+  ],
+  "router": "https://www.googleapis.com/compute/v1/projects/playground-s-11-226f57f4/regions/us-central1/routers/vpc-demo-router1",
+  "selfLink": "https://www.googleapis.com/compute/v1/projects/playground-s-11-226f57f4/regions/us-central1/vpnTunnels/vpc-demo-tunnel0",
+  "sharedSecret": "*************",
+  "sharedSecretHash": "ijpaUsV2tTyjw0a-mof9fFJG5UNv",
+  "status": "ESTABLISHED",
+  "vpnGateway": "https://www.googleapis.com/compute/v1/projects/playground-s-11-226f57f4/regions/us-central1/vpnGateways/vpc-demo-vpn-gw1",
+  "vpnGatewayInterface": 0
+}
+----
+
+=== BGP peering on vpc-demo-tunnel1
+
+[source, bash]
+.*1. Create a router interface for tunnel1 in network vpc-demo*
+----
+gcloud compute routers add-interface vpc-demo-router1 --interface-name=if-tunnel1-to-on-prem  --ip-address=169.254.1.1 --mask-length=30 --vpn-tunnel=vpc-demo-tunnel1 --region=us-central1
 ----
 
 [source, bash]
-.*3. Create a router interface for tunnel1 in network vpc-demo*
+.*2. Create the BGP peer for tunnel1 in network vpc-demo*
 ----
-gcloud compute routers add-interface vpc-demo-router1 --interface-name if-tunnel1-to-on-prem --ip-address 169.254.1.1 --mask-length 30 --vpn-tunnel vpc-demo-tunnel1 --region us-central1
+gcloud compute routers add-bgp-peer vpc-demo-router1 --peer-name=bgp-on-prem-tunnel1 --interface=if-tunnel1-to-on-prem --peer-ip-address=169.254.1.2 --peer-asn=65002 --region=us-central1
+----
+
+[source, json]
+.*3. View the router information(BGP neighboring not done)*
+----
+{
+  "bgp": {
+    "advertiseMode": "DEFAULT",
+    "asn": 65001,
+    "keepaliveInterval": 20
+  },
+  "bgpPeers": [
+    {
+      "bfd": {
+        "minReceiveInterval": 1000,
+        "minTransmitInterval": 1000,
+        "multiplier": 5,
+        "sessionInitializationMode": "DISABLED"
+      },
+      "enable": "TRUE",
+      "enableIpv6": false,
+      "interfaceName": "if-tunnel0-to-on-prem",
+      "ipAddress": "169.254.0.1",
+      "name": "bgp-on-prem-tunnel0",
+      "peerAsn": 65002,
+      "peerIpAddress": "169.254.0.2"
+    },
+    {
+      "bfd": {
+        "minReceiveInterval": 1000,
+        "minTransmitInterval": 1000,
+        "multiplier": 5,
+        "sessionInitializationMode": "DISABLED"
+      },
+      "enable": "TRUE",
+      "enableIpv6": false,
+      "interfaceName": "if-tunnel1-to-on-prem",
+      "ipAddress": "169.254.1.1",
+      "name": "bgp-on-prem-tunnel1",
+      "peerAsn": 65002,
+      "peerIpAddress": "169.254.1.2"
+    }
+  ],
+  "creationTimestamp": "2023-03-18T08:05:50.210-07:00",
+  "encryptedInterconnectRouter": false,
+  "id": "8540647100926946721",
+  "interfaces": [
+    {
+      "ipRange": "169.254.0.1/30",
+      "linkedVpnTunnel": "https://www.googleapis.com/compute/v1/projects/playground-s-11-226f57f4/regions/us-central1/vpnTunnels/vpc-demo-tunnel0",
+      "name": "if-tunnel0-to-on-prem"
+    },
+    {
+      "ipRange": "169.254.1.1/30",
+      "linkedVpnTunnel": "https://www.googleapis.com/compute/v1/projects/playground-s-11-226f57f4/regions/us-central1/vpnTunnels/vpc-demo-tunnel1",
+      "name": "if-tunnel1-to-on-prem"
+    }
+  ],
+  "kind": "compute#router",
+  "name": "vpc-demo-router1",
+  "network": "https://www.googleapis.com/compute/v1/projects/playground-s-11-226f57f4/global/networks/vpc-demo",
+  "region": "https://www.googleapis.com/compute/v1/projects/playground-s-11-226f57f4/regions/us-central1",
+  "selfLink": "https://www.googleapis.com/compute/v1/projects/playground-s-11-226f57f4/regions/us-central1/routers/vpc-demo-router1"
+}
+----
+
+[source, json]
+.*4. view the tunnel*
+----
+{
+  "creationTimestamp": "2023-03-18T08:34:29.798-07:00",
+  "description": "",
+  "detailedStatus": "Tunnel is up and running.",
+  "id": "2733471186359444714",
+  "ikeVersion": 2,
+  "kind": "compute#vpnTunnel",
+  "localTrafficSelector": [
+    "0.0.0.0/0"
+  ],
+  "name": "vpc-demo-tunnel1",
+  "peerGcpGateway": "https://www.googleapis.com/compute/v1/projects/playground-s-11-226f57f4/regions/us-central1/vpnGateways/on-prem-vpn-gw1",
+  "peerIp": "34.157.224.167",
+  "region": "https://www.googleapis.com/compute/v1/projects/playground-s-11-226f57f4/regions/us-central1",
+  "remoteTrafficSelector": [
+    "0.0.0.0/0"
+  ],
+  "router": "https://www.googleapis.com/compute/v1/projects/playground-s-11-226f57f4/regions/us-central1/routers/vpc-demo-router1",
+  "selfLink": "https://www.googleapis.com/compute/v1/projects/playground-s-11-226f57f4/regions/us-central1/vpnTunnels/vpc-demo-tunnel1",
+  "sharedSecret": "*************",
+  "sharedSecretHash": "wXZs2kCivy8XkUD_xLcUVzw_UrDb",
+  "status": "ESTABLISHED",
+  "vpnGateway": "https://www.googleapis.com/compute/v1/projects/playground-s-11-226f57f4/regions/us-central1/vpnGateways/vpc-demo-vpn-gw1",
+  "vpnGatewayInterface": 1
+}
+----
+
+=== BGP peering on on-prem-tunnel0
+
+[source, bash]
+.*1. Create a router interface for tunnel0 in network on-prem*
+----
+gcloud compute routers add-interface on-prem-router1 --interface-name=if-tunnel0-to-vpc-demo --ip-address=169.254.0.2 --mask-length=30 --vpn-tunnel=on-prem-tunnel0 --region=us-central1
 ----
 
 [source, bash]
-.*4. Create the BGP peer for tunnel1 in network vpc-demo*
+.*2. Create the BGP peer for tunnel0 in network on-prem*
 ----
-gcloud compute routers add-bgp-peer vpc-demo-router1 --peer-name bgp-on-prem-tunnel1 --interface if-tunnel1-to-on-prem --peer-ip-address 169.254.1.2 --peer-asn 65002 --region us-central1
+gcloud compute routers add-bgp-peer on-prem-router1 --peer-name=bgp-vpc-demo-tunnel0 --interface=if-tunnel0-to-vpc-demo --peer-ip-address=169.254.0.1  --peer-asn=65001 --region=us-central1
+----
+
+[source, json]
+.*3. View the router information*
+----
+{
+  "bgp": {
+    "advertiseMode": "DEFAULT",
+    "asn": 65002,
+    "keepaliveInterval": 20
+  },
+  "bgpPeers": [
+    {
+      "bfd": {
+        "minReceiveInterval": 1000,
+        "minTransmitInterval": 1000,
+        "multiplier": 5,
+        "sessionInitializationMode": "DISABLED"
+      },
+      "enable": "TRUE",
+      "enableIpv6": false,
+      "interfaceName": "if-tunnel0-to-vpc-demo",
+      "ipAddress": "169.254.0.2",
+      "name": "bgp-vpc-demo-tunnel0",
+      "peerAsn": 65001,
+      "peerIpAddress": "169.254.0.1"
+    }
+  ],
+  "creationTimestamp": "2023-03-18T08:15:56.131-07:00",
+  "encryptedInterconnectRouter": false,
+  "id": "6213271535167761219",
+  "interfaces": [
+    {
+      "ipRange": "169.254.0.2/30",
+      "linkedVpnTunnel": "https://www.googleapis.com/compute/v1/projects/playground-s-11-226f57f4/regions/us-central1/vpnTunnels/on-prem-tunnel0",
+      "name": "if-tunnel0-to-vpc-demo"
+    }
+  ],
+  "kind": "compute#router",
+  "name": "on-prem-router1",
+  "network": "https://www.googleapis.com/compute/v1/projects/playground-s-11-226f57f4/global/networks/on-prem",
+  "region": "https://www.googleapis.com/compute/v1/projects/playground-s-11-226f57f4/regions/us-central1",
+  "selfLink": "https://www.googleapis.com/compute/v1/projects/playground-s-11-226f57f4/regions/us-central1/routers/on-prem-router1"
+}
+----
+
+[source, json]
+.*4. view the tunnel*
+----
+{
+  "creationTimestamp": "2023-03-18T08:42:37.462-07:00",
+  "description": "",
+  "detailedStatus": "Tunnel is up and running.",
+  "id": "6824639715773801730",
+  "ikeVersion": 2,
+  "kind": "compute#vpnTunnel",
+  "localTrafficSelector": [
+    "0.0.0.0/0"
+  ],
+  "name": "on-prem-tunnel0",
+  "peerGcpGateway": "https://www.googleapis.com/compute/v1/projects/playground-s-11-226f57f4/regions/us-central1/vpnGateways/vpc-demo-vpn-gw1",
+  "peerIp": "34.157.104.109",
+  "region": "https://www.googleapis.com/compute/v1/projects/playground-s-11-226f57f4/regions/us-central1",
+  "remoteTrafficSelector": [
+    "0.0.0.0/0"
+  ],
+  "router": "https://www.googleapis.com/compute/v1/projects/playground-s-11-226f57f4/regions/us-central1/routers/on-prem-router1",
+  "selfLink": "https://www.googleapis.com/compute/v1/projects/playground-s-11-226f57f4/regions/us-central1/vpnTunnels/on-prem-tunnel0",
+  "sharedSecret": "*************",
+  "sharedSecretHash": "RGtD_bSFR-qLzmhrJEdJ2Fi-XVL0",
+  "status": "ESTABLISHED",
+  "vpnGateway": "https://www.googleapis.com/compute/v1/projects/playground-s-11-226f57f4/regions/us-central1/vpnGateways/on-prem-vpn-gw1",
+  "vpnGatewayInterface": 0
+}
+----
+
+=== BGP peering on on-prem-tunnel1
+
+[source, bash]
+.*1. Create a router interface for tunnel1 in network on-prem*
+----
+gcloud compute routers add-interface on-prem-router1 --interface-name=if-tunnel1-to-vpc-demo --ip-address=169.254.1.2 --mask-length=30 --vpn-tunnel=on-prem-tunnel1 --region=us-central1
 ----
 
 [source, bash]
-.*5. Create a router interface for tunnel0 in network on-prem*
+.*2. Create the BGP peer for tunnel1 in network on-prem*
 ----
-gcloud compute routers add-interface on-prem-router1 --interface-name if-tunnel0-to-vpc-demo --ip-address 169.254.0.2 --mask-length 30 --vpn-tunnel on-prem-tunnel0 --region us-central1
-----
-
-[source, bash]
-.*6. Create the BGP peer for tunnel0 in network on-prem*
-----
-gcloud compute routers add-bgp-peer on-prem-router1 --peer-name bgp-vpc-demo-tunnel0 --interface if-tunnel0-to-vpc-demo --peer-ip-address 169.254.0.1 --peer-asn 65001 --region us-central1
+gcloud compute routers add-bgp-peer on-prem-router1 --peer-name=bgp-vpc-demo-tunnel1 --interface=if-tunnel1-to-vpc-demo --peer-ip-address=169.254.1.1  --peer-asn=65001 --region=us-central1
 ----
 
-[source, bash]
-.*7. Create a router interface for tunnel1 in network on-prem*
+[source, json]
+.*3. View the router information*
 ----
-gcloud compute routers add-interface  on-prem-router1 --interface-name if-tunnel1-to-vpc-demo --ip-address 169.254.1.2 --mask-length 30 --vpn-tunnel on-prem-tunnel1 --region us-central1
+{
+  "bgp": {
+    "advertiseMode": "DEFAULT",
+    "asn": 65002,
+    "keepaliveInterval": 20
+  },
+  "bgpPeers": [
+    {
+      "bfd": {
+        "minReceiveInterval": 1000,
+        "minTransmitInterval": 1000,
+        "multiplier": 5,
+        "sessionInitializationMode": "DISABLED"
+      },
+      "enable": "TRUE",
+      "enableIpv6": false,
+      "interfaceName": "if-tunnel0-to-vpc-demo",
+      "ipAddress": "169.254.0.2",
+      "name": "bgp-vpc-demo-tunnel0",
+      "peerAsn": 65001,
+      "peerIpAddress": "169.254.0.1"
+    },
+    {
+      "bfd": {
+        "minReceiveInterval": 1000,
+        "minTransmitInterval": 1000,
+        "multiplier": 5,
+        "sessionInitializationMode": "DISABLED"
+      },
+      "enable": "TRUE",
+      "enableIpv6": false,
+      "interfaceName": "if-tunnel1-to-vpc-demo",
+      "ipAddress": "169.254.1.2",
+      "name": "bgp-vpc-demo-tunnel1",
+      "peerAsn": 65001,
+      "peerIpAddress": "169.254.1.1"
+    }
+  ],
+  "creationTimestamp": "2023-03-18T08:15:56.131-07:00",
+  "encryptedInterconnectRouter": false,
+  "id": "6213271535167761219",
+  "interfaces": [
+    {
+      "ipRange": "169.254.0.2/30",
+      "linkedVpnTunnel": "https://www.googleapis.com/compute/v1/projects/playground-s-11-226f57f4/regions/us-central1/vpnTunnels/on-prem-tunnel0",
+      "name": "if-tunnel0-to-vpc-demo"
+    },
+    {
+      "ipRange": "169.254.1.2/30",
+      "linkedVpnTunnel": "https://www.googleapis.com/compute/v1/projects/playground-s-11-226f57f4/regions/us-central1/vpnTunnels/on-prem-tunnel1",
+      "name": "if-tunnel1-to-vpc-demo"
+    }
+  ],
+  "kind": "compute#router",
+  "name": "on-prem-router1",
+  "network": "https://www.googleapis.com/compute/v1/projects/playground-s-11-226f57f4/global/networks/on-prem",
+  "region": "https://www.googleapis.com/compute/v1/projects/playground-s-11-226f57f4/regions/us-central1",
+  "selfLink": "https://www.googleapis.com/compute/v1/projects/playground-s-11-226f57f4/regions/us-central1/routers/on-prem-router1"
+}
 ----
 
-[source, bash]
-.*8. Create the BGP peer for tunnel1 in network on-prem*
+[source, json]
+.*4. view the tunnel*
 ----
-gcloud compute routers add-bgp-peer  on-prem-router1 --peer-name bgp-vpc-demo-tunnel1 --interface if-tunnel1-to-vpc-demo --peer-ip-address 169.254.1.1 --peer-asn 65001 --region us-central1
+{
+  "creationTimestamp": "2023-03-18T08:43:49.034-07:00",
+  "description": "",
+  "detailedStatus": "Tunnel is up and running.",
+  "id": "5123307482251813594",
+  "ikeVersion": 2,
+  "kind": "compute#vpnTunnel",
+  "localTrafficSelector": [
+    "0.0.0.0/0"
+  ],
+  "name": "on-prem-tunnel1",
+  "peerGcpGateway": "https://www.googleapis.com/compute/v1/projects/playground-s-11-226f57f4/regions/us-central1/vpnGateways/vpc-demo-vpn-gw1",
+  "peerIp": "35.220.77.49",
+  "region": "https://www.googleapis.com/compute/v1/projects/playground-s-11-226f57f4/regions/us-central1",
+  "remoteTrafficSelector": [
+    "0.0.0.0/0"
+  ],
+  "router": "https://www.googleapis.com/compute/v1/projects/playground-s-11-226f57f4/regions/us-central1/routers/on-prem-router1",
+  "selfLink": "https://www.googleapis.com/compute/v1/projects/playground-s-11-226f57f4/regions/us-central1/vpnTunnels/on-prem-tunnel1",
+  "sharedSecret": "*************",
+  "sharedSecretHash": "-2jx_uPNpdINyv0oFJw15Ovh49SJ",
+  "status": "ESTABLISHED",
+  "vpnGateway": "https://www.googleapis.com/compute/v1/projects/playground-s-11-226f57f4/regions/us-central1/vpnGateways/on-prem-vpn-gw1",
+  "vpnGatewayInterface": 1
+}
 ----
 
 == Verify and Testing
-
-=== router configurations
-
-[source, bash]
-.*vpc-demo-router1*
-----
-$ gcloud compute routers describe vpc-demo-router1 --region us-central1
-bgp:
-  advertiseMode: DEFAULT
-  asn: 65001
-  keepaliveInterval: 20
-bgpPeers:
-- bfd:
-    minReceiveInterval: 1000
-    minTransmitInterval: 1000
-    multiplier: 5
-    sessionInitializationMode: DISABLED
-  enable: 'TRUE'
-  enableIpv6: false
-  interfaceName: if-tunnel0-to-on-prem
-  ipAddress: 169.254.0.1
-  name: bgp-on-prem-tunnel0
-  peerAsn: 65002
-  peerIpAddress: 169.254.0.2
-- bfd:
-    minReceiveInterval: 1000
-    minTransmitInterval: 1000
-    multiplier: 5
-    sessionInitializationMode: DISABLED
-  enable: 'TRUE'
-  enableIpv6: false
-  interfaceName: if-tunnel1-to-on-prem
-  ipAddress: 169.254.1.1
-  name: bgp-on-prem-tunnel1
-  peerAsn: 65002
-  peerIpAddress: 169.254.1.2
-creationTimestamp: '2023-01-24T01:12:22.219-08:00'
-id: '5276357984759455257'
-interfaces:
-- ipRange: 169.254.0.1/30
-  linkedVpnTunnel: https://www.googleapis.com/compute/v1/projects/qwiklabs-gcp-01-0e4b3b1f8f92/regions/us-central1/vpnTunnels/vpc-demo-tunnel0
-  name: if-tunnel0-to-on-prem
-- ipRange: 169.254.1.1/30
-  linkedVpnTunnel: https://www.googleapis.com/compute/v1/projects/qwiklabs-gcp-01-0e4b3b1f8f92/regions/us-central1/vpnTunnels/vpc-demo-tunnel1
-  name: if-tunnel1-to-on-prem
-kind: compute#router
-name: vpc-demo-router1
-network: https://www.googleapis.com/compute/v1/projects/qwiklabs-gcp-01-0e4b3b1f8f92/global/networks/vpc-demo
-region: https://www.googleapis.com/compute/v1/projects/qwiklabs-gcp-01-0e4b3b1f8f92/regions/us-central1
-selfLink: https://www.googleapis.com/compute/v1/projects/qwiklabs-gcp-01-0e4b3b1f8f92/regions/us-central1/routers/vpc-demo-router1
-----
-
-[source, bash]
-.*on-prem-router1*
-----
-$ gcloud compute routers describe on-prem-router1 --region us-central1
-bgp:
-  advertiseMode: DEFAULT
-  asn: 65002
-  keepaliveInterval: 20
-bgpPeers:
-- bfd:
-    minReceiveInterval: 1000
-    minTransmitInterval: 1000
-    multiplier: 5
-    sessionInitializationMode: DISABLED
-  enable: 'TRUE'
-  enableIpv6: false
-  interfaceName: if-tunnel0-to-vpc-demo
-  ipAddress: 169.254.0.2
-  name: bgp-vpc-demo-tunnel0
-  peerAsn: 65001
-  peerIpAddress: 169.254.0.1
-- bfd:
-    minReceiveInterval: 1000
-    minTransmitInterval: 1000
-    multiplier: 5
-    sessionInitializationMode: DISABLED
-  enable: 'TRUE'
-  enableIpv6: false
-  interfaceName: if-tunnel1-to-vpc-demo
-  ipAddress: 169.254.1.2
-  name: bgp-vpc-demo-tunnel1
-  peerAsn: 65001
-  peerIpAddress: 169.254.1.1
-creationTimestamp: '2023-01-24T01:14:56.616-08:00'
-id: '1096972188589891455'
-interfaces:
-- ipRange: 169.254.0.2/30
-  linkedVpnTunnel: https://www.googleapis.com/compute/v1/projects/qwiklabs-gcp-01-0e4b3b1f8f92/regions/us-central1/vpnTunnels/on-prem-tunnel0
-  name: if-tunnel0-to-vpc-demo
-- ipRange: 169.254.1.2/30
-  linkedVpnTunnel: https://www.googleapis.com/compute/v1/projects/qwiklabs-gcp-01-0e4b3b1f8f92/regions/us-central1/vpnTunnels/on-prem-tunnel1
-  name: if-tunnel1-to-vpc-demo
-kind: compute#router
-name: on-prem-router1
-network: https://www.googleapis.com/compute/v1/projects/qwiklabs-gcp-01-0e4b3b1f8f92/global/networks/on-prem
-region: https://www.googleapis.com/compute/v1/projects/qwiklabs-gcp-01-0e4b3b1f8f92/regions/us-central1
-selfLink: https://www.googleapis.com/compute/v1/projects/qwiklabs-gcp-01-0e4b3b1f8f92/regions/us-central1/routers/on-prem-router1
-----
 
 === Create firewall allow traffic betwen remote network
 
@@ -423,11 +759,50 @@ gcloud compute firewall-rules create vpc-demo-allow-subnets-from-on-prem --netwo
 gcloud compute firewall-rules create on-prem-allow-subnets-from-vpc-demo --network on-prem --allow tcp,udp,icmp --source-ranges 10.1.1.0/24,10.2.1.0/24
 ----
 
-=== TODO
+=== on-prem ping vpc instance
 
 [source, bash]
-.*TODO*
+.*1. on on-prem instace ping vpc instance*
 ----
-TODO
+@on-prem-instance1:~$ ping 10.1.1.2
+PING 10.1.1.2 (10.1.1.2) 56(84) bytes of data.
+64 bytes from 10.1.1.2: icmp_seq=1 ttl=62 time=4.88 ms
+64 bytes from 10.1.1.2: icmp_seq=2 ttl=62 time=1.50 ms
+64 bytes from 10.1.1.2: icmp_seq=3 ttl=62 time=1.22 ms
 ----
 
+The icmp packet flow:
+
+image:icmp.png[]
+
+[source, bash]
+.*2. on on-prem instace ping instace on us-east1*
+----
+@on-prem-instance1:~$ ping 10.2.1.2
+PING 10.2.1.2 (10.2.1.2) 56(84) bytes of data.
+----
+
+NOTE: ping faied.
+
+=== on vpc to access http service on on-prem
+
+[source, bash]
+.*1. on vpc instance to access on-prem http service on port 8080*
+----
+$ curl http://192.168.1.2:8080/test -H "Host: testvpn.gcp"
+
+            request: GET /test HTTP/1.1
+               host: testvpn.gcp
+           hostname: on-prem-instance1
+
+        client addr: 10.1.1.2:36172
+        server addr: 192.168.1.2:8080
+
+             cookie: 
+                xff: 
+         user agent: curl/7.74.0
+----
+
+*2. the http packet flow*
+
+image:http.png[]
