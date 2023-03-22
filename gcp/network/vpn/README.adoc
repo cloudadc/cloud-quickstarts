@@ -78,7 +78,6 @@ gcloud compute vpn-gateways create vpc-demo-vpn-gw1 --network vpc-demo --region 
 [source, json]
 .*2. view the details of vpn gateway*
 ----
-$ gcloud compute vpn-gateways describe vpc-demo-vpn-gw1 --region us-central1 --format=json
 {
   "creationTimestamp": "2023-01-24T01:02:43.130-08:00",
   "id": "7388101625046507612",
