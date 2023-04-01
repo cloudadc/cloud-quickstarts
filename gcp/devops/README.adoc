@@ -1,3 +1,71 @@
 = DevOps
 :toc: manual
 
+== Development Environment
+
+=== Node.js
+
+[source, bash]
+.*1. Setting up*
+----
+sudo apt-get update
+curl -sL https://deb.nodesource.com/setup_13.x | sudo -E bash -
+sudo apt install nodejs
+node -v
+----
+
+[source, bash]
+.*2. Running example*
+----
+sudo node nodejs/hello/server/app.js
+----
+
+Test the app local via http://127.0.0.1:8080, if you want access the app via GCP `allow-http` firewall rule, just add the following dnat iptables rule on vm instance that run app:
+
+[source, bash]
+----
+sudo iptables -t nat -A PREROUTING -p tcp --dport 80 -j REDIRECT --to-port 8080
+----
+
+=== Java
+
+[source, bash]
+.*1. Setting up*
+----
+sudo apt-get update
+sudo apt-get install -yq openjdk-17-jdk
+sudo apt-get install git -y
+sudo apt-get install -yq maven
+----
+
+.*2. Running example*
+
+* List GCP VM instance via Java: link:https://github.com/GoogleCloudPlatform/training-data-analyst/blob/master/courses/developingapps/v1.3/java/devenv/src/main/java/com/google/training/appdev/console/ConsoleApp.java[ConsoleApp.java]
+
+=== Python
+
+[source, bash]
+.*1. Setting up*
+----
+sudo apt-get update
+
+sudo apt-get install git
+sudo apt-get install python3-setuptools python3-dev build-essential
+
+curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py
+sudo python3 get-pip.py
+----
+
+[source, bash]
+.*2. Running example*
+----
+sudo python3 python/hello/server/server.py 
+----
+
+Test the app local via http://127.0.0.1:8080, if you want access the app via GCP `allow-http` firewall rule, just add the following dnat iptables rule on vm instance that run app:
+
+[source, bash]
+----
+sudo iptables -t nat -A PREROUTING -p tcp --dport 80 -j REDIRECT --to-port 8080
+----
+
