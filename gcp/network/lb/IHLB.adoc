@@ -150,47 +150,47 @@ gcloud compute ssh utility-vm --zone=us-central1-c --tunnel-through-iap
 ----
 
 [source, bash]
-.*3. access application in blue instance group*
+.*3. access application in app-v1 instance group*
 ----
-utility-vm:~$ curl 10.10.10.7:8080/blue
+utility-vm:~$ curl http://10.10.10.3:8080
 
-            request: GET /blue HTTP/1.1
-               host: 10.10.10.7
-           hostname: blue-n7gm
+            request: GET / HTTP/1.1
+               host: 10.10.10.3
+           hostname: app-v1-s7t5
 
-        client addr: 10.10.10.50:48216
-        server addr: 10.10.10.7:8080
+        client addr: 10.10.10.50:49612
+        server addr: 10.10.10.3:8080
 
-utility-vm:~$ curl 10.10.10.8:8080/blue
+utility-vm:~$ curl http://10.10.10.4:8080
 
-            request: GET /blue HTTP/1.1
-               host: 10.10.10.8
-           hostname: blue-qkf4
+            request: GET / HTTP/1.1
+               host: 10.10.10.4
+           hostname: app-v1-4ts6
 
-        client addr: 10.10.10.50:34012
-        server addr: 10.10.10.8:8080
+        client addr: 10.10.10.50:60388
+        server addr: 10.10.10.4:8080
 ----
 
 [source, bash]
-.*4. access application in green instance group*
+.*4. access application in app-v2 instance group*
 ----
-utility-vm:~$ curl 10.10.20.4:8080/green
+utility-vm:~$ curl http://10.10.20.2:8080
 
-            request: GET /green HTTP/1.1
-               host: 10.10.20.4
-           hostname: green-s7qr
+            request: GET / HTTP/1.1
+               host: 10.10.20.2
+           hostname: app-v2-mq8w
 
-        client addr: 10.10.10.50:34334
-        server addr: 10.10.20.4:8080
+        client addr: 10.10.10.50:48308
+        server addr: 10.10.20.2:8080
 
-utility-vm:~$ curl 10.10.20.5:8080/green
+utility-vm:~$ curl http://10.10.20.3:8080
 
-            request: GET /green HTTP/1.1
-               host: 10.10.20.5
-           hostname: green-gpmg
+            request: GET / HTTP/1.1
+               host: 10.10.20.3
+           hostname: app-v2-lsm3
 
-        client addr: 10.10.10.50:52178
-        server addr: 10.10.20.5:8080
+        client addr: 10.10.10.50:33264
+        server addr: 10.10.20.3:8080
 ----
 
 == Basic Load Balancer Configuration
@@ -253,6 +253,8 @@ gcloud compute target-http-proxies create l7-ihlb-proxy --url-map=l7-ihlb-map --
 gcloud compute forwarding-rules create l7-ihlb-forwarding-rule --load-balancing-scheme=INTERNAL_MANAGED --target-http-proxy=l7-ihlb-proxy  --target-http-proxy-region=us-central1 --network=internal --subnet=internal-lb --address=10.10.30.11 --ports=80 --region=us-central1
 ----
 
+== Load Balancer Behavior
+
 === Test Basic Load Balancer
 
 [source, bash]
@@ -271,7 +273,7 @@ utility-vm:~$ curl 10.10.30.11
            hostname: app-v1-7kwg
 
         client addr: 10.10.40.5:54286
-        server addr: 10.10.10.5:8080
+        server addr: 10.10.10.3:8080
 
 utility-vm:~$ curl 10.10.30.11
 
@@ -280,98 +282,48 @@ utility-vm:~$ curl 10.10.30.11
            hostname: app-v1-zbvh
 
         client addr: 10.10.40.2:47208
-        server addr: 10.10.10.6:8080
+        server addr: 10.10.10.4:8080
 ----
 
-
-
-
-
-
-== TD
-
-=== Set up traffic management(blue/green)
+=== Round Robin Algorithm
 
 [source, bash]
-.*1. create ihlb-bule-green.yaml content as the following*
+.*Load are distribute on two instances via `Round Robin` Algorithm*
 ----
-name: ihlb-bule-green
-defaultService: regions/us-central1/backendServices/green-service
-hostRules:
-- hosts:
-  - '*'
-  pathMatcher: matcher1
-pathMatchers:
-- defaultService: regions/us-central1/backendServices/green-service
-  name: matcher1
-  routeRules:
-  - priority: 2
-    matchRules:
-      - prefixMatch: /
-    routeAction:
-      weightedBackendServices:
-        - backendService: regions/us-central1/backendServices/green-service
-          weight: 95
-        - backendService: regions/us-central1/backendServices/blue-service
-          weight: 5
+utility-vm:~$ for i in {1..10} ; do curl -s 10.10.30.11 | grep server; done
+        server addr: 10.10.10.3:8080
+        server addr: 10.10.10.3:8080
+        server addr: 10.10.10.3:8080
+        server addr: 10.10.10.4:8080
+        server addr: 10.10.10.4:8080
+        server addr: 10.10.10.3:8080
+        server addr: 10.10.10.3:8080
+        server addr: 10.10.10.4:8080
+        server addr: 10.10.10.4:8080
+        server addr: 10.10.10.3:8080
 ----
+
+=== SNAT
 
 [source, bash]
-.*2. Create the URL map*
+.*VPC subnet `internal-proxy` be used as snat pool*
 ----
-gcloud compute url-maps import ihlb-bule-green --region=us-central1 --source=ihlb-bule-green.yaml
-----
-
-=== Setting up an HTTP frontend(blue/green)
-
-[source, bash]
-.*1. Create a target HTTP proxy to route requests to blue/green URL map*
-----
-gcloud compute target-http-proxies create ihlb-thp-bule-green --url-map=ihlb-bule-green --url-map-region=us-central1 --region=us-central1
-----
-
-[source, bash]
-.*2. Create forwarding rules reference with blue/green http proxy*
-----
-gcloud compute forwarding-rules create ihlb-fr-blue-green --load-balancing-scheme=INTERNAL_MANAGED --target-http-proxy=ihlb-thp-bule-green --target-http-proxy-region=us-central1 --network=internal --subnet=internal-lb --address=10.10.30.5 --ports=80 --region=us-central1
-----
-
-=== Test blue/green access
-
-[source, bash]
-.*1. Access the application several times, count the blue/green rate*
-----
-$ for i in {1..1000} ; do curl -s http://10.10.30.5 | grep hostname ; done > out
-
-$ cat out | wc -l
-1000
-
-$ cat out | grep blue | wc -l
-48
-
-$ cat out | grep green | wc -l
-952
-----
-
-[source, bash]
-.*2. Access the application several times, review snat address*
-----
-$ for i in {1..10} ; do curl -s http://10.10.30.5 | grep client ; done
-        client addr: 10.10.40.3:42582
-        client addr: 10.10.40.3:38666
-        client addr: 10.10.40.3:42582
-        client addr: 10.10.40.2:51752
-        client addr: 10.10.40.4:50638
-        client addr: 10.10.40.4:51336
-        client addr: 10.10.40.3:38666
-        client addr: 10.10.40.4:50638
+utility-vm:~$ for i in {1..10} ; do curl -s 10.10.30.11 | grep client; done
         client addr: 10.10.40.2:52810
-        client addr: 10.10.40.5:55542
+        client addr: 10.10.40.2:49080
+        client addr: 10.10.40.4:34062
+        client addr: 10.10.40.4:40206
+        client addr: 10.10.40.3:43722
+        client addr: 10.10.40.2:52810
+        client addr: 10.10.40.5:41382
+        client addr: 10.10.40.2:49080
+        client addr: 10.10.40.5:53920
+        client addr: 10.10.40.5:41382
 ----
 
-=== Blue/green Packet Flow Deep Dive 
+=== Health Check
 
-This section will install tcpdump on both ig-green and ig-blue's vm, capture the packet flow, due to the vm are internal, to install tcpdump need set up nat firstly.
+This section will install tcpdump on application vm, capture the packet flow, due to the vm are internal, to install tcpdump need set up nat firstly.
 
 [source, bash]
 .*1. create cloud router*
@@ -397,10 +349,10 @@ sudo apt-get install tcpdump -y
 $ sudo tcpdump -nni ens4 port 8080
 tcpdump: verbose output suppressed, use -v[v]... for full protocol decode
 listening on ens4, link-type EN10MB (Ethernet), snapshot length 262144 bytes
-09:18:38.900556 IP 35.191.8.79.35284 > 10.10.10.7.8080: Flags [S], seq 2155631061, win 65535, options [mss 1420,sackOK,TS val 3285289368 ecr 0,nop,wscale 8], length 0
-09:18:38.900594 IP 10.10.10.7.8080 > 35.191.8.79.35284: Flags [S.], seq 4250585293, ack 2155631062, win 64768, options [mss 1420,sackOK,TS val 3375367435 ecr 3285289368,nop,wscale 7], length 0
-09:18:38.901453 IP 35.191.8.79.35284 > 10.10.10.7.8080: Flags [P.], seq 1:87, ack 1, win 256, options [nop,nop,TS val 3285289371 ecr 3375367435], length 86: HTTP: GET / HTTP/1.1
-09:18:38.901456 IP 35.191.8.79.35284 > 10.10.10.7.8080: Flags [.], ack 1, win 256, options [nop,nop,TS val 3285289370 ecr 3375367435], length 0
+09:18:38.900556 IP 35.191.8.79.35284 > 10.10.10.3.8080: Flags [S], seq 2155631061, win 65535, options [mss 1420,sackOK,TS val 3285289368 ecr 0,nop,wscale 8], length 0
+09:18:38.900594 IP 10.10.10.3.8080 > 35.191.8.79.35284: Flags [S.], seq 4250585293, ack 2155631062, win 64768, options [mss 1420,sackOK,TS val 3375367435 ecr 3285289368,nop,wscale 7], length 0
+09:18:38.901453 IP 35.191.8.79.35284 > 10.10.10.3.8080: Flags [P.], seq 1:87, ack 1, win 256, options [nop,nop,TS val 3285289371 ecr 3375367435], length 86: HTTP: GET / HTTP/1.1
+09:18:38.901456 IP 35.191.8.79.35284 > 10.10.10.3.8080: Flags [.], ack 1, win 256, options [nop,nop,TS val 3285289370 ecr 3375367435], length 0
 ----
 
 NOTE: The `35.191.8.79` from health check snat address.
@@ -408,50 +360,125 @@ NOTE: The `35.191.8.79` from health check snat address.
 [source, bash]
 .*5. Capture the traffic from LB*
 ----
-09:21:10.697309 IP 10.10.40.4.43810 > 10.10.10.7.8080: Flags [P.], seq 629:786, ack 1649, win 273, options [nop,nop,TS val 1574104694 ecr 2605581615], length 157: HTTP: GET / HTTP/1.1
-09:21:10.697534 IP 10.10.10.7.8080 > 10.10.40.4.43810: Flags [P.], seq 1649:2061, ack 786, win 501, options [nop,nop,TS val 2605583184 ecr 1574104694], length 412: HTTP: HTTP/1.1 200 OK
+09:21:10.697309 IP 10.10.40.4.43810 > 10.10.10.3.8080: Flags [P.], seq 629:786, ack 1649, win 273, options [nop,nop,TS val 1574104694 ecr 2605581615], length 157: HTTP: GET / HTTP/1.1
+09:21:10.697534 IP 10.10.10.3.8080 > 10.10.40.4.43810: Flags [P.], seq 1649:2061, ack 786, win 501, options [nop,nop,TS val 2605583184 ecr 1574104694], length 412: HTTP: HTTP/1.1 200 OK
 ----
 
 NOTE: The `10.10.40.4` from Envoy based MANAGED internal HTTP Load balancing snat address.
 
-=== Set up traffic management(url map)
+== Weight-based traffic splitting
+
+=== Create routing rules
 
 [source, bash]
-.*1. create ihlb-path-map.yaml content as the following*
+.*create ihlb-weight-based-splitting.yaml content as the following*
+----
+name: ihlb-weight-based-splitting
+defaultService: regions/us-central1/backendServices/app-v1-service
+hostRules:
+- hosts:
+  - '*'
+  pathMatcher: matcher1
+pathMatchers:
+- defaultService: regions/us-central1/backendServices/app-v1-service
+  name: matcher1
+  routeRules:
+  - priority: 2
+    matchRules:
+      - prefixMatch: /
+    routeAction:
+      weightedBackendServices:
+        - backendService: regions/us-central1/backendServices/app-v1-service
+          weight: 95
+        - backendService: regions/us-central1/backendServices/app-v2-service
+          weight: 5
+----
+
+=== Create URL Maps
+
+[source, bash]
+----
+gcloud compute url-maps import ihlb-weight-based-splitting --region=us-central1 --source=ihlb-weight-based-splitting.yaml
+----
+
+=== Create Target Proxy
+
+[source, bash]
+.*Create a target HTTP proxy to route requests to `ihlb-weight-based-splitting` URL map*
+----
+gcloud compute target-http-proxies create ihlb-thp-weight-based-splitting --url-map=ihlb-weight-based-splitting --url-map-region=us-central1 --region=us-central1
+----
+
+=== Create Forwarding Rule
+
+[source, bash]
+.*Create forwarding rules reference with `ihlb-thp-weight-based-splitting` http proxy*
+----
+gcloud compute forwarding-rules create ihlb-fr-weight-based-splitting --load-balancing-scheme=INTERNAL_MANAGED --target-http-proxy=ihlb-thp-weight-based-splitting --target-http-proxy-region=us-central1 --network=internal --subnet=internal-lb --address=10.10.30.12 --ports=80 --region=us-central1
+----
+
+=== Test weight-based traffic splitting
+
+[source, bash]
+.*Access the application in utility vm several times, count the rate*
+----
+$ for i in {1..1000} ; do curl -s http://10.10.30.12 | grep hostname ; done > out
+
+$ cat out | wc -l
+1000
+
+$ cat out | grep app-v1 | wc -l
+955
+
+$ cat out | grep app-v2 | wc -l
+45
+----
+
+NOET: Around 95% traffic route to app-v1.
+
+== Path-based route
+
+=== Create routing rules
+
+[source, bash]
+.*create ihlb-path-map.yaml content as the following*
 ----
 name: ihlb-pathmap
-defaultService: regions/us-central1/backendServices/green-service
+defaultService: regions/us-central1/backendServices/app-v1-service
 hostRules:
 - hosts:
   - '*'
   pathMatcher: pathmap
 pathMatchers:
-- defaultService: regions/us-central1/backendServices/green-service
+- defaultService: regions/us-central1/backendServices/app-v1-service
   name: pathmap
   - paths:
     - /blue
     - /blue/*
-    service: regions/us-central1/backendServices/blue-service
+    service: regions/us-central1/backendServices/app-v2-service
 ----
 
+=== Create URL Maps
+
 [source, bash]
-.*2. Create the URL map*
 ----
 gcloud compute url-maps import ihlb-path-map --region=us-central1 --source=ihlb-path-map.yaml
 ----
 
-=== Setting up an HTTP frontend(path map)
+=== Create Target Proxy
 
 [source, bash]
-.*1. Create a target HTTP proxy to route requests to path map URL map*
+.*Create a target HTTP proxy to route requests to path map URL map*
 ----
 gcloud compute target-http-proxies create ihlb-thp-path-map --url-map=ihlb-path-map --url-map-region=us-central1 --region=us-central1
 ----
 
+=== Create Forwarding Rule
+
 [source, bash]
-.*2. Create forwarding rules reference with path map http proxy*
+.*Create forwarding rules reference with path map http proxy*
 ----
-gcloud compute forwarding-rules create ihlb-fr-path-map --load-balancing-scheme=INTERNAL_MANAGED --target-http-proxy=ihlb-thp-path-map --target-http-proxy-region=us-central1 --network=internal --subnet=internal-lb --address=10.10.30.6 --ports=80 --region=us-central1
+gcloud compute forwarding-rules create ihlb-fr-path-map --load-balancing-scheme=INTERNAL_MANAGED --target-http-proxy=ihlb-thp-path-map --target-http-proxy-region=us-central1 --network=internal --subnet=internal-lb --address=10.10.30.13 --ports=80 --region=us-central1
 ----
 
 === Test url map access
@@ -459,35 +486,27 @@ gcloud compute forwarding-rules create ihlb-fr-path-map --load-balancing-scheme=
 [source, bash]
 .*1. access with url /blue/test*
 ----
-$ curl http://10.10.30.6/blue/test
+$ curl http://10.10.30.13/blue/test
 
             request: GET /blue/test HTTP/1.1
-               host: 10.10.30.6
-           hostname: blue-qkf4
+               host: 10.10.30.13
+           hostname: app-v2-qkf4
 
         client addr: 10.10.40.5:41970
-        server addr: 10.10.10.8:8080
-
-             cookie:
-                xff:
-         user agent: curl/7.74.0
+        server addr: 10.10.10.3:8080
 ----
 
 [source, bash]
 .*2. access with url /green/test*
 ----
-$ curl http://10.10.30.6/green/test
+$ curl http://10.10.30.13/green/test
 
             request: GET /green/test HTTP/1.1
-               host: 10.10.30.6
+               host: 10.10.30.13
            hostname: green-s7qr
 
         client addr: 10.10.40.5:38630
-        server addr: 10.10.20.4:8080
-
-             cookie:
-                xff:
-         user agent: curl/7.74.0
+        server addr: 10.10.20.3:8080
 ----
 
 
