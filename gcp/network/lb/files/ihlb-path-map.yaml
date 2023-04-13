@@ -1,0 +1,38 @@
+name: ihlb-path-map
+defaultService: regions/us-central1/backendServices/app-v1-service
+hostRules:
+- hosts:
+  - '*'
+  pathMatcher: default-matcher
+- hosts:
+  - 'blue.example.com'
+  pathMatcher: blue-matcher
+- hosts:
+  - 'green.example.com'
+  pathMatcher: green-matcher
+pathMatchers:
+- defaultService: regions/us-central1/backendServices/app-v1-service
+  name: default-matcher
+  pathRules:
+  - paths:
+    - /blue
+    - /blue/*
+    service: regions/us-central1/backendServices/app-v1-service
+  - paths:
+    - /green
+    - /green/*
+    service: regions/us-central1/backendServices/app-v2-service
+- defaultService: regions/us-central1/backendServices/app-v1-service
+  name: blue-matcher
+  pathRules:
+  - paths:
+    - /
+    - /*
+    service: regions/us-central1/backendServices/app-v1-service
+- defaultService: regions/us-central1/backendServices/app-v2-service
+  name: green-matcher
+  pathRules:
+  - paths:
+    - /
+    - /*
+    service: regions/us-central1/backendServices/app-v2-service

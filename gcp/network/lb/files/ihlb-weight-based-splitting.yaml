@@ -1,0 +1,19 @@
+name: ihlb-weight-based-splitting
+defaultService: regions/us-central1/backendServices/app-v1-service
+hostRules:
+- hosts:
+  - '*'
+  pathMatcher: matcher1
+pathMatchers:
+- defaultService: regions/us-central1/backendServices/app-v1-service
+  name: matcher1
+  routeRules:
+  - priority: 2
+    matchRules:
+      - prefixMatch: /
+    routeAction:
+      weightedBackendServices:
+        - backendService: regions/us-central1/backendServices/app-v1-service
+          weight: 95
+        - backendService: regions/us-central1/backendServices/app-v2-service
+          weight: 5

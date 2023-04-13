@@ -394,6 +394,8 @@ pathMatchers:
           weight: 5
 ----
 
+* link:files/ihlb-weight-based-splitting.yaml[ihlb-weight-based-splitting.yaml]
+
 === Create URL Maps
 
 [source, bash]
@@ -422,16 +424,18 @@ gcloud compute forwarding-rules create ihlb-fr-weight-based-splitting --load-bal
 [source, bash]
 .*Access the application in utility vm several times, count the rate*
 ----
+$ gcloud compute ssh utility-vm --zone=us-central1-c --tunnel-through-iap
+
 $ for i in {1..1000} ; do curl -s http://10.10.30.12 | grep hostname ; done > out
 
 $ cat out | wc -l
 1000
 
 $ cat out | grep app-v1 | wc -l
-955
+952
 
 $ cat out | grep app-v2 | wc -l
-45
+48
 ----
 
 NOET: Around 95% traffic route to app-v1.
@@ -443,20 +447,47 @@ NOET: Around 95% traffic route to app-v1.
 [source, bash]
 .*create ihlb-path-map.yaml content as the following*
 ----
-name: ihlb-pathmap
+name: ihlb-path-map
 defaultService: regions/us-central1/backendServices/app-v1-service
 hostRules:
 - hosts:
   - '*'
-  pathMatcher: pathmap
+  pathMatcher: default-matcher
+- hosts:
+  - 'blue.example.com'
+  pathMatcher: blue-matcher
+- hosts:
+  - 'green.example.com'
+  pathMatcher: green-matcher
 pathMatchers:
 - defaultService: regions/us-central1/backendServices/app-v1-service
-  name: pathmap
+  name: default-matcher
+  pathRules:
   - paths:
     - /blue
     - /blue/*
+    service: regions/us-central1/backendServices/app-v1-service
+  - paths:
+    - /green
+    - /green/*
+    service: regions/us-central1/backendServices/app-v2-service
+- defaultService: regions/us-central1/backendServices/app-v1-service
+  name: blue-matcher
+  pathRules:
+  - paths:
+    - /
+    - /*
+    service: regions/us-central1/backendServices/app-v1-service
+- defaultService: regions/us-central1/backendServices/app-v2-service
+  name: green-matcher
+  pathRules:
+  - paths:
+    - /
+    - /*
     service: regions/us-central1/backendServices/app-v2-service
 ----
+
+* link:files/ihlb-path-map.yaml[ihlb-path-map.yaml]
 
 === Create URL Maps
 
@@ -481,32 +512,48 @@ gcloud compute target-http-proxies create ihlb-thp-path-map --url-map=ihlb-path-
 gcloud compute forwarding-rules create ihlb-fr-path-map --load-balancing-scheme=INTERNAL_MANAGED --target-http-proxy=ihlb-thp-path-map --target-http-proxy-region=us-central1 --network=internal --subnet=internal-lb --address=10.10.30.13 --ports=80 --region=us-central1
 ----
 
-=== Test url map access
+=== Test Path-based route
 
 [source, bash]
-.*1. access with url /blue/test*
+.*1. ssh to utility vm*
 ----
-$ curl http://10.10.30.13/blue/test
-
-            request: GET /blue/test HTTP/1.1
-               host: 10.10.30.13
-           hostname: app-v2-qkf4
-
-        client addr: 10.10.40.5:41970
-        server addr: 10.10.10.3:8080
+gcloud compute ssh utility-vm --zone=us-central1-c --tunnel-through-iap
 ----
 
 [source, bash]
-.*2. access with url /green/test*
+.*2. host based routing*
 ----
-$ curl http://10.10.30.13/green/test
+$ for i in {1..5} ; do curl -s -H "Host: blue.example.com" http://10.10.30.13 | grep hostname ; done
+           hostname: app-v1-mwrr
+           hostname: app-v1-mwrr
+           hostname: app-v1-mwrr
+           hostname: app-v1-mwrr
+           hostname: app-v1-3n2c
 
-            request: GET /green/test HTTP/1.1
-               host: 10.10.30.13
-           hostname: green-s7qr
+$ for i in {1..5} ; do curl -s -H "Host: green.example.com" http://10.10.30.13 | grep hostname ; done
+           hostname: app-v2-qtcb
+           hostname: app-v2-qtcb
+           hostname: app-v2-pllt
+           hostname: app-v2-pllt
+           hostname: app-v2-qtcb
+----
 
-        client addr: 10.10.40.5:38630
-        server addr: 10.10.20.3:8080
+[source, bash]
+.*3. path based routing*
+----
+$ for i in {1..5} ; do curl -s http://10.10.30.13/blue | grep hostname ; done
+           hostname: app-v1-mwrr
+           hostname: app-v1-mwrr
+           hostname: app-v1-mwrr
+           hostname: app-v1-mwrr
+           hostname: app-v1-3n2c
+
+$ for i in {1..5} ; do curl -s http://10.10.30.13/green | grep hostname ; done
+           hostname: app-v2-qtcb
+           hostname: app-v2-qtcb
+           hostname: app-v2-qtcb
+           hostname: app-v2-pllt
+           hostname: app-v2-qtcb
 ----
 
 
