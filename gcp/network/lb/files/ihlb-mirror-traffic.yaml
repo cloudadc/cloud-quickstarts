@@ -1,0 +1,20 @@
+name: ihlb-mirror-traffic
+defaultService: regions/us-central1/backendServices/app-v1-service
+region: region/us-central1
+hostRules:
+- hosts:
+  - '*'
+  pathMatcher: matcher1
+pathMatchers:
+- defaultService: regions/us-central1/backendServices/app-v1-service
+  name: matcher1
+  routeRules:
+  - priority: 1
+    matchRules:
+      - prefixMatch: /
+    routeAction:
+      weightedBackendServices:
+        - backendService: regions/us-central1/backendServices/app-v1-service
+          weight: 100
+      requestMirrorPolicy:
+        backendService: regions/us-central1/backendServices/app-v2-service

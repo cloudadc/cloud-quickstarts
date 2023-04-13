@@ -1,0 +1,18 @@
+name: ihlb-url-redirect
+defaultService: regions/us-central1/backendServices/app-v1-service
+region: region/us-central1
+hostRules:
+- hosts:
+  - '*'
+  pathMatcher: matcher1
+pathMatchers:
+- defaultService: regions/us-central1/backendServices/app-v1-service
+  name: matcher1
+  routeRules:
+  - priority: 2
+    matchRules:
+      - prefixMatch: /
+    urlRedirect:
+      pathRedirect: "/new-path"
+      redirectResponseCode: FOUND
+      stripQuery: True

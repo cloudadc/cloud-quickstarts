@@ -499,7 +499,6 @@ gcloud compute url-maps import ihlb-path-map --region=us-central1 --source=ihlb-
 === Create Target Proxy
 
 [source, bash]
-.*Create a target HTTP proxy to route requests to path map URL map*
 ----
 gcloud compute target-http-proxies create ihlb-thp-path-map --url-map=ihlb-path-map --url-map-region=us-central1 --region=us-central1
 ----
@@ -507,7 +506,6 @@ gcloud compute target-http-proxies create ihlb-thp-path-map --url-map=ihlb-path-
 === Create Forwarding Rule
 
 [source, bash]
-.*Create forwarding rules reference with path map http proxy*
 ----
 gcloud compute forwarding-rules create ihlb-fr-path-map --load-balancing-scheme=INTERNAL_MANAGED --target-http-proxy=ihlb-thp-path-map --target-http-proxy-region=us-central1 --network=internal --subnet=internal-lb --address=10.10.30.13 --ports=80 --region=us-central1
 ----
@@ -556,4 +554,225 @@ $ for i in {1..5} ; do curl -s http://10.10.30.13/green | grep hostname ; done
            hostname: app-v2-qtcb
 ----
 
+== URL redirect
 
+=== Create routing rules
+
+Create `ihlb-url-redirect.yaml` content as the following:
+
+[source, bash]
+----
+name: ihlb-url-redirect
+defaultService: regions/us-central1/backendServices/app-v1-service
+region: region/us-central1
+hostRules:
+- hosts:
+  - '*'
+  pathMatcher: matcher1
+pathMatchers:
+- defaultService: regions/us-central1/backendServices/app-v1-service
+  name: matcher1
+  routeRules:
+  - priority: 2
+    matchRules:
+      - prefixMatch: /
+    urlRedirect:
+      pathRedirect: "/new-path"
+      redirectResponseCode: FOUND
+      stripQuery: True
+----
+
+* link:files/ihlb-url-redirect.yaml[ihlb-url-redirect.yaml]
+
+=== Create URL Maps
+
+[source, bash]
+----
+gcloud compute url-maps import ihlb-url-redirect --region=us-central1 --source=ihlb-url-redirect.yaml
+----
+
+=== Create Target Proxy
+
+[source, bash]
+----
+gcloud compute target-http-proxies create ihlb-thp-url-redirect --url-map=ihlb-url-redirect --url-map-region=us-central1 --region=us-central1
+----
+
+=== Create Forwarding Rule
+
+[source, bash]
+----
+gcloud compute forwarding-rules create ihlb-fr-url-redirect --load-balancing-scheme=INTERNAL_MANAGED --target-http-proxy=ihlb-thp-url-redirect --target-http-proxy-region=us-central1 --network=internal --subnet=internal-lb --address=10.10.30.14 --ports=80 --region=us-central1
+----
+
+=== Test URL redirect
+
+[source, bash]
+----
+$ gcloud compute ssh utility-vm --zone=us-central1-c --tunnel-through-iap
+
+$ curl http://10.10.30.14/test -I
+HTTP/1.1 302 Found
+location: http://10.10.30.14/new-path
+date: Thu, 13 Apr 2023 01:47:59 GMT
+via: 1.1 google
+transfer-encoding: chunked
+----
+
+== Mirror traffic
+
+=== Create routing rules
+
+Create `ihlb-mirror-traffic.yaml` content as the following:
+
+[source, bash]
+----
+name: ihlb-mirror-traffic
+defaultService: regions/us-central1/backendServices/app-v1-service
+region: region/us-central1
+hostRules:
+- hosts:
+  - '*'
+  pathMatcher: matcher1
+pathMatchers:
+- defaultService: regions/us-central1/backendServices/app-v1-service
+  name: matcher1
+  routeRules:
+  - priority: 1
+    matchRules:
+      - prefixMatch: /
+    routeAction:
+      weightedBackendServices:
+        - backendService: regions/us-central1/backendServices/app-v1-service
+          weight: 100
+      requestMirrorPolicy:
+        backendService: regions/us-central1/backendServices/app-v2-service
+----
+
+* link:files/ihlb-mirror-traffic.yaml[ihlb-mirror-traffic.yaml]
+
+=== Create URL Maps
+
+[source, bash]
+----
+gcloud compute url-maps import ihlb-mirror-traffic --region=us-central1 --source=ihlb-mirror-traffic.yaml
+----
+
+=== Create Target Proxy
+
+[source, bash]
+----
+gcloud compute target-http-proxies create ihlb-thp-mirror-traffic --url-map=ihlb-mirror-traffic --url-map-region=us-central1 --region=us-central1
+----
+
+=== Create Forwarding Rule
+
+[source, bash]
+----
+gcloud compute forwarding-rules create ihlb-fr-mirror-traffic --load-balancing-scheme=INTERNAL_MANAGED --target-http-proxy=ihlb-thp-mirror-traffic --target-http-proxy-region=us-central1 --network=internal --subnet=internal-lb --address=10.10.30.15 --ports=80 --region=us-central1
+----
+
+=== Test Mirror traffic
+
+[source, bash]
+.*1. generate some traffic via LB*
+----
+$ gcloud compute ssh utility-vm --zone=us-central1-c --tunnel-through-iap
+
+$ for i in {1..6} ; do curl -s http://10.10.30.15/test/mirror | grep hostname ; done
+           hostname: app-v1-mwrr
+           hostname: app-v1-mwrr
+           hostname: app-v1-mwrr
+           hostname: app-v1-3n2c
+           hostname: app-v1-3n2c
+           hostname: app-v1-mwrr
+----
+
+[source, bash]
+.*2. overview the mirror traffic from app-v2 application*
+----
+app-v2-pllt:~$ tail -f /var/log/nginx/access.log
+10.10.40.5 - - [13/Apr/2023:02:43:02 +0000] "GET /test/mirror HTTP/1.1" 200 284 "-" "curl/7.74.0"
+10.10.40.4 - - [13/Apr/2023:02:43:02 +0000] "GET /test/mirror HTTP/1.1" 200 284 "-" "curl/7.74.0"
+10.10.40.2 - - [13/Apr/2023:02:43:02 +0000] "GET /test/mirror HTTP/1.1" 200 284 "-" "curl/7.74.0"
+----
+
+
+
+== TD
+
+=== Create routing rules
+
+Create `` content as the following:
+
+[source, bash]
+----
+
+----
+
+=== Create URL Maps
+
+[source, bash]
+----
+
+----
+
+=== Create Target Proxy
+
+[source, bash]
+----
+
+----
+
+=== Create Forwarding Rule
+
+[source, bash]
+----
+
+----
+
+=== Test TD
+
+[source, bash]
+----
+
+----
+
+== TD
+
+=== Create routing rules
+
+Create `` content as the following:
+
+[source, bash]
+----
+
+----
+
+=== Create URL Maps
+
+[source, bash]
+----
+
+----
+
+=== Create Target Proxy
+
+[source, bash]
+----
+
+----
+
+=== Create Forwarding Rule
+
+[source, bash]
+----
+
+----
+
+=== Test TD
+
+[source, bash]
+----
+
+----
