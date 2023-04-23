@@ -1,62 +1,245 @@
 = GKE
 :toc: manual
 
-== Zonal GKE Cluster
+== GKE Cluster Quick Start
 
-*1. Create Cluster*
-
-Create GKE Cluster can be implement via `gcloud` command, `rest api`, or `Google Cloud Console`, due to the `project id` and `credentials` are necessary are necessary, so in this section use `Google Cloud Console` to create a Zonal GKE Cluster.
-
-Simple navigate to *Kubernetes Engine > Clusters* to start create cluster, name the cluster's name as `test-cluster` and use others as default. 
+=== Deploy GKE Cluster
 
 [source, bash]
-.*2. Generate a kubeconfig on Cloud Shell*
+.*1. set the zone to run cluster and the cluster name*
 ----
-gcloud container clusters get-credentials test-cluster --zone us-central1-c
+export my_zone=us-central1-a
+export my_cluster=standard-cluster-1
 ----
 
 [source, bash]
-.*3. Review GKE Cluster via kubectl*
+.*2. Create cluster*
 ----
-$ kubectl version --short
-Client Version: v1.25.4
-Kustomize Version: v4.5.7
-Server Version: v1.24.7-gke.900
+gcloud container clusters create $my_cluster --num-nodes=3 --zone=$my_zone --enable-ip-alias
+----
 
+* `--enable-ip-alias` -  his will require at least two secondary ranges in the subnetwork, one for the pod IPs and another to reserve space for the services range.
+
+*3. Verify Install*
+
+* Node and Nodepool
+
+[source, bash]
+----
 $ kubectl get nodes -o wide
-NAME                                          STATUS   ROLES    AGE     VERSION           INTERNAL-IP   EXTERNAL-IP    OS-IMAGE                             KERNEL-VERSION   CONTAINER-RUNTIME
-gke-test-cluster-default-pool-297a02ae-332w   Ready    <none>   6m42s   v1.24.7-gke.900   10.128.0.8    34.29.73.234   Container-Optimized OS from Google   5.10.147+        containerd://1.6.6
-gke-test-cluster-default-pool-297a02ae-48lv   Ready    <none>   6m42s   v1.24.7-gke.900   10.128.0.10   34.29.75.13    Container-Optimized OS from Google   5.10.147+        containerd://1.6.6
-gke-test-cluster-default-pool-297a02ae-tts9   Ready    <none>   6m42s   v1.24.7-gke.900   10.128.0.9    34.66.91.221   Container-Optimized OS from Google   5.10.147+        containerd://1.6.6
+NAME                                                STATUS   ROLES    AGE   VERSION             INTERNAL-IP   EXTERNAL-IP      OS-IMAGE                             KERNEL-VERSION   CONTAINER-RUNTIME
+gke-standard-cluster-1-default-pool-94f51f94-6znp   Ready    <none>   12m   v1.24.10-gke.2300   10.128.0.3    34.172.140.126   Container-Optimized OS from Google   5.10.162+        containerd://1.6.9
+gke-standard-cluster-1-default-pool-94f51f94-gxsc   Ready    <none>   12m   v1.24.10-gke.2300   10.128.0.5    34.132.208.226   Container-Optimized OS from Google   5.10.162+        containerd://1.6.9
+gke-standard-cluster-1-default-pool-94f51f94-ltjz   Ready    <none>   12m   v1.24.10-gke.2300   10.128.0.4    34.30.102.248    Container-Optimized OS from Google   5.10.162+        containerd://1.6.9
+----
 
+* Defualt Pod(Metrics exporter, LB Kube-proxy, DNS kube-dns, CNI)
+
+[source, bash]
+----
 $ kubectl get pods -A -o wide
-NAMESPACE     NAME                                                     READY   STATUS    RESTARTS   AGE     IP            NODE                                          NOMINATED NODE   READINESS GATES
-kube-system   event-exporter-gke-857959888b-c7vjj                      2/2     Running   0          8m11s   10.68.1.2     gke-test-cluster-default-pool-297a02ae-tts9   <none>           <none>
-kube-system   fluentbit-gke-8ltlj                                      2/2     Running   0          7m14s   10.128.0.8    gke-test-cluster-default-pool-297a02ae-332w   <none>           <none>
-kube-system   fluentbit-gke-mqpv7                                      2/2     Running   0          7m13s   10.128.0.9    gke-test-cluster-default-pool-297a02ae-tts9   <none>           <none>
-kube-system   fluentbit-gke-qxhxc                                      2/2     Running   0          7m12s   10.128.0.10   gke-test-cluster-default-pool-297a02ae-48lv   <none>           <none>
-kube-system   gke-metrics-agent-88ztw                                  1/1     Running   0          7m13s   10.128.0.10   gke-test-cluster-default-pool-297a02ae-48lv   <none>           <none>
-kube-system   gke-metrics-agent-fjl2q                                  1/1     Running   0          7m13s   10.128.0.9    gke-test-cluster-default-pool-297a02ae-tts9   <none>           <none>
-kube-system   gke-metrics-agent-wlg22                                  1/1     Running   0          7m14s   10.128.0.8    gke-test-cluster-default-pool-297a02ae-332w   <none>           <none>
-kube-system   konnectivity-agent-6c79c4fc86-28cll                      1/1     Running   0          7m3s    10.68.0.3     gke-test-cluster-default-pool-297a02ae-332w   <none>           <none>
-kube-system   konnectivity-agent-6c79c4fc86-dlwn4                      1/1     Running   0          8m4s    10.68.1.3     gke-test-cluster-default-pool-297a02ae-tts9   <none>           <none>
-kube-system   konnectivity-agent-6c79c4fc86-n8bls                      1/1     Running   0          7m3s    10.68.2.5     gke-test-cluster-default-pool-297a02ae-48lv   <none>           <none>
-kube-system   konnectivity-agent-autoscaler-566966775b-4t65m           1/1     Running   0          8m3s    10.68.1.4     gke-test-cluster-default-pool-297a02ae-tts9   <none>           <none>
-kube-system   kube-dns-7d5998784c-4rk7w                                4/4     Running   0          7m3s    10.68.2.6     gke-test-cluster-default-pool-297a02ae-48lv   <none>           <none>
-kube-system   kube-dns-7d5998784c-vfpzt                                4/4     Running   0          8m16s   10.68.0.2     gke-test-cluster-default-pool-297a02ae-332w   <none>           <none>
-kube-system   kube-dns-autoscaler-9f89698b6-l2vdf                      1/1     Running   0          8m16s   10.68.2.3     gke-test-cluster-default-pool-297a02ae-48lv   <none>           <none>
-kube-system   kube-proxy-gke-test-cluster-default-pool-297a02ae-332w   1/1     Running   0          5m51s   10.128.0.8    gke-test-cluster-default-pool-297a02ae-332w   <none>           <none>
-kube-system   kube-proxy-gke-test-cluster-default-pool-297a02ae-48lv   1/1     Running   0          6m28s   10.128.0.10   gke-test-cluster-default-pool-297a02ae-48lv   <none>           <none>
-kube-system   kube-proxy-gke-test-cluster-default-pool-297a02ae-tts9   1/1     Running   0          6m56s   10.128.0.9    gke-test-cluster-default-pool-297a02ae-tts9   <none>           <none>
-kube-system   l7-default-backend-6dc845c45d-gcqph                      1/1     Running   0          8m1s    10.68.2.2     gke-test-cluster-default-pool-297a02ae-48lv   <none>           <none>
-kube-system   metrics-server-v0.5.2-6bf845b67f-qddpr                   2/2     Running   0          6m53s   10.68.1.5     gke-test-cluster-default-pool-297a02ae-tts9   <none>           <none>
-kube-system   pdcsi-node-8dz57                                         2/2     Running   0          7m13s   10.128.0.8    gke-test-cluster-default-pool-297a02ae-332w   <none>           <none>
-kube-system   pdcsi-node-f5x2z                                         2/2     Running   0          7m13s   10.128.0.9    gke-test-cluster-default-pool-297a02ae-tts9   <none>           <none>
-kube-system   pdcsi-node-kx9lj                                         2/2     Running   0          7m13s   10.128.0.10   gke-test-cluster-default-pool-297a02ae-48lv   <none>           <none>
+NAMESPACE     NAME                                                           READY   STATUS    RESTARTS   AGE   IP           NODE                                                NOMINATED NODE   READINESS GATES
+kube-system   event-exporter-gke-857959888b-n8zdr                            2/2     Running   0          11m   10.8.0.2     gke-standard-cluster-1-default-pool-94f51f94-6znp   <none>           <none>
+kube-system   fluentbit-gke-gqtz8                                            2/2     Running   0          10m   10.128.0.4   gke-standard-cluster-1-default-pool-94f51f94-ltjz   <none>           <none>
+kube-system   fluentbit-gke-ngt9s                                            2/2     Running   0          10m   10.128.0.5   gke-standard-cluster-1-default-pool-94f51f94-gxsc   <none>           <none>
+kube-system   fluentbit-gke-nvd8c                                            2/2     Running   0          10m   10.128.0.3   gke-standard-cluster-1-default-pool-94f51f94-6znp   <none>           <none>
+kube-system   gke-metrics-agent-rx4hv                                        1/1     Running   0          10m   10.128.0.3   gke-standard-cluster-1-default-pool-94f51f94-6znp   <none>           <none>
+kube-system   gke-metrics-agent-vgmvq                                        1/1     Running   0          10m   10.128.0.5   gke-standard-cluster-1-default-pool-94f51f94-gxsc   <none>           <none>
+kube-system   gke-metrics-agent-vlwtr                                        1/1     Running   0          10m   10.128.0.4   gke-standard-cluster-1-default-pool-94f51f94-ltjz   <none>           <none>
+kube-system   konnectivity-agent-7888984c76-2p7nw                            1/1     Running   0          11m   10.8.0.6     gke-standard-cluster-1-default-pool-94f51f94-6znp   <none>           <none>
+kube-system   konnectivity-agent-7888984c76-95svx                            1/1     Running   0          10m   10.8.2.4     gke-standard-cluster-1-default-pool-94f51f94-gxsc   <none>           <none>
+kube-system   konnectivity-agent-7888984c76-r2zcj                            1/1     Running   0          10m   10.8.1.3     gke-standard-cluster-1-default-pool-94f51f94-ltjz   <none>           <none>
+kube-system   konnectivity-agent-autoscaler-7d9fbfd578-wc2lv                 1/1     Running   0          11m   10.8.0.5     gke-standard-cluster-1-default-pool-94f51f94-6znp   <none>           <none>
+kube-system   kube-dns-7d5998784c-lbnmj                                      4/4     Running   0          11m   10.8.1.2     gke-standard-cluster-1-default-pool-94f51f94-ltjz   <none>           <none>
+kube-system   kube-dns-7d5998784c-sk4zb                                      4/4     Running   0          10m   10.8.2.3     gke-standard-cluster-1-default-pool-94f51f94-gxsc   <none>           <none>
+kube-system   kube-dns-autoscaler-9f89698b6-zxfbk                            1/1     Running   0          11m   10.8.0.3     gke-standard-cluster-1-default-pool-94f51f94-6znp   <none>           <none>
+kube-system   kube-proxy-gke-standard-cluster-1-default-pool-94f51f94-6znp   1/1     Running   0          10m   10.128.0.3   gke-standard-cluster-1-default-pool-94f51f94-6znp   <none>           <none>
+kube-system   kube-proxy-gke-standard-cluster-1-default-pool-94f51f94-gxsc   1/1     Running   0          10m   10.128.0.5   gke-standard-cluster-1-default-pool-94f51f94-gxsc   <none>           <none>
+kube-system   kube-proxy-gke-standard-cluster-1-default-pool-94f51f94-ltjz   1/1     Running   0          10m   10.128.0.4   gke-standard-cluster-1-default-pool-94f51f94-ltjz   <none>           <none>
+kube-system   l7-default-backend-6dc845c45d-j792m                            1/1     Running   0          11m   10.8.2.2     gke-standard-cluster-1-default-pool-94f51f94-gxsc   <none>           <none>
+kube-system   metrics-server-v0.5.2-6bf845b67f-rmp5w                         2/2     Running   0          10m   10.8.0.7     gke-standard-cluster-1-default-pool-94f51f94-6znp   <none>           <none>
+kube-system   pdcsi-node-64slt                                               2/2     Running   0          10m   10.128.0.5   gke-standard-cluster-1-default-pool-94f51f94-gxsc   <none>           <none>
+kube-system   pdcsi-node-dclhr                                               2/2     Running   0          10m   10.128.0.4   gke-standard-cluster-1-default-pool-94f51f94-ltjz   <none>           <none>
+kube-system   pdcsi-node-j2jfz                                               2/2     Running   0          10m   10.128.0.3   gke-standard-cluster-1-default-pool-94f51f94-6znp   <none>           <none>
+----
+
+* The Installed K8S has 3 nodes, each with ip address `10.128.0.3`, `10.128.0.4` and `10.128.0.5`
+* The Pod CIRD is `10.8.0.0/14`
+* The Service CIRD is `10.12.0.0/20`
+* The apiserver, controller pod are not run on NODE.
+
+* Verify VPC subnet
+
+[source, json]
+----
+{
+  "creationTimestamp": "2023-04-22T15:49:29.660-07:00",
+  "fingerprint": "Oyz4MMoy5mQ=",
+  "gatewayAddress": "10.128.0.1",
+  "id": "4585684495711722134",
+  "ipCidrRange": "10.128.0.0/20",
+  "kind": "compute#subnetwork",
+  "name": "default",
+  "network": "https://www.googleapis.com/compute/v1/projects/playground-s-11-b1e7037d/global/networks/default",
+  "privateIpGoogleAccess": true,
+  "privateIpv6GoogleAccess": "DISABLE_GOOGLE_ACCESS",
+  "purpose": "PRIVATE",
+  "region": "https://www.googleapis.com/compute/v1/projects/playground-s-11-b1e7037d/regions/us-central1",
+  "secondaryIpRanges": [
+    {
+      "ipCidrRange": "10.12.0.0/20",
+      "rangeName": "gke-standard-cluster-1-services-4452472e"
+    },
+    {
+      "ipCidrRange": "10.8.0.0/14",
+      "rangeName": "gke-standard-cluster-1-pods-4452472e"
+    }
+  ],
+  "selfLink": "https://www.googleapis.com/compute/v1/projects/playground-s-11-b1e7037d/regions/us-central1/subnetworks/default",
+  "stackType": "IPV4_ONLY"
+}
+----
+
+NOTE: The `default` vpc network has subnet with ipCidrRange `10.128.0.0/20`, the subnet also has 2 secondaryIpRanges `10.8.0.0/14` and `10.12.0.0/20`.
+
+=== Modify GKE Cluster
+
+[source, bash]
+.*1. Change the cluster node number to 4*
+----
+gcloud container clusters resize $my_cluster --zone=$my_zone --num-nodes=4
 ----
 
 [source, bash]
-.*4. Create a workloads*
+.*2. Veiw the nodes*
+----
+$ kubectl get nodes -o wide
+NAME                                                STATUS   ROLES    AGE   VERSION             INTERNAL-IP   EXTERNAL-IP      OS-IMAGE                             KERNEL-VERSION   CONTAINER-RUNTIME
+gke-standard-cluster-1-default-pool-94f51f94-1571   Ready    <none>   16m   v1.24.10-gke.2300   10.128.0.6    34.28.234.55     Container-Optimized OS from Google   5.10.162+        containerd://1.6.9
+gke-standard-cluster-1-default-pool-94f51f94-6znp   Ready    <none>   39m   v1.24.10-gke.2300   10.128.0.3    34.172.140.126   Container-Optimized OS from Google   5.10.162+        containerd://1.6.9
+gke-standard-cluster-1-default-pool-94f51f94-gxsc   Ready    <none>   39m   v1.24.10-gke.2300   10.128.0.5    34.132.208.226   Container-Optimized OS from Google   5.10.162+        containerd://1.6.9
+gke-standard-cluster-1-default-pool-94f51f94-ltjz   Ready    <none>   39m   v1.24.10-gke.2300   10.128.0.4    34.30.102.248    Container-Optimized OS from Google   5.10.162+        containerd://1.6.9
+----
+
+[source, bash]
+.*3. View the pods*
+----
+$ kubectl get pods -A -o wide
+NAMESPACE     NAME                                                           READY   STATUS    RESTARTS   AGE   IP           NODE                                                NOMINATED NODE   READINESS GATES
+kube-system   event-exporter-gke-857959888b-n8zdr                            2/2     Running   0          41m   10.8.0.2     gke-standard-cluster-1-default-pool-94f51f94-6znp   <none>           <none>
+kube-system   fluentbit-gke-gqtz8                                            2/2     Running   0          40m   10.128.0.4   gke-standard-cluster-1-default-pool-94f51f94-ltjz   <none>           <none>
+kube-system   fluentbit-gke-hnl6j                                            2/2     Running   0          17m   10.128.0.6   gke-standard-cluster-1-default-pool-94f51f94-1571   <none>           <none>
+kube-system   fluentbit-gke-ngt9s                                            2/2     Running   0          40m   10.128.0.5   gke-standard-cluster-1-default-pool-94f51f94-gxsc   <none>           <none>
+kube-system   fluentbit-gke-nvd8c                                            2/2     Running   0          40m   10.128.0.3   gke-standard-cluster-1-default-pool-94f51f94-6znp   <none>           <none>
+kube-system   gke-metrics-agent-dnrr9                                        1/1     Running   0          17m   10.128.0.6   gke-standard-cluster-1-default-pool-94f51f94-1571   <none>           <none>
+kube-system   gke-metrics-agent-rx4hv                                        1/1     Running   0          40m   10.128.0.3   gke-standard-cluster-1-default-pool-94f51f94-6znp   <none>           <none>
+kube-system   gke-metrics-agent-vgmvq                                        1/1     Running   0          40m   10.128.0.5   gke-standard-cluster-1-default-pool-94f51f94-gxsc   <none>           <none>
+kube-system   gke-metrics-agent-vlwtr                                        1/1     Running   0          40m   10.128.0.4   gke-standard-cluster-1-default-pool-94f51f94-ltjz   <none>           <none>
+kube-system   konnectivity-agent-7888984c76-2p7nw                            1/1     Running   0          41m   10.8.0.6     gke-standard-cluster-1-default-pool-94f51f94-6znp   <none>           <none>
+kube-system   konnectivity-agent-7888984c76-95svx                            1/1     Running   0          40m   10.8.2.4     gke-standard-cluster-1-default-pool-94f51f94-gxsc   <none>           <none>
+kube-system   konnectivity-agent-7888984c76-jrbtz                            1/1     Running   0          17m   10.8.3.2     gke-standard-cluster-1-default-pool-94f51f94-1571   <none>           <none>
+kube-system   konnectivity-agent-7888984c76-r2zcj                            1/1     Running   0          40m   10.8.1.3     gke-standard-cluster-1-default-pool-94f51f94-ltjz   <none>           <none>
+kube-system   konnectivity-agent-autoscaler-7d9fbfd578-wc2lv                 1/1     Running   0          41m   10.8.0.5     gke-standard-cluster-1-default-pool-94f51f94-6znp   <none>           <none>
+kube-system   kube-dns-7d5998784c-lbnmj                                      4/4     Running   0          41m   10.8.1.2     gke-standard-cluster-1-default-pool-94f51f94-ltjz   <none>           <none>
+kube-system   kube-dns-7d5998784c-sk4zb                                      4/4     Running   0          40m   10.8.2.3     gke-standard-cluster-1-default-pool-94f51f94-gxsc   <none>           <none>
+kube-system   kube-dns-autoscaler-9f89698b6-zxfbk                            1/1     Running   0          41m   10.8.0.3     gke-standard-cluster-1-default-pool-94f51f94-6znp   <none>           <none>
+kube-system   kube-proxy-gke-standard-cluster-1-default-pool-94f51f94-1571   1/1     Running   0          17m   10.128.0.6   gke-standard-cluster-1-default-pool-94f51f94-1571   <none>           <none>
+kube-system   kube-proxy-gke-standard-cluster-1-default-pool-94f51f94-6znp   1/1     Running   0          39m   10.128.0.3   gke-standard-cluster-1-default-pool-94f51f94-6znp   <none>           <none>
+kube-system   kube-proxy-gke-standard-cluster-1-default-pool-94f51f94-gxsc   1/1     Running   0          40m   10.128.0.5   gke-standard-cluster-1-default-pool-94f51f94-gxsc   <none>           <none>
+kube-system   kube-proxy-gke-standard-cluster-1-default-pool-94f51f94-ltjz   1/1     Running   0          39m   10.128.0.4   gke-standard-cluster-1-default-pool-94f51f94-ltjz   <none>           <none>
+kube-system   l7-default-backend-6dc845c45d-j792m                            1/1     Running   0          41m   10.8.2.2     gke-standard-cluster-1-default-pool-94f51f94-gxsc   <none>           <none>
+kube-system   metrics-server-v0.5.2-6bf845b67f-rmp5w                         2/2     Running   0          39m   10.8.0.7     gke-standard-cluster-1-default-pool-94f51f94-6znp   <none>           <none>
+kube-system   pdcsi-node-64slt                                               2/2     Running   0          40m   10.128.0.5   gke-standard-cluster-1-default-pool-94f51f94-gxsc   <none>           <none>
+kube-system   pdcsi-node-9sqwb                                               2/2     Running   0          17m   10.128.0.6   gke-standard-cluster-1-default-pool-94f51f94-1571   <none>           <none>
+kube-system   pdcsi-node-dclhr                                               2/2     Running   0          40m   10.128.0.4   gke-standard-cluster-1-default-pool-94f51f94-ltjz   <none>           <none>
+kube-system   pdcsi-node-j2jfz                                               2/2     Running   0          40m   10.128.0.3   gke-standard-cluster-1-default-pool-94f51f94-6znp   <none>           <none>
+----
+
+=== Connect to a GKE cluster
+
+[source, bash]
+.*1. Fetching cluster endpoint and auth data*
+----
+gcloud container clusters get-credentials $my_cluster --zone $my_zone
+----
+
+[source, bash]
+.*2. View the kube config file*
+----
+cat ~/.kube/config
+----
+
+=== Use kubectl to inspect a GKE cluster
+
+[source, bash]
+.*1. kubeconfig file view*
+----
+kubectl config view
+----
+
+[source, bash]
+.*2. CLuster view*
+----
+$ kubectl cluster-info
+Kubernetes control plane is running at https://34.123.72.123
+GLBCDefaultBackend is running at https://34.123.72.123/api/v1/namespaces/kube-system/services/default-http-backend:http/proxy
+KubeDNS is running at https://34.123.72.123/api/v1/namespaces/kube-system/services/kube-dns:dns/proxy
+Metrics-server is running at https://34.123.72.123/api/v1/namespaces/kube-system/services/https:metrics-server:/proxy
+----
+
+[source, bash]
+.*3. Switch K8S Context*
+----
+kubectl config current-context
+kubectl config get-contexts
+kubectl config use-context gke_${GOOGLE_CLOUD_PROJECT}_us-central1-a_standard-cluster-1
+----
+
+[source, bash]
+.*4. Resource Usage view*
+----
+$ kubectl top nodes
+NAME                                                CPU(cores)   CPU%   MEMORY(bytes)   MEMORY%
+gke-standard-cluster-1-default-pool-94f51f94-1571   91m          9%     650Mi           23%
+gke-standard-cluster-1-default-pool-94f51f94-6znp   129m         13%    756Mi           26%
+gke-standard-cluster-1-default-pool-94f51f94-gxsc   104m         11%    711Mi           25%
+gke-standard-cluster-1-default-pool-94f51f94-ltjz   97m          10%    705Mi           25%
+
+$ kubectl top pods -A
+NAMESPACE     NAME                                                           CPU(cores)   MEMORY(bytes)
+kube-system   event-exporter-gke-857959888b-n8zdr                            1m           21Mi
+kube-system   fluentbit-gke-gqtz8                                            7m           22Mi
+kube-system   fluentbit-gke-hnl6j                                            7m           21Mi
+kube-system   fluentbit-gke-ngt9s                                            9m           23Mi
+kube-system   fluentbit-gke-nvd8c                                            7m           21Mi
+kube-system   gke-metrics-agent-dnrr9                                        3m           26Mi
+kube-system   gke-metrics-agent-rx4hv                                        3m           27Mi
+kube-system   gke-metrics-agent-vgmvq                                        3m           26Mi
+kube-system   gke-metrics-agent-vlwtr                                        3m           28Mi
+kube-system   konnectivity-agent-7888984c76-2p7nw                            1m           6Mi
+kube-system   konnectivity-agent-7888984c76-95svx                            1m           6Mi
+kube-system   konnectivity-agent-7888984c76-jrbtz                            1m           7Mi
+kube-system   konnectivity-agent-7888984c76-r2zcj                            1m           6Mi
+kube-system   konnectivity-agent-autoscaler-7d9fbfd578-wc2lv                 1m           3Mi
+kube-system   kube-dns-7d5998784c-lbnmj                                      3m           30Mi
+kube-system   kube-dns-7d5998784c-sk4zb                                      3m           28Mi
+kube-system   kube-dns-autoscaler-9f89698b6-zxfbk                            1m           11Mi
+kube-system   kube-proxy-gke-standard-cluster-1-default-pool-94f51f94-1571   1m           25Mi
+kube-system   kube-proxy-gke-standard-cluster-1-default-pool-94f51f94-6znp   1m           23Mi
+kube-system   kube-proxy-gke-standard-cluster-1-default-pool-94f51f94-gxsc   1m           25Mi
+kube-system   kube-proxy-gke-standard-cluster-1-default-pool-94f51f94-ltjz   1m           23Mi
+kube-system   l7-default-backend-6dc845c45d-j792m                            1m           2Mi
+kube-system   metrics-server-v0.5.2-6bf845b67f-rmp5w                         12m          29Mi
+kube-system   pdcsi-node-64slt                                               33m          9Mi
+kube-system   pdcsi-node-9sqwb                                               39m          10Mi
+kube-system   pdcsi-node-dclhr                                               34m          10Mi
+kube-system   pdcsi-node-j2jfz                                               34m          9Mi
+----
+
+=== Deploy Pods to GKE cluster
+
+[source, bash]
+.*1. Create a workloads*
 ----
 kubectl apply -f nginx.yaml
 ----
@@ -66,7 +249,7 @@ NOTE: the above commands will create 3 K8S Objects, `Namespace`, `Deployment` an
 * link:nginx.yaml[nginx.yaml]
 
 [source, bash]
-.*5. Review the deployed workload*
+.*2. Review the deployed workload*
 ----
 $ kubectl get deploy -n nginx
 NAME      READY   UP-TO-DATE   AVAILABLE   AGE
@@ -81,9 +264,194 @@ NAME               REFERENCE            TARGETS         MINPODS   MAXPODS   REPL
 nginx-1-hpa-ekh8   Deployment/nginx-1   <unknown>/80%   1         5         3          2m31s
 
 $ kubectl get pods -n nginx -o wide
-NAME                       READY   STATUS    RESTARTS   AGE   IP          NODE                                          NOMINATED NODE   READINESS GATES
-nginx-1-5775447459-2xgwd   1/1     Running   0          3m    10.68.0.4   gke-test-cluster-default-pool-297a02ae-332w   <none>           <none>
-nginx-1-5775447459-bx6r9   1/1     Running   0          3m    10.68.1.6   gke-test-cluster-default-pool-297a02ae-tts9   <none>           <none>
-nginx-1-5775447459-lqk2j   1/1     Running   0          3m    10.68.2.7   gke-test-cluster-default-pool-297a02ae-48lv   <none>           <none>
+NAME                       READY   STATUS    RESTARTS   AGE   IP         NODE                                                NOMINATED NODE   READINESS GATES
+nginx-1-5775447459-jcqmw   1/1     Running   0          85s   10.8.3.3   gke-standard-cluster-1-default-pool-94f51f94-1571   <none>           <none>
+nginx-1-5775447459-kc7gp   1/1     Running   0          85s   10.8.1.4   gke-standard-cluster-1-default-pool-94f51f94-ltjz   <none>           <none>
+nginx-1-5775447459-n8zc8   1/1     Running   0          85s   10.8.0.8   gke-standard-cluster-1-default-pool-94f51f94-6znp   <none>           <none>
 ----
 
+[source, bash]
+.*3. Create test.html with the following content*
+----
+<html> <header><title>This is title</title></header>
+<body> Hello world </body>
+</html>
+----
+
+[source, bash]
+.*4. Copy the test.html to POD*
+----
+for i in $(kubectl get pods -n nginx --no-headers | awk '{print $1}') ; do kubectl cp ~/test.html $i:/usr/share/nginx/html/test.html -n nginx ; done
+----
+
+[source, bash]
+.*5. Create Service*
+----
+kubectl expose deployment nginx-1 -n nginx --port 80 --type LoadBalancer
+kubectl expose pod nginx-1-5775447459-jcqmw -n nginx --port 80 --type LoadBalancer
+----
+
+[source, bash]
+.*6. View the Service*
+----
+$ kubectl get svc -n nginx
+NAME                       TYPE           CLUSTER-IP    EXTERNAL-IP     PORT(S)        AGE
+nginx-1                    LoadBalancer   10.12.0.79    34.134.216.0    80:32709/TCP   2m8s
+nginx-1-5775447459-jcqmw   LoadBalancer   10.12.7.131   34.122.186.90   80:30055/TCP   46s
+----
+
+[source, bash]
+.*7. Test Service*
+----
+$ curl 34.134.216.0/test.html -I
+HTTP/1.1 200 OK
+Server: nginx/1.23.4
+Date: Sun, 23 Apr 2023 04:26:33 GMT
+Content-Type: text/html
+Content-Length: 88
+Last-Modified: Sun, 23 Apr 2023 04:21:45 GMT
+Connection: keep-alive
+ETag: "6444b259-58"
+Accept-Ranges: bytes
+
+$ curl 34.122.186.90/test.html -I
+HTTP/1.1 200 OK
+Server: nginx/1.23.4
+Date: Sun, 23 Apr 2023 04:26:56 GMT
+Content-Type: text/html
+Content-Length: 88
+Last-Modified: Sun, 23 Apr 2023 04:21:45 GMT
+Connection: keep-alive
+ETag: "6444b259-58"
+Accept-Ranges: bytes
+----
+
+[source, bash]
+.*8. View Pod Triffic*
+----
+$ kubectl top pods -n nginx
+NAME                       CPU(cores)   MEMORY(bytes)
+nginx-1-5775447459-jcqmw   0m           2Mi
+nginx-1-5775447459-kc7gp   0m           2Mi
+nginx-1-5775447459-n8zc8   1m           2Mi
+----
+
+=== Service Deep Dive
+
+[source, bash]
+.*1. The Address view*
+----
+$ gcloud compute forwarding-rules list --format=json
+[
+  {
+    "IPAddress": "34.134.216.0",
+    "IPProtocol": "TCP",
+    "creationTimestamp": "2023-04-22T21:23:53.084-07:00",
+    "description": "{\"kubernetes.io/service-name\":\"nginx/nginx-1\"}",
+    "fingerprint": "qdJJe3qIfnE=",
+    "id": "5094408519925959734",
+    "kind": "compute#forwardingRule",
+    "labelFingerprint": "42WmSpB8rSM=",
+    "loadBalancingScheme": "EXTERNAL",
+    "name": "a0d8377cb4dd448fcb49de19f7067ed5",
+    "networkTier": "PREMIUM",
+    "portRange": "80-80",
+    "region": "https://www.googleapis.com/compute/v1/projects/playground-s-11-b1e7037d/regions/us-central1",
+    "selfLink": "https://www.googleapis.com/compute/v1/projects/playground-s-11-b1e7037d/regions/us-central1/forwardingRules/a0d8377cb4dd448fcb49de19f7067ed5",
+    "target": "https://www.googleapis.com/compute/v1/projects/playground-s-11-b1e7037d/regions/us-central1/targetPools/a0d8377cb4dd448fcb49de19f7067ed5"
+  }
+]
+----
+
+[source, bash]
+.*2. The target-pool view*
+----
+$ gcloud compute target-pools list --format=json
+[
+  {
+    "creationTimestamp": "2023-04-22T21:23:49.396-07:00",
+    "description": "{\"kubernetes.io/service-name\":\"nginx/nginx-1\"}",
+    "healthChecks": [
+      "https://www.googleapis.com/compute/v1/projects/playground-s-11-b1e7037d/global/httpHealthChecks/k8s-e634c17ad66069de-node"
+    ],
+    "id": "4677497706655583290",
+    "instances": [
+      "https://www.googleapis.com/compute/v1/projects/playground-s-11-b1e7037d/zones/us-central1-a/instances/gke-standard-cluster-1-default-pool-94f51f94-6znp",
+      "https://www.googleapis.com/compute/v1/projects/playground-s-11-b1e7037d/zones/us-central1-a/instances/gke-standard-cluster-1-default-pool-94f51f94-1571"
+    ],
+    "kind": "compute#targetPool",
+    "name": "a0d8377cb4dd448fcb49de19f7067ed5",
+    "region": "https://www.googleapis.com/compute/v1/projects/playground-s-11-b1e7037d/regions/us-central1",
+    "selfLink": "https://www.googleapis.com/compute/v1/projects/playground-s-11-b1e7037d/regions/us-central1/targetPools/a0d8377cb4dd448fcb49de19f7067ed5",
+    "sessionAffinity": "NONE"
+  }
+]
+----
+
+[source, bash]
+.*3. The forward-rules view*
+----
+$ gcloud compute forwarding-rules list --format=json
+[
+  {
+    "IPAddress": "34.134.216.0",
+    "IPProtocol": "TCP",
+    "creationTimestamp": "2023-04-22T21:23:53.084-07:00",
+    "description": "{\"kubernetes.io/service-name\":\"nginx/nginx-1\"}",
+    "fingerprint": "qdJJe3qIfnE=",
+    "id": "5094408519925959734",
+    "kind": "compute#forwardingRule",
+    "labelFingerprint": "42WmSpB8rSM=",
+    "loadBalancingScheme": "EXTERNAL",
+    "name": "a0d8377cb4dd448fcb49de19f7067ed5",
+    "networkTier": "PREMIUM",
+    "portRange": "80-80",
+    "region": "https://www.googleapis.com/compute/v1/projects/playground-s-11-b1e7037d/regions/us-central1",
+    "selfLink": "https://www.googleapis.com/compute/v1/projects/playground-s-11-b1e7037d/regions/us-central1/forwardingRules/a0d8377cb4dd448fcb49de19f7067ed5",
+    "target": "https://www.googleapis.com/compute/v1/projects/playground-s-11-b1e7037d/regions/us-central1/targetPools/a0d8377cb4dd448fcb49de19f7067ed5"
+  }
+]
+----
+
+=== Delete GKE Cluster
+
+[source, bash]
+----
+gcloud container clusters delete $my_cluster --zone=$my_zone
+----
+
+[source, bash]
+.**
+----
+
+----
+
+[source, bash]
+.**
+----
+
+----
+
+[source, bash]
+.**
+----
+
+----
+
+[source, bash]
+.**
+----
+
+----
+
+[source, bash]
+.**
+----
+
+----
+
+[source, bash]
+.**
+----
+
+----
