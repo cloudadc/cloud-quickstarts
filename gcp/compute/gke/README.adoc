@@ -686,29 +686,88 @@ Sun Apr 23 09:24:01 UTC 2023
 Hello, World!
 ----
 
+== Private GKE Cluster
+
+The private Google Kubernetes Engine (GKE) cluster:
+
+* A type of VPC-native cluster.
+* The nodes only have internal IP addresses, nodes and Pods are isolated from the internet by default.
+
+
+=== Create private GKE Cluster
+
+[source, bash]
+.*1. create private cluster*
+----
+gcloud container clusters create private-cluster --zone=us-central1-a --cluster-version=1.25.7-gke.1000 --num-nodes=2 --enable-private-nodes --master-ipv4-cidr=172.16.0.0/28 --enable-ip-alias
+
+gcloud container clusters create private-cluster \
+    --zone=us-central1-c \
+    --create-subnetwork name=my-subnet-0 \
+    --num-nodes 2 \
+    --enable-master-authorized-networks \
+    --enable-ip-alias \
+    --enable-private-nodes \
+    --enable-private-endpoint \
+    --master-ipv4-cidr 172.16.0.32/28
+----
+
+[source, bash]
+.*2. describe private cluster*
+----
+gcloud container clusters describe private-cluster --zone=us-central1-c
+----
+
+* link:private-cluster.json[private-cluster.json]
+
+[source, bash]
+.*3. Overview the IP allocation*
+----
+$ gcloud compute networks subnets describe my-subnet-0 --region=us-central1 --format=json
+{
+  "creationTimestamp": "2023-04-23T08:40:27.198-07:00",
+  "description": "auto-created subnetwork for cluster \"private-cluster\"",
+  "fingerprint": "_jFMIrMAYaI=",
+  "gatewayAddress": "10.108.208.1",
+  "id": "7131829086890553220",
+  "ipCidrRange": "10.108.208.0/22",
+  "kind": "compute#subnetwork",
+  "name": "my-subnet-0",
+  "network": "https://www.googleapis.com/compute/v1/projects/playground-s-11-fb1cea00/global/networks/default",
+  "privateIpGoogleAccess": true,
+  "privateIpv6GoogleAccess": "DISABLE_GOOGLE_ACCESS",
+  "purpose": "PRIVATE",
+  "region": "https://www.googleapis.com/compute/v1/projects/playground-s-11-fb1cea00/regions/us-central1",
+  "secondaryIpRanges": [
+    {
+      "ipCidrRange": "10.112.0.0/14",
+      "rangeName": "gke-private-cluster-pods-03c5b83b"
+    },
+    {
+      "ipCidrRange": "10.108.224.0/20",
+      "rangeName": "gke-private-cluster-services-03c5b83b"
+    }
+  ],
+  "selfLink": "https://www.googleapis.com/compute/v1/projects/playground-s-11-fb1cea00/regions/us-central1/subnetworks/my-subnet-0",
+  "stackType": "IPV4_ONLY"
+}
+----
+
+Combine the Step 2 and 3:
+
+* Node CIRD Range: `10.108.208.0/22`
+* Pod CIRD Range: `10.112.0.0/14`
+* Service CIRD Range: `10.108.224.0/20`
+* Master CIRD Range: `172.16.0.32/28`
+* privateEndpoint: `172.16.0.34`
+* publicEndpoint: `34.66.239.59`
 
 [source, bash]
 .**
 ----
-
-----
-
-[source, bash]
-.**
-----
-
-----
-
-[source, bash]
-.**
-----
-
-----
-
-[source, bash]
-.**
-----
-
+gcloud container clusters update private-cluster-0 \
+    --enable-master-authorized-networks \
+    --master-authorized-networks 10.128.0.3/32
 ----
 
 [source, bash]
