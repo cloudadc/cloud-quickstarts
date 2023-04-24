@@ -15,7 +15,7 @@ export my_cluster=standard-cluster-1
 [source, bash]
 .*2. Create cluster*
 ----
-gcloud container clusters create $my_cluster --num-nodes=3 --zone=$my_zone --enable-ip-alias
+gcloud container clusters create $my_cluster --num-nodes=2 --zone=$my_zone --enable-ip-alias
 ----
 
 * `--enable-ip-alias` -  his will require at least two secondary ranges in the subnetwork, one for the pod IPs and another to reserve space for the services range.
@@ -770,10 +770,131 @@ gcloud container clusters update private-cluster-0 \
     --master-authorized-networks 10.128.0.3/32
 ----
 
+== Services and Ingress Resources
+
+=== Prepare App
+
 [source, bash]
-.**
+----
+kubectl apply -f services/dns.yaml
+kubectl apply -f services/backend-v1.yaml
+kubectl apply -f services/backend-v2.yaml
 ----
 
+* link:services/dns.yaml[services/dns.yaml]
+* link:services/backend-v1.yaml[services/backend-v1.yaml]
+* link:services/backend-v2.yaml[services/backend-v2.yaml]
+
+=== DNS Resolution
+
+[source, bash]
+.*1. Service lookup*
+----
+$ kubectl run test-ns --image=busybox:1.28 --rm -it --restart=Never -- nslookup dns-demo.nginx.svc.cluster.local
+Server:    10.12.0.10
+Address 1: 10.12.0.10 kube-dns.kube-system.svc.cluster.local
+
+Name:      dns-demo.nginx.svc.cluster.local
+Address 1: 10.8.0.9 dns-demo-2.dns-demo.nginx.svc.cluster.local
+Address 2: 10.8.1.5 dns-demo-1.dns-demo.nginx.svc.cluster.local
+pod "test-ns" deleted
+----
+
+[source, bash]
+.*2. Service lookup(short name)*
+----
+$ kubectl run test-ns --image=busybox:1.28 --rm -it --restart=Never -- nslookup  dns-demo.nginx
+Server:    10.12.0.10
+Address 1: 10.12.0.10 kube-dns.kube-system.svc.cluster.local
+
+Name:      dns-demo.nginx
+Address 1: 10.8.1.5 dns-demo-1.dns-demo.nginx.svc.cluster.local
+Address 2: 10.8.0.9 dns-demo-2.dns-demo.nginx.svc.cluster.local
+pod "test-ns" deleted
+----
+
+[source, bash]
+.*3. Pod lookup*
+----
+$ kubectl run test-ns --image=busybox:1.28 --rm -it --restart=Never -- nslookup dns-demo-2.dns-demo.nginx.svc.cluster.local
+Server:    10.12.0.10
+Address 1: 10.12.0.10 kube-dns.kube-system.svc.cluster.local
+
+Name:      dns-demo-2.dns-demo.nginx.svc.cluster.local
+Address 1: 10.8.0.9 dns-demo-2.dns-demo.nginx.svc.cluster.local
+pod "test-ns" deleted
+----
+
+[source, bash]
+.*4. Pod lookup(short name)*
+----
+$ kubectl run test-ns --image=busybox:1.28 --rm -it --restart=Never -- nslookup dns-demo-2.dns-demo.nginx
+Server:    10.12.0.10
+Address 1: 10.12.0.10 kube-dns.kube-system.svc.cluster.local
+
+Name:      dns-demo-2.dns-demo.nginx
+Address 1: 10.8.0.9 dns-demo-2.dns-demo.nginx.svc.cluster.local
+pod "test-ns" deleted
+----
+
+=== ClusterIP Service
+
+[source, bash]
+.*1. Create Service*
+----
+kubectl apply -f services/svc.yaml
+----
+
+* link:services/svc.yaml[services/svc.yaml]
+
+[source, bash]
+.*2. View Service*
+----
+$ kubectl get svc -n backend
+NAME          TYPE        CLUSTER-IP     EXTERNAL-IP   PORT(S)   AGE
+backend-svc   ClusterIP   10.12.12.170   <none>        80/TCP    61s
+----
+
+[source, bash]
+.*3. Access Service*
+----
+$ kubectl run test --image=curlimages/curl --rm -it --restart=Never -- curl http://backend-svc.backend.svc.cluster.local/foo
+<br>F5 Demo App
+
+    Request URI: /foo
+    Protocol: HTTP/1.1
+
+    Server IP: 10.8.1.17
+    Server Port: 8080
+    Server Hostname: backend-v1-677c668965-xj2b8
+
+    Client IP: 10.8.1.19
+    Client Port: 47564
+    Client Hostname: 10.8.1.19
+
+    Session: EC9F446A2D38D0DE06AB317200A28740
+
+    X-Forwarded-For: null
+
+    Cookies:
+
+    Request Headers: host: [backend-svc.backend.svc.cluster.local] user-agent: [curl/8.0.1-DEV] accept: [*/*]
+----
+
+=== Nodeport Service
+
+[source, bash]
+.*1. Create Service*
+----
+kubectl apply -f services/nodeport-svc.yaml
+----
+
+[source, bash]
+.*2. View Service*
+----
+$ kubectl get svc -n backend
+NAME          TYPE       CLUSTER-IP     EXTERNAL-IP   PORT(S)        AGE
+backend-svc   NodePort   10.12.12.170   <none>        80:30100/TCP   7m43s
 ----
 
 [source, bash]
