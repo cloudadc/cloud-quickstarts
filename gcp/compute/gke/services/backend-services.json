@@ -1,0 +1,110 @@
+[
+  {
+    "affinityCookieTtlSec": 0,
+    "backends": [
+      {
+        "balancingMode": "RATE",
+        "capacityScaler": 1,
+        "group": "https://www.googleapis.com/compute/v1/projects/playground-s-11-40b0f27a/zones/us-central1-a/networkEndpointGroups/k8s1-77c041c5-backend-bar-svc-80-0d837087",
+        "maxRatePerEndpoint": 1
+      }
+    ],
+    "connectionDraining": {
+      "drainingTimeoutSec": 0
+    },
+    "creationTimestamp": "2023-04-25T00:15:58.653-07:00",
+    "description": "{\"kubernetes.io/service-name\":\"backend/bar-svc\",\"kubernetes.io/service-port\":\"\\u0026ServiceBackendPort{Name:,Number:80,}\",\"x-features\":[\"NEG\"]}",
+    "enableCDN": false,
+    "fingerprint": "jZKp5cMDrqM=",
+    "healthChecks": [
+      "https://www.googleapis.com/compute/v1/projects/playground-s-11-40b0f27a/global/healthChecks/k8s1-77c041c5-backend-bar-svc-80-0d837087"
+    ],
+    "id": "8816077048610734273",
+    "kind": "compute#backendService",
+    "loadBalancingScheme": "EXTERNAL",
+    "logConfig": {
+      "enable": true,
+      "optionalMode": "EXCLUDE_ALL_OPTIONAL",
+      "sampleRate": 1
+    },
+    "name": "k8s1-77c041c5-backend-bar-svc-80-0d837087",
+    "port": 80,
+    "portName": "port0",
+    "protocol": "HTTP",
+    "selfLink": "https://www.googleapis.com/compute/v1/projects/playground-s-11-40b0f27a/global/backendServices/k8s1-77c041c5-backend-bar-svc-80-0d837087",
+    "sessionAffinity": "NONE",
+    "timeoutSec": 30
+  },
+  {
+    "affinityCookieTtlSec": 0,
+    "backends": [
+      {
+        "balancingMode": "RATE",
+        "capacityScaler": 1,
+        "group": "https://www.googleapis.com/compute/v1/projects/playground-s-11-40b0f27a/zones/us-central1-a/networkEndpointGroups/k8s1-77c041c5-backend-foo-svc-80-b44a2712",
+        "maxRatePerEndpoint": 1
+      }
+    ],
+    "connectionDraining": {
+      "drainingTimeoutSec": 0
+    },
+    "creationTimestamp": "2023-04-25T00:15:37.532-07:00",
+    "description": "{\"kubernetes.io/service-name\":\"backend/foo-svc\",\"kubernetes.io/service-port\":\"\\u0026ServiceBackendPort{Name:,Number:80,}\",\"x-features\":[\"NEG\"]}",
+    "enableCDN": false,
+    "fingerprint": "GRK7UKEDDOs=",
+    "healthChecks": [
+      "https://www.googleapis.com/compute/v1/projects/playground-s-11-40b0f27a/global/healthChecks/k8s1-77c041c5-backend-foo-svc-80-b44a2712"
+    ],
+    "id": "7695998256973267190",
+    "kind": "compute#backendService",
+    "loadBalancingScheme": "EXTERNAL",
+    "logConfig": {
+      "enable": true,
+      "optionalMode": "EXCLUDE_ALL_OPTIONAL",
+      "sampleRate": 1
+    },
+    "name": "k8s1-77c041c5-backend-foo-svc-80-b44a2712",
+    "port": 80,
+    "portName": "port0",
+    "protocol": "HTTP",
+    "selfLink": "https://www.googleapis.com/compute/v1/projects/playground-s-11-40b0f27a/global/backendServices/k8s1-77c041c5-backend-foo-svc-80-b44a2712",
+    "sessionAffinity": "NONE",
+    "timeoutSec": 30
+  },
+  {
+    "affinityCookieTtlSec": 0,
+    "backends": [
+      {
+        "balancingMode": "RATE",
+        "capacityScaler": 1,
+        "group": "https://www.googleapis.com/compute/v1/projects/playground-s-11-40b0f27a/zones/us-central1-a/networkEndpointGroups/k8s1-77c041c5-kube-system-default-http-backend-80-76fd5895",
+        "maxRatePerEndpoint": 1
+      }
+    ],
+    "connectionDraining": {
+      "drainingTimeoutSec": 0
+    },
+    "creationTimestamp": "2023-04-25T00:15:16.497-07:00",
+    "description": "{\"kubernetes.io/service-name\":\"kube-system/default-http-backend\",\"kubernetes.io/service-port\":\"\\u0026ServiceBackendPort{Name:http,Number:0,}\",\"x-features\":[\"NEG\"]}",
+    "enableCDN": false,
+    "fingerprint": "SHlSz7TqjRc=",
+    "healthChecks": [
+      "https://www.googleapis.com/compute/v1/projects/playground-s-11-40b0f27a/global/healthChecks/k8s1-77c041c5-kube-system-default-http-backend-80-76fd5895"
+    ],
+    "id": "5730814384182837483",
+    "kind": "compute#backendService",
+    "loadBalancingScheme": "EXTERNAL",
+    "logConfig": {
+      "enable": true,
+      "optionalMode": "EXCLUDE_ALL_OPTIONAL",
+      "sampleRate": 1
+    },
+    "name": "k8s1-77c041c5-kube-system-default-http-backend-80-76fd5895",
+    "port": 31014,
+    "portName": "port31014",
+    "protocol": "HTTP",
+    "selfLink": "https://www.googleapis.com/compute/v1/projects/playground-s-11-40b0f27a/global/backendServices/k8s1-77c041c5-kube-system-default-http-backend-80-76fd5895",
+    "sessionAffinity": "NONE",
+    "timeoutSec": 30
+  }
+]

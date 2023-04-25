@@ -9,7 +9,7 @@ metadata:
   name: backend-v1
   namespace: backend
 spec:
-  replicas: 3
+  replicas: 2
   selector:
     matchLabels:
       run: backend-v1

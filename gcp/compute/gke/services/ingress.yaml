@@ -6,6 +6,7 @@ metadata:
   annotations:
     nginx.ingress.kubernetes.io/rewrite-target: /
     kubernetes.io/ingress.global-static-ip-name: "global-ingress"
+    kubernetes.io/ingress.class: "gce"
 spec:
   rules:
   - http:
@@ -14,13 +15,12 @@ spec:
         pathType: ImplementationSpecific
         backend:
           service:
-            name: backend-svc
+            name: foo-svc
             port:
               number: 80
       - path: /bar
         pathType: ImplementationSpecific
         backend:
           service:
-            name: backend-lb-svc
+            name: bar-svc
             port:
-              number: 80

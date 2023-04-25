@@ -1,0 +1,41 @@
+[
+  {
+    "creationTimestamp": "2023-04-25T00:06:53.903-07:00",
+    "description": "{\"cluster-uid\":\"7d28d429-1fa1-45fe-b886-a30b697681f5\",\"namespace\":\"backend\",\"service-name\":\"bar-svc\",\"port\":\"80\"}",
+    "id": "3156840917481734882",
+    "kind": "compute#networkEndpointGroup",
+    "name": "k8s1-77c041c5-backend-bar-svc-80-0d837087",
+    "network": "https://www.googleapis.com/compute/v1/projects/playground-s-11-40b0f27a/global/networks/default",
+    "networkEndpointType": "GCE_VM_IP_PORT",
+    "selfLink": "https://www.googleapis.com/compute/v1/projects/playground-s-11-40b0f27a/zones/us-central1-a/networkEndpointGroups/k8s1-77c041c5-backend-bar-svc-80-0d837087",
+    "size": 2,
+    "subnetwork": "https://www.googleapis.com/compute/v1/projects/playground-s-11-40b0f27a/regions/us-central1/subnetworks/default",
+    "zone": "https://www.googleapis.com/compute/v1/projects/playground-s-11-40b0f27a/zones/us-central1-a"
+  },
+  {
+    "creationTimestamp": "2023-04-25T00:06:53.613-07:00",
+    "description": "{\"cluster-uid\":\"7d28d429-1fa1-45fe-b886-a30b697681f5\",\"namespace\":\"backend\",\"service-name\":\"foo-svc\",\"port\":\"80\"}",
+    "id": "4069668325698487010",
+    "kind": "compute#networkEndpointGroup",
+    "name": "k8s1-77c041c5-backend-foo-svc-80-b44a2712",
+    "network": "https://www.googleapis.com/compute/v1/projects/playground-s-11-40b0f27a/global/networks/default",
+    "networkEndpointType": "GCE_VM_IP_PORT",
+    "selfLink": "https://www.googleapis.com/compute/v1/projects/playground-s-11-40b0f27a/zones/us-central1-a/networkEndpointGroups/k8s1-77c041c5-backend-foo-svc-80-b44a2712",
+    "size": 2,
+    "subnetwork": "https://www.googleapis.com/compute/v1/projects/playground-s-11-40b0f27a/regions/us-central1/subnetworks/default",
+    "zone": "https://www.googleapis.com/compute/v1/projects/playground-s-11-40b0f27a/zones/us-central1-a"
+  },
+  {
+    "creationTimestamp": "2023-04-25T00:06:54.391-07:00",
+    "description": "{\"cluster-uid\":\"7d28d429-1fa1-45fe-b886-a30b697681f5\",\"namespace\":\"kube-system\",\"service-name\":\"default-http-backend\",\"port\":\"80\"}",
+    "id": "2052499440067592929",
+    "kind": "compute#networkEndpointGroup",
+    "name": "k8s1-77c041c5-kube-system-default-http-backend-80-76fd5895",
+    "network": "https://www.googleapis.com/compute/v1/projects/playground-s-11-40b0f27a/global/networks/default",
+    "networkEndpointType": "GCE_VM_IP_PORT",
+    "selfLink": "https://www.googleapis.com/compute/v1/projects/playground-s-11-40b0f27a/zones/us-central1-a/networkEndpointGroups/k8s1-77c041c5-kube-system-default-http-backend-80-76fd5895",
+    "size": 1,
+    "subnetwork": "https://www.googleapis.com/compute/v1/projects/playground-s-11-40b0f27a/regions/us-central1/subnetworks/default",
+    "zone": "https://www.googleapis.com/compute/v1/projects/playground-s-11-40b0f27a/zones/us-central1-a"
+  }
+]
