@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: backend-lb-svc
+  namespace: backend
+spec:
+  type: LoadBalancer
+  loadBalancerIP: 34.134.182.180
+  selector:
+    name: backend-v2
+  ports:
+  - protocol: TCP
+    port: 80
+    targetPort: 8080

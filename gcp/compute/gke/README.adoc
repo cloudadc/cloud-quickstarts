@@ -772,6 +772,13 @@ gcloud container clusters update private-cluster-0 \
 
 == Services and Ingress Resources
 
+=== Prepare GKE Cluster
+
+[source, bash]
+----
+gcloud container clusters create standard-cluster --num-nodes=2 --zone=us-central1-a --enable-ip-alias
+----
+
 === Prepare App
 
 [source, bash]
@@ -889,34 +896,449 @@ $ kubectl run test --image=curlimages/curl --rm -it --restart=Never -- curl http
 kubectl apply -f services/nodeport-svc.yaml
 ----
 
+* link:services/nodeport-svc.yaml[services/nodeport-svc.yaml]
+
 [source, bash]
 .*2. View Service*
 ----
 $ kubectl get svc -n backend
 NAME          TYPE       CLUSTER-IP     EXTERNAL-IP   PORT(S)        AGE
-backend-svc   NodePort   10.12.12.170   <none>        80:30100/TCP   7m43s
+backend-svc   NodePort   10.92.12.169   <none>        80:30100/TCP   2m33s
 ----
 
 [source, bash]
-.**
+.*3. Access Service*
+----
+$ NODEIP=$(kubectl get nodes -o wide --no-headers | head -n 1 | awk '{print $6}')
+$ kubectl run test --image=curlimages/curl --rm -it --restart=Never -- curl http://$NODEIP:30100/foo
+<br>F5 Demo App
+
+    Request URI: /foo
+    Protocol: HTTP/1.1
+
+    Server IP: 10.88.0.6
+    Server Port: 8080
+    Server Hostname: backend-v1-677c668965-wdb42
+
+    Client IP: 10.88.0.1
+    Client Port: 45992
+    Client Hostname: 10.88.0.1
+
+    Session: 9B1910B5E65E69B82EF9566552F86B75
+
+    X-Forwarded-For: null
+
+    Cookies:
+
+    Request Headers: host: [10.128.0.3:30100] user-agent: [curl/8.0.1-DEV] accept: [*/*]
 ----
 
+=== LoadBalancer Service
+
+[source, bash]
+.*1. Reserve a Regional IP address*
+----
+gcloud compute addresses create regional-lb --region=us-central1
 ----
 
 [source, bash]
-.**
+.*2. Create Service*
+----
+kubectl apply -f services/lb-svc.yaml
 ----
 
+* link:services/lb-svc.yaml[services/lb-svc.yaml]
+
+NOTE: The loadBalancerIP in above file should be replaced with the output of commands `gcloud compute addresses describe regional-lb --region us-central1 --format json | jq -r '.address'`.
+
+[source, bash]
+.*3. View Service*
+----
+$ kubectl get svc backend-lb-svc -n backend
+NAME             TYPE           CLUSTER-IP    EXTERNAL-IP      PORT(S)        AGE
+backend-lb-svc   LoadBalancer   10.92.7.134   34.134.182.180   80:30250/TCP   2m2s
 ----
 
 [source, bash]
-.**
+.*4. Access Service*
 ----
+$ curl 34.134.182.180
+<br>F5 Demo App
 
+    Request URI: /
+    Protocol: HTTP/1.1
+
+    Server IP: 10.88.0.8
+    Server Port: 8080
+    Server Hostname: backend-v2-689b558544-cph8w
+
+    Client IP: 10.88.0.1
+    Client Port: 32896
+    Client Hostname: 10.88.0.1
+
+    Session: A9B56E7FB49041864F4A0C69F2ACDB72
+
+    X-Forwarded-For: null
+
+    Cookies:  
+
+    Request Headers: host: [34.134.182.180] user-agent: [curl/7.64.1] accept: [*/*] 
 ----
 
 [source, bash]
-.**
+.*5. View Target Pool*
+----
+$ gcloud compute target-pools list --format=json
+[
+  {
+    "creationTimestamp": "2023-04-24T17:14:11.195-07:00",
+    "description": "{\"kubernetes.io/service-name\":\"backend/backend-lb-svc\"}",
+    "healthChecks": [
+      "https://www.googleapis.com/compute/v1/projects/playground-s-11-17534dca/global/httpHealthChecks/k8s-cd972525ecc36141-node"
+    ],
+    "id": "1301113646279730620",
+    "instances": [
+      "https://www.googleapis.com/compute/v1/projects/playground-s-11-17534dca/zones/us-central1-a/instances/gke-standard-cluster-default-pool-7dd8856b-9tct",
+      "https://www.googleapis.com/compute/v1/projects/playground-s-11-17534dca/zones/us-central1-a/instances/gke-standard-cluster-default-pool-7dd8856b-htfr"
+    ],
+    "kind": "compute#targetPool",
+    "name": "a24bdfb9321ed41f0a305bf15ac16a59",
+    "region": "https://www.googleapis.com/compute/v1/projects/playground-s-11-17534dca/regions/us-central1",
+    "selfLink": "https://www.googleapis.com/compute/v1/projects/playground-s-11-17534dca/regions/us-central1/targetPools/a24bdfb9321ed41f0a305bf15ac16a59",
+    "sessionAffinity": "NONE"
+  }
+]
 ----
 
+[source, bash]
+.*6. View Forward Rule*
+----
+$ gcloud compute forwarding-rules list --format=json
+[
+  {
+    "IPAddress": "34.134.182.180",
+    "IPProtocol": "TCP",
+    "creationTimestamp": "2023-04-24T17:14:15.031-07:00",
+    "description": "{\"kubernetes.io/service-name\":\"backend/backend-lb-svc\"}",
+    "fingerprint": "LQTIFOKmEK8=",
+    "id": "9134871846559851960",
+    "kind": "compute#forwardingRule",
+    "labelFingerprint": "42WmSpB8rSM=",
+    "loadBalancingScheme": "EXTERNAL",
+    "name": "a24bdfb9321ed41f0a305bf15ac16a59",
+    "networkTier": "PREMIUM",
+    "portRange": "80-80",
+    "region": "https://www.googleapis.com/compute/v1/projects/playground-s-11-17534dca/regions/us-central1",
+    "selfLink": "https://www.googleapis.com/compute/v1/projects/playground-s-11-17534dca/regions/us-central1/forwardingRules/a24bdfb9321ed41f0a305bf15ac16a59",
+    "target": "https://www.googleapis.com/compute/v1/projects/playground-s-11-17534dca/regions/us-central1/targetPools/a24bdfb9321ed41f0a305bf15ac16a59"
+  }
+]
+----
+
+=== Ingress
+
+[source, bash]
+.*1. Reserve a Global IP address*
+----
+gcloud compute addresses create global-ingress --global
+----
+
+[source, bash]
+.*2. Create Ingress*
+----
+kubectl apply -f services/ingress.yaml
+----
+
+* link:services/ingress.yaml[services/ingress.yaml]
+
+[source, bash]
+.*3. View Ingress*
+----
+$ kubectl get ingress -n backend
+NAME              CLASS    HOSTS   ADDRESS   PORTS   AGE
+backend-ingress   <none>   *                 80      42s
+
+$ kubectl get ingress backend-ingress -n backend -o yaml
+...
+status:
+  loadBalancer:
+    ingress:
+    - ip: 35.190.122.65
+----
+
+[source, bash]
+.*4. Access Service*
+----
+$ curl 35.190.122.65/foo
+<br>F5 Demo App
+
+    Request URI: /foo
+    Protocol: HTTP/1.1
+
+    Server IP: 10.88.1.10
+    Server Port: 8080
+    Server Hostname: backend-v1-677c668965-vlq9t
+
+    Client IP: 35.191.15.169
+    Client Port: 59488
+    Client Hostname: 35.191.15.169
+
+    Session: 7E1EEB086247D8CF7006B0467991B1EC
+
+    X-Forwarded-For: 42.61.112.56, 35.190.122.65
+
+    Cookies:  
+
+    Request Headers: x-forwarded-proto: [http] x-cloud-trace-context: [c1e23ac203b90a5d86988cdd3fdbaed3/7968553811219848501] host: [35.190.122.65] connection: [Keep-Alive] x-forwarded-for: [42.61.112.56, 35.190.122.65] user-agent: [curl/7.64.1] accept: [*/*] via: [1.1 google] 
+
+$ curl 35.190.122.65/bar
+<br>F5 Demo App
+
+    Request URI: /bar
+    Protocol: HTTP/1.1
+
+    Server IP: 10.88.0.8
+    Server Port: 8080
+    Server Hostname: backend-v2-689b558544-cph8w
+
+    Client IP: 35.191.8.32
+    Client Port: 53413
+    Client Hostname: 35.191.8.32
+
+    Session: E7A29B4FBDD839B568C6359EA4424B46
+
+    X-Forwarded-For: 42.61.112.56, 35.190.122.65
+
+    Cookies:  
+
+    Request Headers: x-forwarded-proto: [http] x-cloud-trace-context: [d13bec3b9a466d4e95860683ee9c8c7b/3747056814182796428] host: [35.190.122.65] connection: [Keep-Alive] x-forwarded-for: [42.61.112.56, 35.190.122.65] user-agent: [curl/7.64.1] accept: [*/*] via: [1.1 google] 
+----
+
+*5. View the backend service*
+
+[source, json]
+----
+[
+  {
+    "affinityCookieTtlSec": 0,
+    "backends": [
+      {
+        "balancingMode": "RATE",
+        "capacityScaler": 1,
+        "group": "https://www.googleapis.com/compute/v1/projects/playground-s-11-17534dca/zones/us-central1-a/instanceGroups/k8s-ig--cd972525ecc36141",
+        "maxRatePerInstance": 1
+      }
+    ],
+    "connectionDraining": {
+      "drainingTimeoutSec": 0
+    },
+    "creationTimestamp": "2023-04-24T17:37:31.994-07:00",
+    "description": "{\"kubernetes.io/service-name\":\"kube-system/default-http-backend\",\"kubernetes.io/service-port\":\"\\u0026ServiceBackendPort{Name:http,Number:0,}\"}",
+    "enableCDN": false,
+    "fingerprint": "q38YQxhGMAQ=",
+    "healthChecks": [
+      "https://www.googleapis.com/compute/v1/projects/playground-s-11-17534dca/global/healthChecks/k8s-be-32075--cd972525ecc36141"
+    ],
+    "id": "6509424970637680164",
+    "kind": "compute#backendService",
+    "loadBalancingScheme": "EXTERNAL",
+    "logConfig": {
+      "enable": true,
+      "optionalMode": "EXCLUDE_ALL_OPTIONAL",
+      "sampleRate": 1
+    },
+    "name": "k8s-be-32075--cd972525ecc36141",
+    "port": 32075,
+    "portName": "port32075",
+    "protocol": "HTTP",
+    "selfLink": "https://www.googleapis.com/compute/v1/projects/playground-s-11-17534dca/global/backendServices/k8s-be-32075--cd972525ecc36141",
+    "sessionAffinity": "NONE",
+    "timeoutSec": 30
+  },
+  {
+    "affinityCookieTtlSec": 0,
+    "backends": [
+      {
+        "balancingMode": "RATE",
+        "capacityScaler": 1,
+        "group": "https://www.googleapis.com/compute/v1/projects/playground-s-11-17534dca/zones/us-central1-a/networkEndpointGroups/k8s1-cd972525-backend-backend-lb-svc-80-f7f7db8f",
+        "maxRatePerEndpoint": 1
+      }
+    ],
+    "connectionDraining": {
+      "drainingTimeoutSec": 0
+    },
+    "creationTimestamp": "2023-04-24T17:38:20.432-07:00",
+    "description": "{\"kubernetes.io/service-name\":\"backend/backend-lb-svc\",\"kubernetes.io/service-port\":\"\\u0026ServiceBackendPort{Name:,Number:80,}\",\"x-features\":[\"NEG\"]}",
+    "enableCDN": false,
+    "fingerprint": "i9rtl_Rootw=",
+    "healthChecks": [
+      "https://www.googleapis.com/compute/v1/projects/playground-s-11-17534dca/global/healthChecks/k8s1-cd972525-backend-backend-lb-svc-80-f7f7db8f"
+    ],
+    "id": "3310239372425207315",
+    "kind": "compute#backendService",
+    "loadBalancingScheme": "EXTERNAL",
+    "logConfig": {
+      "enable": true,
+      "optionalMode": "EXCLUDE_ALL_OPTIONAL",
+      "sampleRate": 1
+    },
+    "name": "k8s1-cd972525-backend-backend-lb-svc-80-f7f7db8f",
+    "port": 30250,
+    "portName": "port30250",
+    "protocol": "HTTP",
+    "selfLink": "https://www.googleapis.com/compute/v1/projects/playground-s-11-17534dca/global/backendServices/k8s1-cd972525-backend-backend-lb-svc-80-f7f7db8f",
+    "sessionAffinity": "NONE",
+    "timeoutSec": 30
+  },
+  {
+    "affinityCookieTtlSec": 0,
+    "backends": [
+      {
+        "balancingMode": "RATE",
+        "capacityScaler": 1,
+        "group": "https://www.googleapis.com/compute/v1/projects/playground-s-11-17534dca/zones/us-central1-a/networkEndpointGroups/k8s1-cd972525-backend-backend-svc-80-e4b71c05",
+        "maxRatePerEndpoint": 1
+      }
+    ],
+    "connectionDraining": {
+      "drainingTimeoutSec": 0
+    },
+    "creationTimestamp": "2023-04-24T17:37:58.480-07:00",
+    "description": "{\"kubernetes.io/service-name\":\"backend/backend-svc\",\"kubernetes.io/service-port\":\"\\u0026ServiceBackendPort{Name:,Number:80,}\",\"x-features\":[\"NEG\"]}",
+    "enableCDN": false,
+    "fingerprint": "okTZLRm5-Wc=",
+    "healthChecks": [
+      "https://www.googleapis.com/compute/v1/projects/playground-s-11-17534dca/global/healthChecks/k8s1-cd972525-backend-backend-svc-80-e4b71c05"
+    ],
+    "id": "3904536763131665929",
+    "kind": "compute#backendService",
+    "loadBalancingScheme": "EXTERNAL",
+    "logConfig": {
+      "enable": true,
+      "optionalMode": "EXCLUDE_ALL_OPTIONAL",
+      "sampleRate": 1
+    },
+    "name": "k8s1-cd972525-backend-backend-svc-80-e4b71c05",
+    "port": 30100,
+    "portName": "port30100",
+    "protocol": "HTTP",
+    "selfLink": "https://www.googleapis.com/compute/v1/projects/playground-s-11-17534dca/global/backendServices/k8s1-cd972525-backend-backend-svc-80-e4b71c05",
+    "sessionAffinity": "NONE",
+    "timeoutSec": 30
+  }
+]
+----
+
+*6. View the URL Map*
+
+[source, json]
+----
+[
+  {
+    "creationTimestamp": "2023-04-24T17:39:46.886-07:00",
+    "defaultService": "https://www.googleapis.com/compute/v1/projects/playground-s-11-17534dca/global/backendServices/k8s-be-32075--cd972525ecc36141",
+    "fingerprint": "DcVbT4gKuY0=",
+    "hostRules": [
+      {
+        "hosts": [
+          "*"
+        ],
+        "pathMatcher": "host3389dae361af79b04c9c8e7057f60cc6"
+      }
+    ],
+    "id": "299235090522349501",
+    "kind": "compute#urlMap",
+    "name": "k8s2-um-3vjgmzch-backend-backend-ingress-hwivzqsl",
+    "pathMatchers": [
+      {
+        "defaultService": "https://www.googleapis.com/compute/v1/projects/playground-s-11-17534dca/global/backendServices/k8s-be-32075--cd972525ecc36141",
+        "name": "host3389dae361af79b04c9c8e7057f60cc6",
+        "pathRules": [
+          {
+            "paths": [
+              "/foo"
+            ],
+            "service": "https://www.googleapis.com/compute/v1/projects/playground-s-11-17534dca/global/backendServices/k8s1-cd972525-backend-backend-svc-80-e4b71c05"
+          },
+          {
+            "paths": [
+              "/bar"
+            ],
+            "service": "https://www.googleapis.com/compute/v1/projects/playground-s-11-17534dca/global/backendServices/k8s1-cd972525-backend-backend-lb-svc-80-f7f7db8f"
+          }
+        ]
+      }
+    ],
+    "selfLink": "https://www.googleapis.com/compute/v1/projects/playground-s-11-17534dca/global/urlMaps/k8s2-um-3vjgmzch-backend-backend-ingress-hwivzqsl"
+  }
+]
+----
+
+*7. View Target Proxy*
+
+[source, json]
+----
+[
+  {
+    "creationTimestamp": "2023-04-24T17:39:46.886-07:00",
+    "defaultService": "https://www.googleapis.com/compute/v1/projects/playground-s-11-17534dca/global/backendServices/k8s-be-32075--cd972525ecc36141",
+    "fingerprint": "DcVbT4gKuY0=",
+    "hostRules": [
+      {
+        "hosts": [
+          "*"
+        ],
+        "pathMatcher": "host3389dae361af79b04c9c8e7057f60cc6"
+      }
+    ],
+    "id": "299235090522349501",
+    "kind": "compute#urlMap",
+    "name": "k8s2-um-3vjgmzch-backend-backend-ingress-hwivzqsl",
+    "pathMatchers": [
+      {
+        "defaultService": "https://www.googleapis.com/compute/v1/projects/playground-s-11-17534dca/global/backendServices/k8s-be-32075--cd972525ecc36141",
+        "name": "host3389dae361af79b04c9c8e7057f60cc6",
+        "pathRules": [
+          {
+            "paths": [
+              "/foo"
+            ],
+            "service": "https://www.googleapis.com/compute/v1/projects/playground-s-11-17534dca/global/backendServices/k8s1-cd972525-backend-backend-svc-80-e4b71c05"
+          },
+          {
+            "paths": [
+              "/bar"
+            ],
+            "service": "https://www.googleapis.com/compute/v1/projects/playground-s-11-17534dca/global/backendServices/k8s1-cd972525-backend-backend-lb-svc-80-f7f7db8f"
+          }
+        ]
+      }
+    ],
+    "selfLink": "https://www.googleapis.com/compute/v1/projects/playground-s-11-17534dca/global/urlMaps/k8s2-um-3vjgmzch-backend-backend-ingress-hwivzqsl"
+  }
+]
+----
+
+*8. View Forward Rule*
+
+[source, json]
+----
+{
+  "IPAddress": "34.134.182.180",
+  "IPProtocol": "TCP",
+  "creationTimestamp": "2023-04-24T17:14:15.031-07:00",
+  "description": "{\"kubernetes.io/service-name\":\"backend/backend-lb-svc\"}",
+  "fingerprint": "LQTIFOKmEK8=",
+  "id": "9134871846559851960",
+  "kind": "compute#forwardingRule",
+  "labelFingerprint": "42WmSpB8rSM=",
+  "loadBalancingScheme": "EXTERNAL",
+  "name": "a24bdfb9321ed41f0a305bf15ac16a59",
+  "networkTier": "PREMIUM",
+  "portRange": "80-80",
+  "region": "https://www.googleapis.com/compute/v1/projects/playground-s-11-17534dca/regions/us-central1",
+  "selfLink": "https://www.googleapis.com/compute/v1/projects/playground-s-11-17534dca/regions/us-central1/forwardingRules/a24bdfb9321ed41f0a305bf15ac16a59",
+  "target": "https://www.googleapis.com/compute/v1/projects/playground-s-11-17534dca/regions/us-central1/targetPools/a24bdfb9321ed41f0a305bf15ac16a59"
+}
 ----
