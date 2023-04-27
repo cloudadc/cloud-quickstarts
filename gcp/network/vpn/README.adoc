@@ -9,6 +9,13 @@ HA VPN is a regional per VPC, VPN solution. HA VPN gateways have two interfaces,
 
 == Netowrks and Resources Preparation
 
+The Network Toploy as below figure:
+
+image:vpn-topology.png[]
+
+* A global VPC called vpc-demo, with two custom subnets in us-east1 and us-central1, each region has a VM accordingly.
+* A second VPC called on-prem to simulate a customer's on-premises data center, with one custom subnet, and has one VM instance.
+
 === vpc-demo
 
 [source, bash]
@@ -34,8 +41,8 @@ gcloud compute firewall-rules create vpc-demo-allow-ssh-icmp --network vpc-demo 
 [source, bash]
 .*4. create vm instances*
 ----
-gcloud compute instances create vpc-demo-instance1 --zone us-central1-b --subnet vpc-demo-subnet1
-gcloud compute instances create vpc-demo-instance2 --zone us-east1-b --subnet vpc-demo-subnet2
+gcloud compute instances create vpc-demo-instance1 --machine-type=e2-micro --zone=us-central1-b --network-interface=subnet=vpc-demo-subnet1,no-address
+gcloud compute instances create vpc-demo-instance2 --machine-type=e2-micro --zone=us-east1-b --network-interface=subnet=vpc-demo-subnet2,no-address
 ----
 
 === on-prem
@@ -62,7 +69,7 @@ gcloud compute firewall-rules create on-prem-allow-ssh-icmp --network on-prem --
 [source, bash]
 .*4. create vm instances*
 ----
-gcloud compute instances create on-prem-instance1 --zone us-central1-a --subnet on-prem-subnet1
+gcloud compute instances create on-prem-instance1 --machine-type=e2-micro --zone=us-central1-a --network-interface=subnet=on-prem-subnet1,no-address
 ----
 
 == HA VPN Setting up on vpc network
