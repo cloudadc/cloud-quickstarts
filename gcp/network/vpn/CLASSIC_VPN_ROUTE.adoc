@@ -1,0 +1,600 @@
+= Cloud VPN Using Static Routes
+:toc: manual
+
+== Reserve external IP
+
+=== vpc-demo
+
+[source, bash]
+.*1. Reserve IP*
+----
+gcloud compute addresses create vpc-demo-gw-ip --region=us-east1
+----
+
+[source, json]
+.*2. View Reserved IP*
+----
+{
+  "address": "34.148.102.88",
+  "addressType": "EXTERNAL",
+  "creationTimestamp": "2023-04-27T22:24:39.907-07:00",
+  "description": "",
+  "id": "2793043379190425208",
+  "kind": "compute#address",
+  "labelFingerprint": "42WmSpB8rSM=",
+  "name": "vpc-demo-gw-ip",
+  "networkTier": "PREMIUM",
+  "region": "https://www.googleapis.com/compute/v1/projects/playground-s-11-bb76bb40/regions/us-east1",
+  "selfLink": "https://www.googleapis.com/compute/v1/projects/playground-s-11-bb76bb40/regions/us-east1/addresses/vpc-demo-gw-ip",
+  "status": "RESERVED"
+}
+----
+
+=== on-prem
+
+[source, bash]
+.*1. Reserve IP*
+----
+gcloud compute addresses create on-prem-gw-ip --region=us-central1
+----
+
+[source, json]
+.*2. View Reserved IP*
+----
+{
+  "address": "34.30.149.166",
+  "addressType": "EXTERNAL",
+  "creationTimestamp": "2023-04-27T22:27:23.548-07:00",
+  "description": "",
+  "id": "3686577141478516692",
+  "kind": "compute#address",
+  "name": "on-prem-gw-ip",
+  "networkTier": "PREMIUM",
+  "region": "https://www.googleapis.com/compute/v1/projects/playground-s-11-bb76bb40/regions/us-central1",
+  "selfLink": "https://www.googleapis.com/compute/v1/projects/playground-s-11-bb76bb40/regions/us-central1/addresses/on-prem-gw-ip",
+  "status": "RESERVED"
+}
+----
+
+== Setup on `vpc-demo` network
+
+=== Create target vpn gateway
+
+[source, bash]
+.*1. Create Target VPN Gateway*
+----
+gcloud compute target-vpn-gateways create vpc-demo-gw --network=vpc-demo --region=us-east1
+----
+
+[source, json]
+.*2. View Target VPN Gateway*
+----
+{
+  "creationTimestamp": "2023-04-27T22:45:23.013-07:00",
+  "description": "",
+  "id": "2035769747880469404",
+  "kind": "compute#targetVpnGateway",
+  "labelFingerprint": "42WmSpB8rSM=",
+  "name": "vpc-demo-gw",
+  "network": "https://www.googleapis.com/compute/v1/projects/playground-s-11-bb76bb40/global/networks/vpc-demo",
+  "region": "https://www.googleapis.com/compute/v1/projects/playground-s-11-bb76bb40/regions/us-east1",
+  "selfLink": "https://www.googleapis.com/compute/v1/projects/playground-s-11-bb76bb40/regions/us-east1/targetVpnGateways/vpc-demo-gw",
+  "status": "READY"
+}
+----
+
+=== Create forwarding rules
+
+[source, bash]
+.*1. Rule for sendig ESP(IPsec) traffic to gateway*
+----
+gcloud compute forwarding-rules create vpc-demo-gw-rule-esp --region=us-east1 --address=34.148.102.88 --ip-protocol=ESP --target-vpn-gateway=vpc-demo-gw
+----
+
+[source, bash]
+.*2. Rule for sendig UDP 500 traffic to gateway*
+----
+gcloud compute forwarding-rules create vpc-demo-gw-rule-udp500 --region=us-east1 --address=34.148.102.88 --ip-protocol=UDP --ports=500 --target-vpn-gateway=vpc-demo-gw
+----
+
+[source, bash]
+.*3. Rule for sendig UDP 4500 traffic to gateway*
+----
+gcloud compute forwarding-rules create vpc-demo-gw-rule-udp4500 --region=us-east1 --address=34.148.102.88 --ip-protocol=UDP --ports=4500 --target-vpn-gateway=vpc-demo-gw
+----
+
+[source, json]
+.*4. View all three rules*
+----
+[
+  {
+    "IPAddress": "34.148.102.88",
+    "IPProtocol": "ESP",
+    "creationTimestamp": "2023-04-27T22:46:46.962-07:00",
+    "description": "",
+    "fingerprint": "oIv_Ki3wcqY=",
+    "id": "1001261110099632937",
+    "kind": "compute#forwardingRule",
+    "labelFingerprint": "42WmSpB8rSM=",
+    "loadBalancingScheme": "EXTERNAL",
+    "name": "vpc-demo-gw-rule-esp",
+    "networkTier": "PREMIUM",
+    "region": "https://www.googleapis.com/compute/v1/projects/playground-s-11-bb76bb40/regions/us-east1",
+    "selfLink": "https://www.googleapis.com/compute/v1/projects/playground-s-11-bb76bb40/regions/us-east1/forwardingRules/vpc-demo-gw-rule-esp",
+    "target": "https://www.googleapis.com/compute/v1/projects/playground-s-11-bb76bb40/regions/us-east1/targetVpnGateways/vpc-demo-gw"
+  },
+  {
+    "IPAddress": "34.148.102.88",
+    "IPProtocol": "UDP",
+    "creationTimestamp": "2023-04-27T22:47:29.460-07:00",
+    "description": "",
+    "fingerprint": "ANclK0pfuOU=",
+    "id": "2297933331857597214",
+    "kind": "compute#forwardingRule",
+    "labelFingerprint": "42WmSpB8rSM=",
+    "loadBalancingScheme": "EXTERNAL",
+    "name": "vpc-demo-gw-rule-udp4500",
+    "networkTier": "PREMIUM",
+    "portRange": "4500-4500",
+    "region": "https://www.googleapis.com/compute/v1/projects/playground-s-11-bb76bb40/regions/us-east1",
+    "selfLink": "https://www.googleapis.com/compute/v1/projects/playground-s-11-bb76bb40/regions/us-east1/forwardingRules/vpc-demo-gw-rule-udp4500",
+    "target": "https://www.googleapis.com/compute/v1/projects/playground-s-11-bb76bb40/regions/us-east1/targetVpnGateways/vpc-demo-gw"
+  },
+  {
+    "IPAddress": "34.148.102.88",
+    "IPProtocol": "UDP",
+    "creationTimestamp": "2023-04-27T22:47:14.361-07:00",
+    "description": "",
+    "fingerprint": "idW6-wm_6e8=",
+    "id": "7362454927876481805",
+    "kind": "compute#forwardingRule",
+    "labelFingerprint": "42WmSpB8rSM=",
+    "loadBalancingScheme": "EXTERNAL",
+    "name": "vpc-demo-gw-rule-udp500",
+    "networkTier": "PREMIUM",
+    "portRange": "500-500",
+    "region": "https://www.googleapis.com/compute/v1/projects/playground-s-11-bb76bb40/regions/us-east1",
+    "selfLink": "https://www.googleapis.com/compute/v1/projects/playground-s-11-bb76bb40/regions/us-east1/forwardingRules/vpc-demo-gw-rule-udp500",
+    "target": "https://www.googleapis.com/compute/v1/projects/playground-s-11-bb76bb40/regions/us-east1/targetVpnGateways/vpc-demo-gw"
+  }
+]
+----
+
+[source, json]
+.*5. View Target VPN Gateway after create rules*
+----
+{
+  "creationTimestamp": "2023-04-27T22:45:23.013-07:00",
+  "description": "",
+  "forwardingRules": [
+    "https://www.googleapis.com/compute/v1/projects/playground-s-11-bb76bb40/regions/us-east1/forwardingRules/vpc-demo-gw-rule-udp4500",
+    "https://www.googleapis.com/compute/v1/projects/playground-s-11-bb76bb40/regions/us-east1/forwardingRules/vpc-demo-gw-rule-esp",
+    "https://www.googleapis.com/compute/v1/projects/playground-s-11-bb76bb40/regions/us-east1/forwardingRules/vpc-demo-gw-rule-udp500"
+  ],
+  "id": "2035769747880469404",
+  "kind": "compute#targetVpnGateway",
+  "labelFingerprint": "42WmSpB8rSM=",
+  "name": "vpc-demo-gw",
+  "network": "https://www.googleapis.com/compute/v1/projects/playground-s-11-bb76bb40/global/networks/vpc-demo",
+  "region": "https://www.googleapis.com/compute/v1/projects/playground-s-11-bb76bb40/regions/us-east1",
+  "selfLink": "https://www.googleapis.com/compute/v1/projects/playground-s-11-bb76bb40/regions/us-east1/targetVpnGateways/vpc-demo-gw",
+  "status": "READY"
+}
+----
+
+=== Create VPN tunnels
+
+[source, bash]
+.*1. Create VPN Tunnel*
+----
+gcloud compute vpn-tunnels create vpc-demo-tunnel --region=us-east1 --peer-address=34.30.149.166 --shared-secret=shared_key --ike-version=2 --local-traffic-selector=0.0.0.0/0 --remote-traffic-selector=0.0.0.0/0 --target-vpn-gateway=vpc-demo-gw
+----
+
+[source, json]
+.*2. View tunnel*
+----
+{
+  "creationTimestamp": "2023-04-27T22:51:25.946-07:00",
+  "description": "",
+  "detailedStatus": "Allocating resources. VPN tunnel will start soon.",
+  "id": "7072889396716298290",
+  "ikeVersion": 2,
+  "kind": "compute#vpnTunnel",
+  "labelFingerprint": "42WmSpB8rSM=",
+  "localTrafficSelector": [
+    "0.0.0.0/0"
+  ],
+  "name": "vpc-demo-tunnel",
+  "peerIp": "34.30.149.166",
+  "region": "https://www.googleapis.com/compute/v1/projects/playground-s-11-bb76bb40/regions/us-east1",
+  "remoteTrafficSelector": [
+    "0.0.0.0/0"
+  ],
+  "selfLink": "https://www.googleapis.com/compute/v1/projects/playground-s-11-bb76bb40/regions/us-east1/vpnTunnels/vpc-demo-tunnel",
+  "sharedSecret": "*************",
+  "sharedSecretHash": "dXE9a_rObfVBKVW_qawgJ4VObHyD",
+  "status": "FIRST_HANDSHAKE",
+  "targetVpnGateway": "https://www.googleapis.com/compute/v1/projects/playground-s-11-bb76bb40/regions/us-east1/targetVpnGateways/vpc-demo-gw"
+}
+----
+
+[source, json]
+.*3. View Target VPN Gateway after create tunnel*
+----
+{
+  "creationTimestamp": "2023-04-27T22:45:23.013-07:00",
+  "description": "",
+  "forwardingRules": [
+    "https://www.googleapis.com/compute/v1/projects/playground-s-11-bb76bb40/regions/us-east1/forwardingRules/vpc-demo-gw-rule-udp500",
+    "https://www.googleapis.com/compute/v1/projects/playground-s-11-bb76bb40/regions/us-east1/forwardingRules/vpc-demo-gw-rule-esp",
+    "https://www.googleapis.com/compute/v1/projects/playground-s-11-bb76bb40/regions/us-east1/forwardingRules/vpc-demo-gw-rule-udp4500"
+  ],
+  "id": "2035769747880469404",
+  "kind": "compute#targetVpnGateway",
+  "labelFingerprint": "42WmSpB8rSM=",
+  "name": "vpc-demo-gw",
+  "network": "https://www.googleapis.com/compute/v1/projects/playground-s-11-bb76bb40/global/networks/vpc-demo",
+  "region": "https://www.googleapis.com/compute/v1/projects/playground-s-11-bb76bb40/regions/us-east1",
+  "selfLink": "https://www.googleapis.com/compute/v1/projects/playground-s-11-bb76bb40/regions/us-east1/targetVpnGateways/vpc-demo-gw",
+  "status": "READY",
+  "tunnels": [
+    "https://www.googleapis.com/compute/v1/projects/playground-s-11-bb76bb40/regions/us-east1/vpnTunnels/vpc-demo-tunnel"
+  ]
+}
+----
+
+=== Create Static Route
+
+[source, bash]
+.*1. Create Route*
+----
+gcloud compute routes create vpc-demo-tunnel-route --network=vpc-demo --priority=1000 --destination-range=192.168.1.0/24 --next-hop-vpn-tunnel=vpc-demo-tunnel --next-hop-vpn-tunnel-region=us-east1
+----
+
+[source, json]
+.*2. View Route*
+----
+{
+  "creationTimestamp": "2023-04-27T22:54:59.303-07:00",
+  "description": "",
+  "destRange": "192.168.1.0/24",
+  "id": "1594376165028979036",
+  "kind": "compute#route",
+  "name": "vpc-demo-tunnel-route",
+  "network": "https://www.googleapis.com/compute/v1/projects/playground-s-11-bb76bb40/global/networks/vpc-demo",
+  "nextHopVpnTunnel": "https://www.googleapis.com/compute/v1/projects/playground-s-11-bb76bb40/regions/us-east1/vpnTunnels/vpc-demo-tunnel",
+  "priority": 1000,
+  "selfLink": "https://www.googleapis.com/compute/v1/projects/playground-s-11-bb76bb40/global/routes/vpc-demo-tunnel-route"
+}
+----
+
+== Setup on `on-prem` network
+
+=== Create target vpn gateway
+
+[source, bash]
+.*1. Create Target VPN Gateway*
+----
+gcloud compute target-vpn-gateways create on-prem-gw --network=on-prem --region=us-central1
+----
+
+[source, json]
+.*2. View Target VPN Gateway*
+----
+{
+  "creationTimestamp": "2023-04-27T23:08:55.795-07:00",
+  "description": "",
+  "id": "2942365927349869592",
+  "kind": "compute#targetVpnGateway",
+  "name": "on-prem-gw",
+  "network": "https://www.googleapis.com/compute/v1/projects/playground-s-11-bb76bb40/global/networks/on-prem",
+  "region": "https://www.googleapis.com/compute/v1/projects/playground-s-11-bb76bb40/regions/us-central1",
+  "selfLink": "https://www.googleapis.com/compute/v1/projects/playground-s-11-bb76bb40/regions/us-central1/targetVpnGateways/on-prem-gw",
+  "status": "READY"
+}
+----
+
+=== Create forwarding rules
+
+[source, bash]
+.*1. Rule for sendig ESP(IPsec) traffic to gateway*
+----
+gcloud compute forwarding-rules create on-prem-gw-rule-esp --region=us-central1 --address=34.30.149.166 --ip-protocol=ESP --target-vpn-gateway=on-prem-gw
+----
+
+[source, bash]
+.*2. Rule for sendig UDP 500 traffic to gateway*
+----
+gcloud compute forwarding-rules create on-prem-gw-rule-udp500 --region=us-central1 --address=34.30.149.166 --ip-protocol=UDP --ports=500 --target-vpn-gateway=on-prem-gw
+----
+
+[source, bash]
+.*3. Rule for sendig UDP 4500 traffic to gateway*
+----
+gcloud compute forwarding-rules create on-prem-gw-rule-udp4500 --region=us-central1 --address=34.30.149.166 --ip-protocol=UDP --ports=4500 --target-vpn-gateway=on-prem-gw
+----
+
+[source, json]
+.*4. View Target VPN Gateway after rules*
+----
+{
+  "creationTimestamp": "2023-04-27T23:08:55.795-07:00",
+  "description": "",
+  "forwardingRules": [
+    "https://www.googleapis.com/compute/v1/projects/playground-s-11-bb76bb40/regions/us-central1/forwardingRules/on-prem-gw-rule-esp",
+    "https://www.googleapis.com/compute/v1/projects/playground-s-11-bb76bb40/regions/us-central1/forwardingRules/on-prem-gw-rule-udp4500",
+    "https://www.googleapis.com/compute/v1/projects/playground-s-11-bb76bb40/regions/us-central1/forwardingRules/on-prem-gw-rule-udp500"
+  ],
+  "id": "2942365927349869592",
+  "kind": "compute#targetVpnGateway",
+  "name": "on-prem-gw",
+  "network": "https://www.googleapis.com/compute/v1/projects/playground-s-11-bb76bb40/global/networks/on-prem",
+  "region": "https://www.googleapis.com/compute/v1/projects/playground-s-11-bb76bb40/regions/us-central1",
+  "selfLink": "https://www.googleapis.com/compute/v1/projects/playground-s-11-bb76bb40/regions/us-central1/targetVpnGateways/on-prem-gw",
+  "status": "READY"
+}
+----
+
+== Create VPN tunnels
+
+[source, bash]
+.*1. Create tunnel*
+----
+gcloud compute vpn-tunnels create on-prem-tunnel --region=us-central1 --peer-address=34.148.102.88 --shared-secret=shared_key --ike-version=2 --local-traffic-selector=0.0.0.0/0 --remote-traffic-selector=0.0.0.0/0 --target-vpn-gateway=on-prem-gw
+----
+
+[source, json]
+.*2. View tunnel*
+----
+{
+  "creationTimestamp": "2023-04-27T23:18:35.915-07:00",
+  "description": "",
+  "detailedStatus": "Tunnel is up and running.",
+  "id": "6638617470936996820",
+  "ikeVersion": 2,
+  "kind": "compute#vpnTunnel",
+  "localTrafficSelector": [
+    "0.0.0.0/0"
+  ],
+  "name": "on-prem-tunnel",
+  "peerIp": "34.148.102.88",
+  "region": "https://www.googleapis.com/compute/v1/projects/playground-s-11-bb76bb40/regions/us-central1",
+  "remoteTrafficSelector": [
+    "0.0.0.0/0"
+  ],
+  "selfLink": "https://www.googleapis.com/compute/v1/projects/playground-s-11-bb76bb40/regions/us-central1/vpnTunnels/on-prem-tunnel",
+  "sharedSecret": "*************",
+  "sharedSecretHash": "hThNQ4fItmvg9sof9lNtKwsUoVm_",
+  "status": "ESTABLISHED",
+  "targetVpnGateway": "https://www.googleapis.com/compute/v1/projects/playground-s-11-bb76bb40/regions/us-central1/targetVpnGateways/on-prem-gw"
+}
+----
+
+[source, json]
+.*3. View Target VPN Gateway after create tunnel*
+----
+{
+  "creationTimestamp": "2023-04-27T23:08:55.795-07:00",
+  "description": "",
+  "forwardingRules": [
+    "https://www.googleapis.com/compute/v1/projects/playground-s-11-bb76bb40/regions/us-central1/forwardingRules/on-prem-gw-rule-udp4500",
+    "https://www.googleapis.com/compute/v1/projects/playground-s-11-bb76bb40/regions/us-central1/forwardingRules/on-prem-gw-rule-udp500",
+    "https://www.googleapis.com/compute/v1/projects/playground-s-11-bb76bb40/regions/us-central1/forwardingRules/on-prem-gw-rule-esp"
+  ],
+  "id": "2942365927349869592",
+  "kind": "compute#targetVpnGateway",
+  "name": "on-prem-gw",
+  "network": "https://www.googleapis.com/compute/v1/projects/playground-s-11-bb76bb40/global/networks/on-prem",
+  "region": "https://www.googleapis.com/compute/v1/projects/playground-s-11-bb76bb40/regions/us-central1",
+  "selfLink": "https://www.googleapis.com/compute/v1/projects/playground-s-11-bb76bb40/regions/us-central1/targetVpnGateways/on-prem-gw",
+  "status": "READY",
+  "tunnels": [
+    "https://www.googleapis.com/compute/v1/projects/playground-s-11-bb76bb40/regions/us-central1/vpnTunnels/on-prem-tunnel"
+  ]
+}
+----
+
+=== Create Static Route
+
+[source, bash]
+.*1. Create Route*
+----
+gcloud compute routes create on-prem-tunnel-route-1 --network=on-prem --priority=1000 --destination-range=10.1.1.0/24 --next-hop-vpn-tunnel=on-prem-tunnel --next-hop-vpn-tunnel-region=us-central1
+gcloud compute routes create on-prem-tunnel-route-2 --network=on-prem --priority=1000 --destination-range=10.2.1.0/24 --next-hop-vpn-tunnel=on-prem-tunnel --next-hop-vpn-tunnel-region=us-central1
+----
+
+[source, json]
+.*2. View Route*
+----
+{
+  "creationTimestamp": "2023-04-27T23:24:54.396-07:00",
+  "description": "",
+  "destRange": "10.1.1.0/24",
+  "id": "8567063662356256857",
+  "kind": "compute#route",
+  "name": "on-prem-tunnel-route-1",
+  "network": "https://www.googleapis.com/compute/v1/projects/playground-s-11-bb76bb40/global/networks/on-prem",
+  "nextHopVpnTunnel": "https://www.googleapis.com/compute/v1/projects/playground-s-11-bb76bb40/regions/us-central1/vpnTunnels/on-prem-tunnel",
+  "priority": 1000,
+  "selfLink": "https://www.googleapis.com/compute/v1/projects/playground-s-11-bb76bb40/global/routes/on-prem-tunnel-route-1"
+}
+----
+
+[source, json]
+.*3. View Route*
+----
+{
+  "creationTimestamp": "2023-04-27T23:25:06.894-07:00",
+  "description": "",
+  "destRange": "10.2.1.0/24",
+  "id": "4430200675232045101",
+  "kind": "compute#route",
+  "name": "on-prem-tunnel-route-2",
+  "network": "https://www.googleapis.com/compute/v1/projects/playground-s-11-bb76bb40/global/networks/on-prem",
+  "nextHopVpnTunnel": "https://www.googleapis.com/compute/v1/projects/playground-s-11-bb76bb40/regions/us-central1/vpnTunnels/on-prem-tunnel",
+  "priority": 1000,
+  "selfLink": "https://www.googleapis.com/compute/v1/projects/playground-s-11-bb76bb40/global/routes/on-prem-tunnel-route-2"
+}
+----
+
+== Test Hybrid Connectivity
+
+=== View Gateway
+
+[source, json]
+.*vpc-demo-gw*
+----
+{
+  "creationTimestamp": "2023-04-27T22:45:23.013-07:00",
+  "description": "",
+  "forwardingRules": [
+    "https://www.googleapis.com/compute/v1/projects/playground-s-11-bb76bb40/regions/us-east1/forwardingRules/vpc-demo-gw-rule-esp",
+    "https://www.googleapis.com/compute/v1/projects/playground-s-11-bb76bb40/regions/us-east1/forwardingRules/vpc-demo-gw-rule-udp4500",
+    "https://www.googleapis.com/compute/v1/projects/playground-s-11-bb76bb40/regions/us-east1/forwardingRules/vpc-demo-gw-rule-udp500"
+  ],
+  "id": "2035769747880469404",
+  "kind": "compute#targetVpnGateway",
+  "labelFingerprint": "42WmSpB8rSM=",
+  "name": "vpc-demo-gw",
+  "network": "https://www.googleapis.com/compute/v1/projects/playground-s-11-bb76bb40/global/networks/vpc-demo",
+  "region": "https://www.googleapis.com/compute/v1/projects/playground-s-11-bb76bb40/regions/us-east1",
+  "selfLink": "https://www.googleapis.com/compute/v1/projects/playground-s-11-bb76bb40/regions/us-east1/targetVpnGateways/vpc-demo-gw",
+  "status": "READY",
+  "tunnels": [
+    "https://www.googleapis.com/compute/v1/projects/playground-s-11-bb76bb40/regions/us-east1/vpnTunnels/vpc-demo-tunnel"
+  ]
+}
+----
+
+[source, json]
+.*on-prem-gw*
+----
+{
+  "creationTimestamp": "2023-04-27T23:08:55.795-07:00",
+  "description": "",
+  "forwardingRules": [
+    "https://www.googleapis.com/compute/v1/projects/playground-s-11-bb76bb40/regions/us-central1/forwardingRules/on-prem-gw-rule-udp4500",
+    "https://www.googleapis.com/compute/v1/projects/playground-s-11-bb76bb40/regions/us-central1/forwardingRules/on-prem-gw-rule-esp",
+    "https://www.googleapis.com/compute/v1/projects/playground-s-11-bb76bb40/regions/us-central1/forwardingRules/on-prem-gw-rule-udp500"
+  ],
+  "id": "2942365927349869592",
+  "kind": "compute#targetVpnGateway",
+  "name": "on-prem-gw",
+  "network": "https://www.googleapis.com/compute/v1/projects/playground-s-11-bb76bb40/global/networks/on-prem",
+  "region": "https://www.googleapis.com/compute/v1/projects/playground-s-11-bb76bb40/regions/us-central1",
+  "selfLink": "https://www.googleapis.com/compute/v1/projects/playground-s-11-bb76bb40/regions/us-central1/targetVpnGateways/on-prem-gw",
+  "status": "READY",
+  "tunnels": [
+    "https://www.googleapis.com/compute/v1/projects/playground-s-11-bb76bb40/regions/us-central1/vpnTunnels/on-prem-tunnel"
+  ]
+}
+----
+
+=== View Tunnel
+
+[source, json]
+.*vpc-demo-tunnel*
+----
+{
+  "creationTimestamp": "2023-04-27T22:51:25.946-07:00",
+  "description": "",
+  "detailedStatus": "Tunnel is up and running.",
+  "id": "7072889396716298290",
+  "ikeVersion": 2,
+  "kind": "compute#vpnTunnel",
+  "labelFingerprint": "42WmSpB8rSM=",
+  "localTrafficSelector": [
+    "0.0.0.0/0"
+  ],
+  "name": "vpc-demo-tunnel",
+  "peerIp": "34.30.149.166",
+  "region": "https://www.googleapis.com/compute/v1/projects/playground-s-11-bb76bb40/regions/us-east1",
+  "remoteTrafficSelector": [
+    "0.0.0.0/0"
+  ],
+  "selfLink": "https://www.googleapis.com/compute/v1/projects/playground-s-11-bb76bb40/regions/us-east1/vpnTunnels/vpc-demo-tunnel",
+  "sharedSecret": "*************",
+  "sharedSecretHash": "dXE9a_rObfVBKVW_qawgJ4VObHyD",
+  "status": "ESTABLISHED",
+  "targetVpnGateway": "https://www.googleapis.com/compute/v1/projects/playground-s-11-bb76bb40/regions/us-east1/targetVpnGateways/vpc-demo-gw"
+}
+----
+
+[source, json]
+.*on-prem-tunnel*
+----
+{
+  "creationTimestamp": "2023-04-27T23:18:35.915-07:00",
+  "description": "",
+  "detailedStatus": "Tunnel is up and running.",
+  "id": "6638617470936996820",
+  "ikeVersion": 2,
+  "kind": "compute#vpnTunnel",
+  "localTrafficSelector": [
+    "0.0.0.0/0"
+  ],
+  "name": "on-prem-tunnel",
+  "peerIp": "34.148.102.88",
+  "region": "https://www.googleapis.com/compute/v1/projects/playground-s-11-bb76bb40/regions/us-central1",
+  "remoteTrafficSelector": [
+    "0.0.0.0/0"
+  ],
+  "selfLink": "https://www.googleapis.com/compute/v1/projects/playground-s-11-bb76bb40/regions/us-central1/vpnTunnels/on-prem-tunnel",
+  "sharedSecret": "*************",
+  "sharedSecretHash": "hThNQ4fItmvg9sof9lNtKwsUoVm_",
+  "status": "ESTABLISHED",
+  "targetVpnGateway": "https://www.googleapis.com/compute/v1/projects/playground-s-11-bb76bb40/regions/us-central1/targetVpnGateways/on-prem-gw"
+}
+----
+
+=== Test Connectivity via ICMP
+
+[source, bash]
+.*1. on-prem vm ping VPC vm*
+----
+$ ping 10.1.1.2 -c3
+PING 10.1.1.2 (10.1.1.2) 56(84) bytes of data.
+64 bytes from 10.1.1.2: icmp_seq=1 ttl=62 time=67.1 ms
+64 bytes from 10.1.1.2: icmp_seq=2 ttl=62 time=61.9 ms
+64 bytes from 10.1.1.2: icmp_seq=3 ttl=62 time=61.7 ms
+
+$ ping 10.2.1.2 -c3
+PING 10.2.1.2 (10.2.1.2) 56(84) bytes of data.
+64 bytes from 10.2.1.2: icmp_seq=1 ttl=62 time=35.6 ms
+64 bytes from 10.2.1.2: icmp_seq=2 ttl=62 time=31.5 ms
+64 bytes from 10.2.1.2: icmp_seq=3 ttl=62 time=31.6 ms
+----
+
+[source, bash]
+.*2. VPC vm ping on-prem vm*
+----
+$ ping 192.168.1.2 -c3
+PING 192.168.1.2 (192.168.1.2) 56(84) bytes of data.
+64 bytes from 192.168.1.2: icmp_seq=1 ttl=62 time=66.7 ms
+64 bytes from 192.168.1.2: icmp_seq=2 ttl=62 time=62.9 ms
+64 bytes from 192.168.1.2: icmp_seq=3 ttl=62 time=62.7 ms
+----
+
+=== Clean up
+
+[source, bash]
+----
+gcloud compute routes delete on-prem-tunnel-route-2
+gcloud compute routes delete on-prem-tunnel-route-1
+gcloud compute vpn-tunnels delete on-prem-tunnel --region=us-central1
+gcloud compute forwarding-rules delete on-prem-gw-rule-udp4500 --region=us-central1
+gcloud compute forwarding-rules delete on-prem-gw-rule-udp500 --region=us-central1
+gcloud compute forwarding-rules delete on-prem-gw-rule-esp --region=us-central1
+gcloud compute target-vpn-gateways delete on-prem-gw --region=us-central1
+
+gcloud compute routes delete vpc-demo-tunnel-route
+gcloud compute vpn-tunnels delete vpc-demo-tunnel --region=us-east1
+gcloud compute forwarding-rules delete vpc-demo-gw-rule-udp4500 --region=us-east1
+gcloud compute forwarding-rules delete vpc-demo-gw-rule-udp500 --region=us-east1
+gcloud compute forwarding-rules delete vpc-demo-gw-rule-esp --region=us-east1
+gcloud compute target-vpn-gateways delete vpc-demo-gw --region=us-east1
+
+gcloud compute addresses delete on-prem-gw-ip --region=us-central1
+gcloud compute addresses delete vpc-demo-gw-ip --region=us-east1
+----
+

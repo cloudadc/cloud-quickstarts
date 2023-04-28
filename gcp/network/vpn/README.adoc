@@ -66,9 +66,17 @@ gcloud compute firewall-rules create on-prem-allow-ssh-icmp --network on-prem --
 gcloud compute instances create on-prem-instance1 --machine-type=e2-micro --zone=us-central1-a --network-interface=subnet=on-prem-subnet1,no-address
 ----
 
+== Route Based Classic VPN
+
+link:CLASSIC_VPN_ROUTE.adoc[Route Based Classic VPN]
+
 == Policy Based Classic VPN
 
 link:CLASSIC_VPN.adoc[Policy Based Classic VPN]
+
+== Cloud VPN Using Static Routes
+
+link:CLASSIC_VPN_ROUTE.adoc[Cloud VPN Using Static Routes]
 
 == Cloud Router
 
