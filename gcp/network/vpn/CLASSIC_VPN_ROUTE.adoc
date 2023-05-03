@@ -335,7 +335,7 @@ gcloud compute forwarding-rules create on-prem-gw-rule-udp4500 --region=us-centr
 }
 ----
 
-== Create VPN tunnels
+=== Create VPN tunnels
 
 [source, bash]
 .*1. Create tunnel*

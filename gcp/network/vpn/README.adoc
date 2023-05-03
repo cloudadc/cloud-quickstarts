@@ -90,15 +90,15 @@ link:CLASSIC_VPN_ROUTE.adoc[Route Based Classic VPN]
 
 == Policy Based Classic VPN
 
-link:CLASSIC_VPN.adoc[Policy Based Classic VPN]
-
-== Cloud VPN Using Static Routes
-
-link:CLASSIC_VPN_ROUTE.adoc[Cloud VPN Using Static Routes]
+link:CLASSIC_VPN_POLICY.adoc[Policy Based Classic VPN]
 
 == Cloud Router
 
 link:CLOUD_ROUTER.adoc[Cloud Router]
+
+== Classic VPN with BGP
+
+TODO
 
 == Cloud HA VPN
 
