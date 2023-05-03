@@ -7,48 +7,84 @@ HA VPN is a high-availability (HA) Cloud VPN solution that lets you securely con
 
 HA VPN is a regional per VPC, VPN solution. HA VPN gateways have two interfaces, each with its own public IP address. When you create an HA VPN gateway, two public IP addresses are automatically chosen from different address pools. When HA VPN is configured with two tunnels, Cloud VPN offers a 99.99% service availability uptime.
 
-== HA VPN Setting up on vpc network
+== Set up VPN Gateway
 
-=== Create HA VPN gateway 
+=== vpc-demo 
 
 [source, bash]
 .*1. create vpn gateway*
 ----
-gcloud compute vpn-gateways create vpc-demo-vpn-gw1 --network vpc-demo --region us-central1
+gcloud compute vpn-gateways create vpc-demo-vpn-gw --region=us-central1 --network=vpc-demo
 ----
 
 [source, json]
 .*2. view the details of vpn gateway*
 ----
 {
-  "creationTimestamp": "2023-01-24T01:02:43.130-08:00",
-  "id": "7388101625046507612",
+  "creationTimestamp": "2023-05-02T20:38:11.705-07:00",
+  "id": "1438689914152315340",
   "kind": "compute#vpnGateway",
   "labelFingerprint": "42WmSpB8rSM=",
-  "name": "vpc-demo-vpn-gw1",
-  "network": "https://www.googleapis.com/compute/v1/projects/qwiklabs-gcp-01-0e4b3b1f8f92/global/networks/vpc-demo",
-  "region": "https://www.googleapis.com/compute/v1/projects/qwiklabs-gcp-01-0e4b3b1f8f92/regions/us-central1",
-  "selfLink": "https://www.googleapis.com/compute/v1/projects/qwiklabs-gcp-01-0e4b3b1f8f92/regions/us-central1/vpnGateways/vpc-demo-vpn-gw1",
+  "name": "vpc-demo-vpn-gw",
+  "network": "https://www.googleapis.com/compute/v1/projects/playground-s-11-c08fdfcc/global/networks/vpc-demo",
+  "region": "https://www.googleapis.com/compute/v1/projects/playground-s-11-c08fdfcc/regions/us-east1",
+  "selfLink": "https://www.googleapis.com/compute/v1/projects/playground-s-11-c08fdfcc/regions/us-east1/vpnGateways/vpc-demo-vpn-gw",
   "stackType": "IPV4_ONLY",
   "vpnInterfaces": [
     {
       "id": 0,
-      "ipAddress": "34.157.109.112"
+      "ipAddress": "35.242.3.148"
     },
     {
       "id": 1,
-      "ipAddress": "35.220.92.201"
+      "ipAddress": "35.220.7.9"
     }
   ]
 }
 ----
 
-=== Create cloud router
+=== on-prem
+
+[source, bash]
+.*1. create vpn gateway*
+----
+gcloud compute vpn-gateways create on-prem-vpn-gw --region=us-central1 --network=on-prem
+----
+
+[source, json]
+.*2. view the details of vpn gateway*
+----
+{
+  "creationTimestamp": "2023-05-02T20:40:29.157-07:00",
+  "id": "3155095687586933058",
+  "kind": "compute#vpnGateway",
+  "labelFingerprint": "42WmSpB8rSM=",
+  "name": "on-prem-vpn-gw",
+  "network": "https://www.googleapis.com/compute/v1/projects/playground-s-11-c08fdfcc/global/networks/on-prem",
+  "region": "https://www.googleapis.com/compute/v1/projects/playground-s-11-c08fdfcc/regions/us-central1",
+  "selfLink": "https://www.googleapis.com/compute/v1/projects/playground-s-11-c08fdfcc/regions/us-central1/vpnGateways/on-prem-vpn-gw",
+  "stackType": "IPV4_ONLY",
+  "vpnInterfaces": [
+    {
+      "id": 0,
+      "ipAddress": "34.157.109.137"
+    },
+    {
+      "id": 1,
+      "ipAddress": "35.220.67.86"
+    }
+  ]
+}
+----
+
+== Create Cloud Router
+
+=== vpc-demo 
 
 [source, bash]
 .*1. create cloud router*
 ----
-gcloud compute routers create vpc-demo-router1 --network=vpc-demo --asn=65001 --region=us-central1
+gcloud compute routers create vpc-demo-router --network=vpc-demo --asn=65001 --region=us-central1
 ----
 
 [source, json]
@@ -60,59 +96,23 @@ gcloud compute routers create vpc-demo-router1 --network=vpc-demo --asn=65001 --
     "asn": 65001,
     "keepaliveInterval": 20
   },
-  "creationTimestamp": "2023-03-18T08:05:50.210-07:00",
+  "creationTimestamp": "2023-05-02T20:56:46.528-07:00",
   "encryptedInterconnectRouter": false,
-  "id": "8540647100926946721",
+  "id": "7618459868054971793",
   "kind": "compute#router",
-  "name": "vpc-demo-router1",
-  "network": "https://www.googleapis.com/compute/v1/projects/playground-s-11-226f57f4/global/networks/vpc-demo",
-  "region": "https://www.googleapis.com/compute/v1/projects/playground-s-11-226f57f4/regions/us-central1",
-  "selfLink": "https://www.googleapis.com/compute/v1/projects/playground-s-11-226f57f4/regions/us-central1/routers/vpc-demo-router1"
+  "name": "vpc-demo-router",
+  "network": "https://www.googleapis.com/compute/v1/projects/playground-s-11-c08fdfcc/global/networks/vpc-demo",
+  "region": "https://www.googleapis.com/compute/v1/projects/playground-s-11-c08fdfcc/regions/us-east1",
+  "selfLink": "https://www.googleapis.com/compute/v1/projects/playground-s-11-c08fdfcc/regions/us-east1/routers/vpc-demo-router"
 }
 ----
 
-== HA VPN Setting up on on-prem 
-
-=== Create HA VPN gateway
-
-[source, bash]
-.*1. create vpn gateway*
-----
-gcloud compute vpn-gateways create on-prem-vpn-gw1 --network=on-prem --region=us-central1 
-----
-
-[source, json]
-.*2. view the details of vpn gateway*
-----
-{
-  "creationTimestamp": "2023-03-18T08:12:11.802-07:00",
-  "id": "7181549694185138724",
-  "kind": "compute#vpnGateway",
-  "labelFingerprint": "42WmSpB8rSM=",
-  "name": "on-prem-vpn-gw1",
-  "network": "https://www.googleapis.com/compute/v1/projects/playground-s-11-226f57f4/global/networks/on-prem",
-  "region": "https://www.googleapis.com/compute/v1/projects/playground-s-11-226f57f4/regions/us-central1",
-  "selfLink": "https://www.googleapis.com/compute/v1/projects/playground-s-11-226f57f4/regions/us-central1/vpnGateways/on-prem-vpn-gw1",
-  "stackType": "IPV4_ONLY",
-  "vpnInterfaces": [
-    {
-      "id": 0,
-      "ipAddress": "35.242.115.23"
-    },
-    {
-      "id": 1,
-      "ipAddress": "34.157.224.167"
-    }
-  ]
-}
-----
-
-=== Create cloud router 
+=== on-prem
 
 [source, bash]
 .*1. create cloud router*
 ----
-gcloud compute routers create on-prem-router1 --network=on-prem --asn=65002 --region=us-central1
+gcloud compute routers create on-prem-router --network=on-prem --asn=65002 --region=us-central1
 ----
 
 [source, json]
@@ -124,31 +124,31 @@ gcloud compute routers create on-prem-router1 --network=on-prem --asn=65002 --re
     "asn": 65002,
     "keepaliveInterval": 20
   },
-  "creationTimestamp": "2023-03-18T08:15:56.131-07:00",
+  "creationTimestamp": "2023-05-02T20:59:55.999-07:00",
   "encryptedInterconnectRouter": false,
-  "id": "6213271535167761219",
+  "id": "111298093428531924",
   "kind": "compute#router",
-  "name": "on-prem-router1",
-  "network": "https://www.googleapis.com/compute/v1/projects/playground-s-11-226f57f4/global/networks/on-prem",
-  "region": "https://www.googleapis.com/compute/v1/projects/playground-s-11-226f57f4/regions/us-central1",
-  "selfLink": "https://www.googleapis.com/compute/v1/projects/playground-s-11-226f57f4/regions/us-central1/routers/on-prem-router1"
+  "name": "on-prem-router",
+  "network": "https://www.googleapis.com/compute/v1/projects/playground-s-11-c08fdfcc/global/networks/on-prem",
+  "region": "https://www.googleapis.com/compute/v1/projects/playground-s-11-c08fdfcc/regions/us-central1",
+  "selfLink": "https://www.googleapis.com/compute/v1/projects/playground-s-11-c08fdfcc/regions/us-central1/routers/on-prem-router"
 }
 ----
 
 == Create VPN Tunnels
 
-=== Create VPN tunnels on `vpc-demo network`
+=== vpc-demo
 
 [source, bash]
 .*1. create 1st tunnel*
 ----
-gcloud compute vpn-tunnels create vpc-demo-tunnel0 --peer-gcp-gateway=on-prem-vpn-gw1 --ike-version=2  --shared-secret=shared_secret --router=vpc-demo-router1 --vpn-gateway=vpc-demo-vpn-gw1 --interface=0 --region=us-central1
+gcloud compute vpn-tunnels create vpc-demo-tunnel0 --peer-gcp-gateway=on-prem-vpn-gw --ike-version=2 --shared-secret=shared_secret --router=vpc-demo-router --vpn-gateway=vpc-demo-vpn-gw --interface=0 --region=us-east1
 ----
 
 [source, bash]
 .*2. create 2nd tunnel*
 ----
-gcloud compute vpn-tunnels create vpc-demo-tunnel1 --peer-gcp-gateway=on-prem-vpn-gw1 --ike-version=2  --shared-secret=shared_secret --router=vpc-demo-router1 --vpn-gateway=vpc-demo-vpn-gw1 --interface=1 --region=us-central1
+gcloud compute vpn-tunnels create vpc-demo-tunnel1 --peer-gcp-gateway=on-prem-vpn-gw --ike-version=2 --shared-secret=shared_secret --router=vpc-demo-router --vpn-gateway=vpc-demo-vpn-gw --interface=1 --region=us-east1
 ----
 
 [source, json]

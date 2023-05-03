@@ -98,7 +98,7 @@ link:CLOUD_ROUTER.adoc[Cloud Router]
 
 == Classic VPN with BGP
 
-TODO
+link:CLASSIC_VPN_BGP.adoc[Classic VPN with BGP]
 
 == Cloud HA VPN
 

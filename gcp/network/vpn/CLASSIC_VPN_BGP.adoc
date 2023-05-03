@@ -1,0 +1,4 @@
+= Classic VPN with BGP
+:toc: manual
+
+Dynamic routing only support cloud vpn gateway connect to a thirdparty vpn gateway. Peer IP has to be used by a Compute Engine VM. Other Classic VPN usages are deprecated.
