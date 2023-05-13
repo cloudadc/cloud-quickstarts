@@ -146,7 +146,7 @@ googledomains.com
         minimum = 60
 ----
 
-== Internal DNS NS
+=== Internal DNS NS
 
 [source, bash]
 ----
@@ -175,6 +175,47 @@ Non-authoritative answer:
 169.254.169.254
 169.254.169.254
 ----
+
+=== `private.googleapis.com`/`restricted.googleapis.com`
+
+[source, bash]
+.*private.googleapis.com*
+----
+$ nslookup private.googleapis.com
+Server:         169.254.169.254
+Address:        169.254.169.254#53
+
+Non-authoritative answer:
+Name:   private.googleapis.com
+Address: 199.36.153.9
+Name:   private.googleapis.com
+Address: 199.36.153.8
+Name:   private.googleapis.com
+Address: 199.36.153.10
+Name:   private.googleapis.com
+Address: 199.36.153.11
+----
+
+[source, bash]
+.*restricted.googleapis.com*
+----
+$ nslookup restricted.googleapis.com
+Server:         169.254.169.254
+Address:        169.254.169.254#53
+
+Non-authoritative answer:
+Name:   restricted.googleapis.com
+Address: 199.36.153.7
+Name:   restricted.googleapis.com
+Address: 199.36.153.4
+Name:   restricted.googleapis.com
+Address: 199.36.153.6
+Name:   restricted.googleapis.com
+Address: 199.36.153.5
+----
+
+* `private.googleapis.com` and `restricted.googleapis.com` virtual IP addresses (VIPs) support only HTTP-based protocols over TCP (HTTP, HTTPS, and HTTP/2). 
+* If you need to restrict users to just the Google APIs and services that support VPC Service Controls, use `restricted.googleapis.com`. 
 
 == Internal IP Host Mapping
 
