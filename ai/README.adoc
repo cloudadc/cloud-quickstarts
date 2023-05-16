@@ -1,0 +1,94 @@
+= AI
+:toc: manual
+
+== Generative AI(生成式人工智能)
+
+=== Definition
+
+* Generative AI is a type of artificial intelligence technology that can produce various types of content, including text, imagery, audio and synthetic data.
+
+=== How Generative AI Works
+
+Generative AI is a type of artificial intelligence technology that creates new content based on what it has learned from existing content.
+
+* The process of *learning from existing content* is called training and results in the creation of a statistical model.
+* When given a prompt, Generative AI uses this *statistical model* to predict what an expected response might be and generates new content.
+
+=== Generative AI Model Types
+
+[cols="2,5a"]
+.*Generative language models*
+|===
+|Item |Generative `language` models 
+
+|Definition
+|Generative language models learn about patterns in language through training data.
+
+Then, give some text, they predict *what comes next*.
+
+Generative language models are pattern-matching systems.
+
+|Input
+|Text
+
+|Output
+|
+
+* *Text* - Translation, Summarization, Question Answering, Grammar Correction
+* *Image* - Image Generation, Video Generation
+* *Audio* - Text to Speech
+* *Decisions* - Play Games
+
+|===
+
+[cols="2,5a"]
+.*Generative image models*
+|===
+|Item |Generative `image` models
+
+|Definition
+|Generative image models produce new images using techniques like diffusion.
+
+Then give a prompt or related imagery, they *transform random noise into image or generate images from prompts*.
+
+|Input
+|Image
+
+|Output
+|
+
+* *Text* - Image Captioning, Visual Question Answering, Image Search 
+* *Image* - Super Resolution, Image Completion
+* *Video* - Animation
+|===
+
+=== Generative Applications
+
+|===
+|TYPE | DESC
+
+|Text
+|Marketing(content), Sales(mail), Support(chat/email), General writing, Note taking, etc
+
+|Code
+|Code generation, Code Documentation, Text to SQL, Web app builders
+
+|Image
+|Image generation, Consumer/Social, Media/Advertising, Design
+
+|Speech
+|Voice Synthesis
+
+|Vedio
+|Vedio editing/generation
+
+|3D
+|3D Models/scenes
+
+|Other
+|Gaming, RPA, Music, Audio, Biology & chemistry
+
+|===
+
+== Large Language Models
+
