@@ -7,8 +7,13 @@
 
 |01
 |Google Cloud Certified - Associate Cloud Engineer
-|link:https://www.credential.net/ec71e3a4-055d-492d-935f-52f144935daf?key=2b0f16b2cac8c55fe16f9345437bbbb1a1ab0ed2649b68399ef94a358d77d921[link]
+|link:https://google.accredible.com/ec71e3a4-055d-492d-935f-52f144935daf?key=2b0f16b2cac8c55fe16f9345437bbbb1a1ab0ed2649b68399ef94a358d77d921&record_view=true[link]
 |2023-02-13
+
+|02
+|Google Cloud Certified - Professional Cloud Network Engineer
+|link:https://google.accredible.com/20fbbc6d-e73e-4c38-928c-279f21656d0b?key=b689c512a4442d5f70a65f2d838ae92bbd4fb6fb675394b2aaeb8c1c3ea04680&record_view=true[link]
+|2023-05-16
 
 |===
 
