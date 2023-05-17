@@ -15,11 +15,15 @@ public class QuestionService {
 
 
     private Datastore datastore = DatastoreOptions.getDefaultInstance().getService();
+    
     private static final String ENTITY_KIND = "Question";
+    
     private final KeyFactory keyFactory = datastore.newKeyFactory().setKind(ENTITY_KIND);
 
     public Key createQuestion(Question question){
+    	
         Key key = datastore.allocateId(keyFactory.newKey());
+        
         Entity questionEntity = Entity.newBuilder(key)
                 .set(Question.QUIZ, question.getQuiz())
                 .set(Question.AUTHOR, question.getAuthor())
@@ -30,26 +34,33 @@ public class QuestionService {
                 .set(Question.ANSWER_FOUR, question.getAnswerFour())
                 .set(Question.CORRECT_ANSWER, question.getCorrectAnswer())
                 .build();
+        
         datastore.put(questionEntity);
+        
         return key;
     }
 
     public List<Question> getAllQuestions(String quiz){
+    	
         Query<Entity> query = Query.newEntityQueryBuilder()
                 .setKind(ENTITY_KIND)
                 .setFilter(StructuredQuery.PropertyFilter.eq(Question.QUIZ, quiz))
                 .build();
+        
         Iterator<Entity> entities = datastore.run(query);
+        
         return buildQuestions(entities);
     }
 
     private List<Question> buildQuestions(Iterator<Entity> entities){
+    	
         List<Question> questions = new ArrayList<>();
         entities.forEachRemaining(entity-> questions.add(entityToQuestion(entity)));
         return questions;
     }
 
     private Question entityToQuestion(Entity entity){
+    	
         return new Question.Builder()
                 .withQuiz(entity.getString(Question.QUIZ))
                 .withAuthor(entity.getString(Question.AUTHOR))

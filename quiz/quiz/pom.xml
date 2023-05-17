@@ -119,6 +119,22 @@
                     <target>${java.version}</target>
                 </configuration>
             </plugin>
+            <plugin>
+				<groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <version>3.1.0</version>
+                <executions>
+					<execution>
+                        <id>create-entities</id>
+                        <goals>
+                            <goal>java</goal>
+                        </goals>
+                        <configuration>
+                            <mainClass>io.cloudadc.quiz.setup.QuestionBuilder</mainClass>
+                        </configuration>
+                    </execution>
+				</executions>
+			</plugin>
         </plugins>
     </build>
 </project>
