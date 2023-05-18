@@ -1,0 +1,205 @@
+= NGINX Ingress Controller on GCP
+:toc: manual
+
+== Prerequisites
+
+=== Prepare Projects
+
+[source, bash]
+.*Get Current project*
+----
+$ gcloud config configurations list
+NAME: cloudshell-31353
+IS_ACTIVE: True
+ACCOUNT: 
+PROJECT: playground-s-11-74402444
+COMPUTE_DEFAULT_ZONE:
+COMPUTE_DEFAULT_REGION:
+----
+
+[source, bash]
+.*Set PROJECT as Virable*
+----
+export PROJECT=$(gcloud config configurations list | grep PROJECT | awk '{print $2}')
+----
+
+=== Prepare Artifact Registry
+
+[source, bash]
+.*1. Enable Artifact Registry API*
+----
+gcloud services enable artifactregistry.googleapis.com
+----
+
+[source, bash]
+.*2. Create Artifact Registry*
+----
+gcloud artifacts repositories create nginx --repository-format=docker --location=us-central1
+----
+
+[source, bash]
+.*3. Configure authentication*
+----
+gcloud auth configure-docker us-central1-docker.pkg.dev
+----
+
+NOTE: Before you can push or pull images, configure Docker to use the Google Cloud CLI to authenticate requests to Artifact Registry.
+
+=== Prepare Kubernetes
+
+[source, bash]
+.*1. set the zone to run cluster and the cluster name*
+----
+export my_zone=us-central1-a
+export my_cluster=standard-cluster-1
+----
+
+[source, bash]
+.*2. Create cluster*
+----
+gcloud container clusters create $my_cluster --num-nodes=2 --zone=$my_zone --cluster-version=1.22.17-gke.7500 --enable-ip-alias
+----
+
+[source, bash]
+.*3. Verify Install*
+----
+$ kubectl get nodes -o wide
+NAME                                                STATUS   ROLES    AGE   VERSION             INTERNAL-IP   EXTERNAL-IP       OS-IMAGE                             KERNEL-VERSION   CONTAINER-RUNTIME
+gke-standard-cluster-1-default-pool-96a64d1f-4h7q   Ready    <none>   29s   v1.22.17-gke.7500   10.128.0.3    104.198.201.247   Container-Optimized OS from Google   5.10.162+        containerd://1.5.18
+gke-standard-cluster-1-default-pool-96a64d1f-jhb2   Ready    <none>   29s   v1.22.17-gke.7500   10.128.0.2    34.67.181.117     Container-Optimized OS from Google   5.10.162+        containerd://1.5.18
+----
+
+[source, bash]
+.*4. Fetching cluster endpoint and auth data*
+----
+gcloud container clusters get-credentials $my_cluster --zone $my_zone
+----
+
+== Installation
+
+=== Docker Image Build
+
+[source, bash]
+.*1. Get Code*
+----
+git clone https://github.com/nginxinc/kubernetes-ingress.git --branch v2.4.2
+cd kubernetes-ingress/
+----
+
+[source, bash]
+.*2. Copy certificate to project*
+----
+$ ls -l kubernetes-ingress/nginx-repo.*
+-rw-r--r-- 1 cloud_user_p_636d55a2 1001 1532 May 18 07:30 kubernetes-ingress/nginx-repo.crt
+-rw-r--r-- 1 cloud_user_p_636d55a2 1001 1732 May 18 07:30 kubernetes-ingress/nginx-repo.key
+----
+
+[source, bash]
+.*3. Build Image*
+----
+$ make debian-image-plus PREFIX=us-central1-docker.pkg.dev/$PROJECT/nginx/nginx-plus-ingress TARGET=download
+...
+ => => naming to us-central1-docker.pkg.dev/playground-s-11-74402444/nginx/nginx-plus-ingress:2.4.2-SNAPSHOT-4252538  
+----
+
+[source, bash]
+.*4. Push Image to Artifact Registry*
+----
+docker push us-central1-docker.pkg.dev/$PROJECT/nginx/nginx-plus-ingress:2.4.2-SNAPSHOT-4252538 
+----
+
+[source, bash]
+.*5. Tag and Push Image*
+----
+docker tag us-central1-docker.pkg.dev/$PROJECT/nginx/nginx-plus-ingress:2.4.2-SNAPSHOT-4252538  us-central1-docker.pkg.dev/$PROJECT/nginx/nginx-plus-ingress:2.4.2
+docker push us-central1-docker.pkg.dev/$PROJECT/nginx/nginx-plus-ingress:2.4.2
+----
+
+=== Installation
+
+NOTE: The installation scripts are under `kubernetes-ingress/deployments`.
+
+[source, bash]
+.*1. Configure RBAC*
+----
+kubectl apply -f common/ns-and-sa.yaml
+kubectl apply -f rbac/rbac.yaml
+----
+
+[source, bash]
+.*2. Create Common Resources*
+----
+kubectl apply -f common/nginx-config.yaml
+kubectl apply -f common/ingress-class.yaml
+----
+
+[source, bash]
+.*3. Create Custom Resources*
+----
+kubectl apply -f common/crds/k8s.nginx.org_virtualservers.yaml
+kubectl apply -f common/crds/k8s.nginx.org_virtualserverroutes.yaml
+kubectl apply -f common/crds/k8s.nginx.org_transportservers.yaml
+kubectl apply -f common/crds/k8s.nginx.org_policies.yaml
+kubectl apply -f common/crds/k8s.nginx.org_globalconfigurations.yaml
+----
+
+[source, bash]
+.*4. Deploy the Ingress Controller*
+----
+kubectl apply -f daemon-set/nginx-plus-ingress.yaml 
+----
+
+NOTE: Replace the default `nginx-plus-ingress:2.4.2` to `us-central1-docker.pkg.dev/playground-s-11-74402444/nginx/nginx-plus-ingress:2.4.2`, and comment out `-default-server-tls-secret`.
+
+=== Verify Installation
+
+[source, bash]
+.*View the Pod is running*
+----
+$ kubectl get pods -n nginx-ingress
+NAME                  READY   STATUS    RESTARTS   AGE
+nginx-ingress-9tfqp   1/1     Running   0          38s
+nginx-ingress-qqfwg   1/1     Running   0          38s
+----
+
+[source, bash]
+.*Enable ingress http 80*
+----
+gcloud compute firewall-rules create allow-external-http-80 --direction=INGRESS --priority=1000 --network=default --action=ALLOW --rules=tcp:80 --source-ranges=0.0.0.0/0
+----
+
+[source, bash]
+.*Use Node IP to access http 80*
+----
+$ curl 34.67.181.117 -I
+HTTP/1.1 404 Not Found
+Server: nginx/1.23.2
+Date: Thu, 18 May 2023 09:22:40 GMT
+Content-Type: text/html
+Content-Length: 153
+Connection: keep-alive
+----
+
+[source, bash]
+.**
+----
+
+----
+
+[source, bash]
+.**
+----
+
+----
+
+[source, bash]
+.**
+----
+
+----
+
+[source, bash]
+.**
+----
+
+----
