@@ -1,4 +1,0 @@
-= What's this
-:toc: manual
-
-This section contains quickstarts for cloud native adc on public cloud.
