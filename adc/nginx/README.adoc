@@ -175,6 +175,15 @@ kubectl apply -f daemon-set/nginx-plus-ingress.yaml
 
 NOTE: Replace the default `nginx-plus-ingress:2.4.2` to `us-central1-docker.pkg.dev/playground-s-11-74402444/nginx/nginx-plus-ingress:2.4.2`, and comment out `-default-server-tls-secret`.
 
+=== Enable Firewall for ingress HTTP request
+
+[source, bash]
+----
+gcloud compute firewall-rules create allow-external-http-80 --direction=INGRESS --priority=1000 --network=default --action=ALLOW --rules=tcp:80 --source-ranges=0.0.0.0/0
+gcloud compute firewall-rules create allow-external-http-8080 --direction=INGRESS --priority=1000 --network=default --action=ALLOW --rules=tcp:8080 --source-ranges=0.0.0.0/0
+gcloud compute firewall-rules create allow-external-http-8898 --direction=INGRESS --priority=1000 --network=default --action=ALLOW --rules=tcp:8898 --source-ranges=0.0.0.0/0
+----
+
 === Verify Installation
 
 [source, bash]
@@ -184,14 +193,6 @@ $ kubectl get pods -n nginx-ingress
 NAME                  READY   STATUS    RESTARTS   AGE
 nginx-ingress-9tfqp   1/1     Running   0          38s
 nginx-ingress-qqfwg   1/1     Running   0          38s
-----
-
-[source, bash]
-.*Enable ingress http*
-----
-gcloud compute firewall-rules create allow-external-http-80 --direction=INGRESS --priority=1000 --network=default --action=ALLOW --rules=tcp:80 --source-ranges=0.0.0.0/0
-gcloud compute firewall-rules create allow-external-http-8080 --direction=INGRESS --priority=1000 --network=default --action=ALLOW --rules=tcp:8080 --source-ranges=0.0.0.0/0
-gcloud compute firewall-rules create allow-external-http-8898 --direction=INGRESS --priority=1000 --network=default --action=ALLOW --rules=tcp:8898 --source-ranges=0.0.0.0/0
 ----
 
 [source, bash]
