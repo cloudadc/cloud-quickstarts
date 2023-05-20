@@ -48,20 +48,26 @@ NOTE: Before you can push or pull images, configure Docker to use the Google Clo
 === Prepare Kubernetes
 
 [source, bash]
-.*1. set the zone to run cluster and the cluster name*
+.*1. Enable Container API*
+----
+gcloud services enable container.googleapis.com
+----
+
+[source, bash]
+.*2. set the zone to run cluster and the cluster name*
 ----
 export my_zone=us-central1-a
 export my_cluster=standard-cluster-1
 ----
 
 [source, bash]
-.*2. Create cluster*
+.*3. Create cluster*
 ----
 gcloud container clusters create $my_cluster --num-nodes=2 --zone=$my_zone --cluster-version=1.22.17-gke.7500 --enable-ip-alias
 ----
 
 [source, bash]
-.*3. Verify Install*
+.*4. Verify Install*
 ----
 $ kubectl get nodes -o wide
 NAME                                                STATUS   ROLES    AGE   VERSION             INTERNAL-IP   EXTERNAL-IP       OS-IMAGE                             KERNEL-VERSION   CONTAINER-RUNTIME
@@ -70,7 +76,7 @@ gke-standard-cluster-1-default-pool-96a64d1f-jhb2   Ready    <none>   29s   v1.2
 ----
 
 [source, bash]
-.*4. Fetching cluster endpoint and auth data*
+.*5. Fetching cluster endpoint and auth data*
 ----
 gcloud container clusters get-credentials $my_cluster --zone $my_zone
 ----
@@ -113,6 +119,24 @@ docker push us-central1-docker.pkg.dev/$PROJECT/nginx/nginx-plus-ingress:2.4.2-S
 ----
 docker tag us-central1-docker.pkg.dev/$PROJECT/nginx/nginx-plus-ingress:2.4.2-SNAPSHOT-4252538  us-central1-docker.pkg.dev/$PROJECT/nginx/nginx-plus-ingress:2.4.2
 docker push us-central1-docker.pkg.dev/$PROJECT/nginx/nginx-plus-ingress:2.4.2
+----
+
+=== Prepare Test Image
+
+[source, bash]
+.*cafe*
+----
+docker pull cloudadc/cafe:1.1
+docker tag cloudadc/cafe:1.1 us-central1-docker.pkg.dev/$PROJECT/nginx/cafe:1.1
+docker push us-central1-docker.pkg.dev/$PROJECT/nginx/cafe:1.1
+----
+
+[source, bash]
+.*backend*
+----
+docker pull cloudadc/backend:0.1.5
+docker tag cloudadc/backend:0.1.5 us-central1-docker.pkg.dev/$PROJECT/nginx/backend:0.1.5
+docker push us-central1-docker.pkg.dev/$PROJECT/nginx/backend:0.1.5
 ----
 
 === Installation
@@ -163,43 +187,263 @@ nginx-ingress-qqfwg   1/1     Running   0          38s
 ----
 
 [source, bash]
-.*Enable ingress http 80*
+.*Enable ingress http*
 ----
 gcloud compute firewall-rules create allow-external-http-80 --direction=INGRESS --priority=1000 --network=default --action=ALLOW --rules=tcp:80 --source-ranges=0.0.0.0/0
+gcloud compute firewall-rules create allow-external-http-8080 --direction=INGRESS --priority=1000 --network=default --action=ALLOW --rules=tcp:8080 --source-ranges=0.0.0.0/0
+gcloud compute firewall-rules create allow-external-http-8898 --direction=INGRESS --priority=1000 --network=default --action=ALLOW --rules=tcp:8898 --source-ranges=0.0.0.0/0
+----
+
+[source, bash]
+.*Get Node IP*
+----
+export IP=$(kubectl get nodes -o wide --no-headers | head -n 1 | awk '{print $7}')
 ----
 
 [source, bash]
 .*Use Node IP to access http 80*
 ----
-$ curl 34.67.181.117 -I
+$ curl http://$IP -I
 HTTP/1.1 404 Not Found
 Server: nginx/1.23.2
-Date: Thu, 18 May 2023 09:22:40 GMT
+Date: Sat, 20 May 2023 02:33:18 GMT
 Content-Type: text/html
 Content-Length: 153
 Connection: keep-alive
 ----
 
-[source, bash]
-.**
-----
+== API Route
 
-----
+=== Host and URL based Route
 
 [source, bash]
-.**
+.*App*
+----
+kubectl apply -f 001/app.yaml 
+----
+
+* link:001/app.yaml[001/app.yaml]
+
+[source, bash]
+.*VirtualServer*
+----
+kubectl apply -f 001/vs.yaml 
+----
+
+* link:001/vs.yaml[001/vs.yaml]
+
+[source, bash]
+.*Test*
+----
+curl -H "Host: gw001.example.com" http://$IP/foo
+curl -H "Host: gw001.example.com" http://$IP/bar
+----
+
+=== Host and URL based Route(Cross Namespace)
+
+[source, bash]
+.*App*
+----
+kubectl apply -f 002/foo.yaml 
+kubectl apply -f 002/bar.yaml 
+----
+
+* link:002/foo.yaml[002/foo.yaml]
+* link:002/bar.yaml[002/bar.yaml]
+
+[source, bash]
+.*VirtualServer, VirtualServerRoute*
+----
+kubectl apply -f 002/foo-route.yaml 
+kubectl apply -f 002/bar-route.yaml 
+kubectl apply -f 002/vs.yaml 
+----
+* link:002/foo-route.yaml[002/foo-route.yaml]
+* link:002/bar-route.yaml[002/bar-route.yaml]
+* link:002/vs.yaml[002/vs.yaml]
+
+[source, bash]
+.*Test*
+----
+curl -H "Host: gw002.example.com" http://$IP/foo/user
+curl -H "Host: gw002.example.com" http://$IP/foo/order
+curl -H "Host: gw002.example.com" http://$IP/bar/user
+curl -H "Host: gw002.example.com" http://$IP/bar/order
+----
+
+=== Ratio based canary route
+
+[source, bash]
+.*App*
+----
+kubectl apply -f 003/app.yaml 
+----
+
+* link:003/app.yaml[003/app.yaml]
+
+[source, bash]
+.*VirtualServer*
+----
+kubectl apply -f 003/vs.yaml 
+----
+
+* link:003/vs.yaml[003/vs.yaml]
+
+[source, bash]
+.*Test*
+----
+$ for i in {1..100} ; do curl -s -H "Host: gw003.example.com" http://$IP/foo | grep name ; done > out.log
+
+$ cat out.log | wc -l
+     100
+
+$ cat out.log | grep v1 | wc -l
+      93
+
+$ cat out.log | grep v2 | wc -l
+       7
+----
+
+=== Cookie based canary route
+
+[source, bash]
+.*App*
+----
+kubectl apply -f 004/app.yaml 
+----
+
+* link:004/app.yaml[004/app.yaml]
+
+[source, bash]
+.*VirtualServer*
+----
+kubectl apply -f 004/vs.yaml
+----
+
+* link:004/vs.yaml
+
+[source, bash]
+.*Test*
+----
+curl --cookie "version=v2" -H "Host: gw004.example.com" http://$IP/foo
+----
+
+=== Header based canary route
+
+[source, bash]
+.*App*
+----
+kubectl apply -f 005/app.yaml 
+----
+
+* link:005/app.yaml[005/app.yaml]
+
+[source, bash]
+.*VirtualServer*
+----
+kubectl apply -f 005/vs.yaml 
+----
+
+[source, bash]
+.*Test*
+----
+curl -H "test: v2" -H "Host: gw005.example.com" http://$IP/foo
+----
+
+=== Health Check
+
+[source, bash]
+.*App*
+----
+kubectl apply -f 006/app.yaml
+----
+
+* link:006/app.yaml[006/app.yaml]
+
+[source, bash]
+.*VirtualServer*
+----
+kubectl apply -f 006/vs.yaml
+----
+
+* link:006/vs.yaml[006/vs.yaml]
+
+[source, bash]
+.*Test*
+----
+$ curl  -H "Host: gw006.example.com" http://$IP/foo
+
+$ curl -s -X 'GET' http:/$IP_DA:8898//api/8/http/upstreams/vs_gw-006_vs-006_foo | jq .peers[].health_checks
+{
+  "checks": 18,
+  "fails": 0,
+  "unhealthy": 0,
+  "last_passed": true
+}
+{
+  "checks": 18,
+  "fails": 0,
+  "unhealthy": 0,
+  "last_passed": true
+}
+----
+
+=== TD
+
+[source, bash]
+.*App*
 ----
 
 ----
 
 [source, bash]
-.**
+.*VirtualServer*
 ----
 
 ----
 
 [source, bash]
-.**
+.*Test*
+----
+
+----
+
+=== TD
+
+[source, bash]
+.*App*
+----
+
+----
+
+[source, bash]
+.*VirtualServer*
+----
+
+----
+
+[source, bash]
+.*Test*
+----
+
+----
+
+=== TD
+
+[source, bash]
+.*App*
+----
+
+----
+
+[source, bash]
+.*VirtualServer*
+----
+
+----
+
+[source, bash]
+.*Test*
 ----
 
 ----

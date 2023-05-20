@@ -1,0 +1,78 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: gw-002-2
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: user
+  name: user
+  namespace: gw-002-2
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: user
+  template:
+    metadata:
+      labels:
+        app: user
+    spec:
+      containers:
+      - image: us-central1-docker.pkg.dev/playground-s-11-559ebbb3/nginx/cafe:1.1
+        name: backend
+        ports:
+        - containerPort: 8080
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: user-svc
+  namespace: gw-002-2
+spec:
+  ports:
+  - port: 80
+    protocol: TCP
+    targetPort: 8080
+  selector:
+    app: user
+  type: ClusterIP
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: order
+  name: order
+  namespace: gw-002-2
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: order
+  template:
+    metadata:
+      labels:
+        app: order
+    spec:
+      containers:
+      - image: us-central1-docker.pkg.dev/playground-s-11-559ebbb3/nginx/cafe:1.1
+        name: backend
+        ports:
+        - containerPort: 8080
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: order-svc
+  namespace: gw-002-2
+spec:
+  ports:
+  - port: 80
+    protocol: TCP
+    targetPort: 8080
+  selector:
+    app: order
+  type: ClusterIP

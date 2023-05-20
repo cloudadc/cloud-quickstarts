@@ -1,0 +1,21 @@
+apiVersion: k8s.nginx.org/v1
+kind: VirtualServerRoute
+metadata:
+  name: foo-route
+  namespace: gw-002-1
+spec:
+  host: gw002.example.com
+  upstreams:
+  - name: user
+    service: user-svc
+    port: 80
+  - name: order
+    service: order-svc
+    port: 80
+  subroutes:
+  - path: /foo/user
+    action:
+      pass: user
+  - path: /foo/order
+    action:
+      pass: order
