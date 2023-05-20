@@ -1,0 +1,24 @@
+apiVersion: k8s.nginx.org/v1
+kind: VirtualServer
+metadata:
+  name: vs-003
+  namespace: gw-003
+spec:
+  host: gw003.example.com
+  upstreams:
+  - name: foo-v1
+    service: foo-v1-svc
+    port: 80
+  - name: foo-v2
+    service: foo-v2-svc
+    port: 80
+  routes:
+  - path: /foo
+    splits:
+    - weight: 10
+      action:
+        pass: foo-v2
+    - weight: 90
+      action:
+        pass: foo-v1
+

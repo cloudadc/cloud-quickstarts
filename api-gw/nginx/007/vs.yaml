@@ -1,0 +1,23 @@
+apiVersion: k8s.nginx.org/v1
+kind: VirtualServer
+metadata:
+  name: vs-007
+  namespace: gw-007
+spec:
+  host: gw007.example.com
+  upstreams:
+  - name: foo
+    service: foo-svc
+    port: 80
+    sessionCookie:
+      enable: true
+      name: srv_id
+      path: /
+      expires: 1h
+      domain: .example.com
+      httpOnly: false
+      secure: true
+  routes:
+  - path: /foo
+    action:
+      pass: foo
