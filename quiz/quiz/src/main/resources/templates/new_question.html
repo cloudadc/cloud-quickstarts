@@ -1,4 +1,3 @@
-<!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <title>Quiz - Java</title>
@@ -29,7 +28,7 @@
 </div>
 <div class="container">
     <h3>Add question</h3>
-    <form method="POST">
+    <form enctype="multipart/form-data" method="POST">
         <div class="form-group">
             <label for="author">Author</label>
             <input class="form-control" id="author" name="author" type="text"/>
