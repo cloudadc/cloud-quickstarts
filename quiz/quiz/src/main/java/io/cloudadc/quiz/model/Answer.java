@@ -1,4 +1,4 @@
-package io.cloudadc.quiz.services.gcp.domain;
+package io.cloudadc.quiz.model;
 
 public class Answer {
 	

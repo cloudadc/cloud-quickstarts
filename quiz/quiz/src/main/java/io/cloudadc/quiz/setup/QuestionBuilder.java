@@ -1,6 +1,6 @@
 package io.cloudadc.quiz.setup;
 
-import io.cloudadc.quiz.services.gcp.domain.Question;
+import io.cloudadc.quiz.model.Question;
 import io.cloudadc.quiz.services.gcp.datastore.QuestionService;
 
 import java.util.ArrayList;

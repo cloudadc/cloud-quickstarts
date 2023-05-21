@@ -2,7 +2,7 @@ package io.cloudadc.quiz.services.gcp.datastore;
 
 import com.google.cloud.datastore.*;
 
-import io.cloudadc.quiz.services.gcp.domain.Question;
+import io.cloudadc.quiz.model.Question;
 
 import java.util.ArrayList;
 import java.util.Iterator;

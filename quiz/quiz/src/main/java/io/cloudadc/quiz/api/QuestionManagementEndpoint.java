@@ -1,7 +1,7 @@
 package io.cloudadc.quiz.api;
 
+import io.cloudadc.quiz.model.Question;
 import io.cloudadc.quiz.services.gcp.datastore.QuestionService;
-import io.cloudadc.quiz.services.gcp.domain.Question;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;

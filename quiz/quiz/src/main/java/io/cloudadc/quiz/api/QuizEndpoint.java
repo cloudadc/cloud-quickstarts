@@ -6,11 +6,11 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import java.util.List;
 
+import io.cloudadc.quiz.model.Answer;
+import io.cloudadc.quiz.model.Feedback;
+import io.cloudadc.quiz.model.Question;
+import io.cloudadc.quiz.model.QuizResult;
 import io.cloudadc.quiz.services.gcp.datastore.QuestionService;
-import io.cloudadc.quiz.services.gcp.domain.Answer;
-import io.cloudadc.quiz.services.gcp.domain.Feedback;
-import io.cloudadc.quiz.services.gcp.domain.Question;
-import io.cloudadc.quiz.services.gcp.domain.QuizResult;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;

@@ -23,14 +23,31 @@ export GCLOUD_PROJECT=$DEVSHELL_PROJECT_ID
 mvn clean install
 ----
 
+=== Setup Datastore & Load data
+
 [source, bash]
-.*4. Creating Datastore entities*
+.*Creating Datastore entities*
 ----
 mvn exec:java@create-entities
 ----
 
+=== Setup Cloud Storage
+
 [source, bash]
-.*5. Run App locally*
+.*1. Create Bucket*
+----
+gsutil mb gs://$DEVSHELL_PROJECT_ID-media
+----
+
+[source, bash]
+.*2. set GCLOUD_BUCKET*
+----
+export GCLOUD_BUCKET=$DEVSHELL_PROJECT_ID-media
+----
+
+=== Run App locally
+
+[source, bash]
 ----
 mvn spring-boot:run
 ----

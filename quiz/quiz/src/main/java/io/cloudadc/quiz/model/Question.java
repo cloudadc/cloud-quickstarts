@@ -1,4 +1,4 @@
-package io.cloudadc.quiz.services.gcp.domain;
+package io.cloudadc.quiz.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonRootName;
@@ -23,6 +23,8 @@ public class Question {
     
     private long correctAnswer;
     
+    private String imageUrl = "";
+    
     private MultipartFile image;
     
     private long id;
@@ -34,6 +36,7 @@ public class Question {
     public static final String ANSWER_TWO = "answerTwo";
     public static final String ANSWER_THREE = "answerThree";
     public static final String ANSWER_FOUR = "answerFour";
+    public static final String IMAGE_URL = "imageUrl";
     public static final String CORRECT_ANSWER = "correctAnswer";
 
 
@@ -46,6 +49,7 @@ public class Question {
         this.answerThree = builder.answerThree;
         this.answerFour = builder.answerFour;
         this.correctAnswer = builder.correctAnswer;
+        this.imageUrl = builder.imageUrl;
         this.id = builder.id;
     }
 
@@ -58,6 +62,7 @@ public class Question {
         private String answerThree;
         private String answerFour;
         private long correctAnswer;
+        private String imageUrl;
         private long id;
 
         public Builder withQuiz(String quiz){
@@ -97,6 +102,11 @@ public class Question {
 
         public Builder withCorrectAnswer(long correctAnswer){
             this.correctAnswer = correctAnswer;
+            return this;
+        }
+        
+        public Builder withImageUrl(String imageUrl){
+            this.imageUrl = imageUrl;
             return this;
         }
 
@@ -192,7 +202,19 @@ public class Question {
         this.correctAnswer = correctAnswer;
     }
 
-    public MultipartFile getImage() {
+    public String getImageUrl() {
+		return imageUrl;
+	}
+
+
+
+	public void setImageUrl(String imageUrl) {
+		this.imageUrl = imageUrl;
+	}
+
+
+
+	public MultipartFile getImage() {
         return image;
     }
 
@@ -211,6 +233,7 @@ public class Question {
                 ", answerThree='" + answerThree + '\'' +
                 ", answerFour='" + answerFour + '\'' +
                 ", correctAnswer=" + correctAnswer +
+                ", imageUrl='" + imageUrl + '\'' +
                 ", id=" + id +
                 '}';
     }
