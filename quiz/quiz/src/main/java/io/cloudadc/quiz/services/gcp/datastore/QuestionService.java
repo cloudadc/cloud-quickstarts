@@ -33,6 +33,7 @@ public class QuestionService {
                 .set(Question.ANSWER_THREE,question.getAnswerThree())
                 .set(Question.ANSWER_FOUR, question.getAnswerFour())
                 .set(Question.CORRECT_ANSWER, question.getCorrectAnswer())
+                .set(Question.IMAGE_URL,question.getImageUrl())
                 .build();
         
         datastore.put(questionEntity);
@@ -70,6 +71,7 @@ public class QuestionService {
                 .withAnswerThree(entity.getString(Question.ANSWER_THREE))
                 .withAnswerFour(entity.getString(Question.ANSWER_FOUR))
                 .withCorrectAnswer(entity.getLong(Question.CORRECT_ANSWER))
+                .withImageUrl(entity.getString(Question.IMAGE_URL))
                 .withId(entity.getKey().getId())
                 .build();
     }
