@@ -4,6 +4,8 @@ import io.cloudadc.quiz.model.Question;
 import io.cloudadc.quiz.services.gcp.cloudstorage.ImageService;
 import io.cloudadc.quiz.services.gcp.datastore.QuestionService;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -14,6 +16,8 @@ import java.io.IOException;
 
 @Controller
 public class QuestionsController {
+	
+	Logger log = LoggerFactory.getLogger(QuestionsController.class);
 
     @Autowired
     private QuestionService questionService;
@@ -34,8 +38,8 @@ public class QuestionsController {
     	String imageUrl = imageService.saveImage(question.getImage());
     	question.setImageUrl(imageUrl);
     	
-    	System.out.println("Image URL is "+imageUrl);
-    	
+    	log.info("Image URL is " + imageUrl);
+    	    	
         questionService.createQuestion(question);
         return "redirect:/";
     }

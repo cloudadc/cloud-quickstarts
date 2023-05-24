@@ -229,6 +229,138 @@ Content-Length: 153
 Connection: keep-alive
 ----
 
+== Service Types
+
+=== HTTP
+
+[source, bash]
+.*App*
+----
+kubectl apply -f 101/app.yaml 
+----
+
+* link:101/app.yaml[101/app.yaml]
+
+[source, bash]
+.*VirtualServer*
+----
+kubectl apply -f 101/vs.yaml 
+----
+
+* link:101/vs.yaml[101/vs.yaml]
+
+[source, bash]
+.*Test*
+----
+curl -H "Host: gw101.example.com" http://$IP
+----
+
+=== HTTPS
+
+[source, bash]
+.*App*
+----
+kubectl apply -f 102/app.yaml
+----
+
+* link:102/app.yaml[102/app.yaml]
+
+[source, bash]
+.*VirtualServer*
+----
+kubectl apply -f 102/secret.yaml 
+kubectl apply -f 102/vs.yaml 
+----
+
+* link:102/secret.yaml[102/secret.yaml]
+* link:102/vs.yaml[102/vs.yaml]
+
+[source, bash]
+.*Test*
+----
+curl -H "Host: gw102.example.com" https://$IP --insecure
+----
+
+=== gRPC HTTP2
+
+[source, bash]
+.*App*
+----
+kubectl apply -f 103/app.yaml 
+----
+
+* link:103/app.yaml[103/app.yaml]
+
+[source, bash]
+.*VirtualServer*
+----
+kubectl apply -f 103/vs.yaml 
+----
+
+* link:103/vs.yaml[103/vs.yaml]
+
+[source, bash]
+.*Test*
+----
+echo "ADDRESS=gw103.example.com:80" > env.list
+docker run --env-file ./env.list cloudadc/grpc-go-greeting:0.1 greeter_client "kylin SONG"
+----
+
+=== WebSocket
+
+[source, bash]
+.*App*
+----
+kubectl apply -f 104/app.yaml 
+----
+
+* link:104/app.yaml[104/app.yaml]
+
+[source, bash]
+.*VirtualServer*
+----
+kubectl apply -f 104/vs.yaml 
+----
+
+* link:104/vs.yaml[104/vs.yaml]
+
+*TEST*
+
+1. Aceess the websocket via http://gw104.example.com/client.html in broswer.
+2. Enter `ws://gw104.example.com/rlzy/websocket` as connection URL, click *Connect* Button.
+3. Enter `TEXT` as message to send via websocket.
+
+image:104/gw104.png[]
+ 
+=== TCP/UDP
+
+[source, bash]
+.*App*
+----
+kubectl apply -f 105/dns.yaml
+----
+
+* link:105/dns.yaml
+
+[source, bash]
+.*TransportServer*
+----
+kubectl apply -f 105/listeners.yaml 
+kubectl apply -f 105/transport-server-tcp.yaml 
+kubectl apply -f 105/transport-server-udp.yaml 
+----
+
+* link:105/listeners.yaml[105/listeners.yaml]
+* link:105/transport-server-tcp.yaml[105/transport-server-tcp.yaml]
+* link:105/transport-server-udp.yaml[105/transport-server-udp.yaml]
+
+[source, bash]
+.*Test*
+----
+nslookup
+----
+
+
 == API Route
 
 === Host and URL based Route

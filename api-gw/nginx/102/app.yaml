@@ -1,0 +1,41 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: gw-102
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: http-app
+  name: http-app
+  namespace: gw-102
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: http-app
+  template:
+    metadata:
+      labels:
+        app: http-app
+    spec:
+      containers:
+      - image: us-central1-docker.pkg.dev/playground-s-11-e8df3222/nginx/cafe:1.1
+        name: backend
+        ports:
+        - containerPort: 8080
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: http-app-svc
+  namespace: gw-102
+spec:
+  ports:
+  - port: 80
+    protocol: TCP
+    targetPort: 8080
+  selector:
+    app: http-app
+  type: ClusterIP

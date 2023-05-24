@@ -1,0 +1,16 @@
+apiVersion: k8s.nginx.org/v1
+kind: VirtualServer
+metadata:
+  name: vs-103
+  namespace: gw-103
+spec:
+  host: gw103.example.com
+  upstreams:
+  - name: grpc-app
+    service: grpc-app-svc
+    port: 80
+    type: grpc
+  routes:
+  - path: /
+    action:
+      pass: grpc-app

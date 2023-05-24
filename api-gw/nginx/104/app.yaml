@@ -1,0 +1,41 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: gw-104
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: ws-app
+  name: ws-app
+  namespace: gw-104
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ws-app
+  template:
+    metadata:
+      labels:
+        app: ws-app
+    spec:
+      containers:
+      - image: us-central1-docker.pkg.dev/playground-s-11-e8df3222/nginx/backend:0.1.5
+        name: backend
+        ports:
+        - containerPort: 8080
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ws-app-svc
+  namespace: gw-104
+spec:
+  ports:
+  - port: 80
+    protocol: TCP
+    targetPort: 8080
+  selector:
+    app: ws-app
+  type: ClusterIP

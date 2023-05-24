@@ -1,0 +1,15 @@
+apiVersion: k8s.nginx.org/v1
+kind: VirtualServer
+metadata:
+  name: vs-101
+  namespace: gw-101
+spec:
+  host: gw101.example.com
+  upstreams:
+  - name: http-app
+    service: http-app-svc
+    port: 80
+  routes:
+  - path: /
+    action:
+      pass: http-app
