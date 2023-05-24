@@ -1,4 +1,15 @@
 = What's this
 :toc: manual
 
-This section contains quickstarts for cloud native adc on public cloud.
+This section contains quickstarts for cloud native API Gateway on public cloud.
+
+== What's API Gateway
+
+* Develop, deploy, secure, and manage APIs
+
+== Integrated & Tested
+
+The current integrated gateway including:
+
+* NGINX Gateway - https://docs.nginx.com/
+* Google Cloud API Gateway - https://cloud.google.com/api-gateway

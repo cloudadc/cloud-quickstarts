@@ -1,0 +1,72 @@
+= API Gateway
+:toc: manual
+
+== Prerequisites
+
+=== Prepare Projects
+
+[source, bash]
+----
+export GCLOUD_PROJECT=$DEVSHELL_PROJECT_ID
+----
+
+=== Enabling required services
+
+[source, bash]
+----
+gcloud services enable apigateway.googleapis.com
+gcloud services enable servicemanagement.googleapis.com
+gcloud services enable servicecontrol.googleapis.com
+gcloud services enable cloudfunctions.googleapis.com
+gcloud services enable artifactregistry.googleapis.com 
+gcloud services enable run.googleapis.com
+----
+
+== API Gateway and Cloud Functions 
+
+=== Deploying an API backend
+
+[source, bash]
+.*1. Prepare Code*
+----
+cd helloworldFunction
+----
+
+[source, bash]
+.**
+----
+
+----
+
+[source, bash]
+.**
+----
+
+----
+
+[source, bash]
+.**
+----
+
+----
+
+[source, bash]
+.**
+----
+
+----
+
+[source, bash]
+.**
+----
+
+----
+
+[source, bash]
+.**
+----
+
+----
+
+
+
