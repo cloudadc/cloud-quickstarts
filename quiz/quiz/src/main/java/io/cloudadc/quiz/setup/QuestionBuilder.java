@@ -23,6 +23,7 @@ public class QuestionBuilder {
                .withAnswerThree("IBM")
                .withAnswerFour("Microsoft")
                .withCorrectAnswer(2)
+               .withImageUrl("")
                .build();
        questions.add(question);
 
@@ -35,6 +36,7 @@ public class QuestionBuilder {
                 .withAnswerThree("Spanner")
                 .withAnswerFour("BigQuery")
                 .withCorrectAnswer(2)
+                .withImageUrl("")
                 .build();
         questions.add(question);
 
@@ -47,6 +49,7 @@ public class QuestionBuilder {
                 .withAnswerThree("Big Table")
                 .withAnswerFour("All of the above")
                 .withCorrectAnswer(1)
+                .withImageUrl("")
                 .build();
         questions.add(question);
 
@@ -59,6 +62,7 @@ public class QuestionBuilder {
                 .withAnswerThree("Paris")
                 .withAnswerFour("Stockholm")
                 .withCorrectAnswer(3)
+                .withImageUrl("")
                 .build();
         questions.add(question);
        return questions;
