@@ -1,7 +1,9 @@
 package io.cloudadc.quiz.model;
 
 public class QuizResult {
+	
     private long correct;
+    
     private long total;
 
     public long getCorrect() {

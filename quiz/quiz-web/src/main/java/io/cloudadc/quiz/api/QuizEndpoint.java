@@ -11,6 +11,7 @@ import io.cloudadc.quiz.model.Feedback;
 import io.cloudadc.quiz.model.Question;
 import io.cloudadc.quiz.model.QuizResult;
 import io.cloudadc.quiz.services.gcp.datastore.QuestionService;
+import io.cloudadc.quiz.services.gcp.pubsub.PublishService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -25,6 +26,9 @@ public class QuizEndpoint {
 
     @Autowired
     private QuestionService questionService;
+    
+    @Autowired
+    private PublishService publishService;
 
 
     @GetMapping(value = "{quiz}")
@@ -38,13 +42,15 @@ public class QuizEndpoint {
     }
 
     @PostMapping(value = "{quiz}")
-    public ResponseEntity<QuizResult> processAnswers(@PathVariable String quiz, @RequestBody List<Answer> answers) {
+    public ResponseEntity<QuizResult> processAnswers(@PathVariable String quiz, @RequestBody List<Answer> answers) throws Exception {
         
     	List<Question> questions = questionService.getAllQuestions(quiz);
         long correctAnswers = answers.stream().filter(answer -> checkCorrectAnswer(answer, questions)).count();
         QuizResult result = new QuizResult();
         result.setCorrect(correctAnswers);
         result.setTotal(questions.size());
+        
+        publishService.publishAnswers(answers, quiz);
         
         return new ResponseEntity<QuizResult>(result,HttpStatus.OK);
     }
@@ -54,6 +60,8 @@ public class QuizEndpoint {
         
     	ObjectMapper mapper = new ObjectMapper();
         ObjectNode root = mapper.createObjectNode();
+        publishService.publishFeedback(feedback);
+        
         root.put("data","Feedback received");
         
         return new ResponseEntity<ObjectNode>(root,HttpStatus.OK);
@@ -62,6 +70,11 @@ public class QuizEndpoint {
     private boolean checkCorrectAnswer(Answer answer,  List<Question> questions){
        
     	for(Question question : questions){
+    		
+    		if(answer.getId() == question.getId()){
+                answer.setCorrectAnswer(question.getCorrectAnswer());
+            }
+    		
             if (answer.getId() == question.getId() && answer.getAnswer() == question.getCorrectAnswer()){
                 return true;
             }
