@@ -79,3 +79,22 @@ gcloud spanner databases create quiz-database --instance quiz-instance --ddl "CR
 ----
 
 NOTE: The above created a spanner instance named `quiz-instance`, a spanner database named `quiz-database`, `Feedback` and `Answers` are tables under database `quiz-database`.
+
+=== Create quiz-account Service Account
+
+[source, bash]
+----
+gcloud iam service-accounts create quiz-account --display-name "Quiz Account"
+gcloud iam service-accounts keys create key.json --iam-account=quiz-account@$DEVSHELL_PROJECT_ID.iam.gserviceaccount.com
+gcloud projects add-iam-policy-binding $DEVSHELL_PROJECT_ID --member serviceAccount:quiz-account@$DEVSHELL_PROJECT_ID.iam.gserviceaccount.com --role roles/owner
+export GOOGLE_APPLICATION_CREDENTIALS=key.json
+----
+
+=== Start Feedback Handler
+
+[source, bash]
+----
+java -jar feedback-handler/target/quiz-feedback-handler-0.0.1.jar 
+----
+
+=== Start Answers Handler

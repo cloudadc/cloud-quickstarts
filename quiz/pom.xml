@@ -94,6 +94,7 @@
       <module>model</module>  
       <module>questions-loader</module>  
       <module>feedback-handler</module>  
+      <module>answers-handler</module>  
       <module>quiz</module>  
     </modules>
 
