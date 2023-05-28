@@ -1,4 +1,4 @@
-package io.cloudadc.quiz.services.gcp.languageapi;
+package io.cloudadc.quiz.feedback.handler;
 
 import com.google.cloud.language.v1.Document;
 import com.google.cloud.language.v1.LanguageServiceClient;

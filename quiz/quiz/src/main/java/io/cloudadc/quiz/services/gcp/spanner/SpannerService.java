@@ -12,7 +12,6 @@ import com.google.cloud.spanner.Mutation;
 import com.google.cloud.spanner.ResultSet;
 
 import io.cloudadc.quiz.model.Answer;
-import io.cloudadc.quiz.model.Feedback;
 import io.cloudadc.quiz.model.LeaderBoardEntry;
 
 import java.util.ArrayList;
@@ -31,46 +30,11 @@ public class SpannerService {
         return spannerService;
     }
 	
-	public void insertFeedback(Feedback feedback) {
-		
-		SpannerOptions options = SpannerOptions.newBuilder().build();
-        Spanner spanner = options.getService();
-        
-        try {
-			DatabaseId db = DatabaseId.of(options.getProjectId(), SPANNER_INSTANCE, SPANNER_DATABASE);
-			DatabaseClient dbClient = spanner.getDatabaseClient(db);
-			
-			List<Mutation> mutations = new ArrayList<>();
-			
-			mutations.add( 
-					Mutation.newInsertBuilder("Feedback")
-			        .set("feedbackId")
-			        .to(feedback.getEmail()+'_'+feedback.getQuiz()+"_"+feedback.getTimestamp())
-			        .set("email")
-			        .to(feedback.getEmail())
-			        .set("quiz")
-			        .to(feedback.getQuiz())
-			        .set("feedback")
-			        .to(feedback.getFeedback())
-			        .set("rating")
-			        .to(feedback.getRating())
-			        .set("score")
-			        .to(feedback.getSentimentScore())
-			        .set("timestamp")
-			        .to(feedback.getTimestamp())
-			        .build());
-			
-			dbClient.write(mutations);
-		} catch (SpannerException e) {
-			throw e;
-		}
-	}
-	
 	public void insertAnswer(Answer answer) {
         SpannerOptions options = SpannerOptions.newBuilder().build();
         Spanner spanner = options.getService();
         try {
-            DatabaseId db = DatabaseId.of(options.getProjectId(), "quiz-instance", "quiz-database");
+            DatabaseId db = DatabaseId.of(options.getProjectId(), SPANNER_INSTANCE, SPANNER_DATABASE );
             DatabaseClient dbClient = spanner.getDatabaseClient(db);
 
             List<Mutation> mutations = new ArrayList<>();
@@ -104,7 +68,7 @@ public class SpannerService {
         Spanner spanner = options.getService();
         List<LeaderBoardEntry> leaderBoardEntries = new ArrayList<>();
         try {
-            DatabaseId db = DatabaseId.of(options.getProjectId(), "quiz-instance", "quiz-database");
+            DatabaseId db = DatabaseId.of(options.getProjectId(), SPANNER_INSTANCE, SPANNER_DATABASE);
             DatabaseClient dbClient = spanner.getDatabaseClient(db);
 
 

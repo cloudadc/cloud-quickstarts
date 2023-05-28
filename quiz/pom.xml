@@ -93,6 +93,7 @@
     <modules>
       <module>model</module>  
       <module>questions-loader</module>  
+      <module>feedback-handler</module>  
       <module>quiz</module>  
     </modules>
 
