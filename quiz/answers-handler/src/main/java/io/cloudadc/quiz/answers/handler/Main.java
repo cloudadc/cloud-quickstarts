@@ -47,7 +47,9 @@ public class Main implements CommandLineRunner {
         	logger.info("Creating subscription to answers...");
             subscriptionAdminClient.createSubscription(subscription, topic, PushConfig.getDefaultInstance(), 0);
             logger.info("Created.");
-        }
+        } catch (Exception e) {
+	    	logger.info(e.getMessage());
+	    }
         
         MessageReceiver receiver =
                 new MessageReceiver() {

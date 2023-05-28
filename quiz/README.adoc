@@ -23,6 +23,7 @@ mvn clean install
 ----
 gcloud services enable datastore.googleapis.com
 gcloud services enable spanner.googleapis.com
+gcloud services enable language.googleapis.com
 ----
 
 === Set Environment Viarables
@@ -56,7 +57,7 @@ java -jar questions-loader/target/quiz-questions-loader-0.0.1.jar
 
 NOTE: The above will create 5 questions and upload link:etc/img/libai.png[etc/img/libai.png] to Cloud Storage.
 
-Query the datastore via `SELECT * FROM Question`:
+Query the Cloud Datastore via `SELECT * FROM Question`:
 
 image:etc/img/datastore-query.png[]
 
@@ -97,4 +98,31 @@ export GOOGLE_APPLICATION_CREDENTIALS=key.json
 java -jar feedback-handler/target/quiz-feedback-handler-0.0.1.jar 
 ----
 
+Send a message to `feedback` topic:
+
+[source, bash]
+----
+gcloud pubsub topics publish feedback --message='{"email":"kylin@example.com","quiz":"gcp","feedback":"Good","rating":6,"timestamp":0,"sentimentScore":0.0}'
+----
+
+Query the Cloud Spanner via `SELECT * FROM Feedback`:
+
+image:etc/img/cloud-spanner-query.png[]
+
 === Start Answers Handler
+
+[source, bash]
+----
+java -jar answers-handler/target/quiz-answers-handler-0.0.1.jar
+----
+
+Send a message to `answers` topic:
+
+[source, bash]
+----
+gcloud pubsub topics publish answers --message='{"answerId":"101","quiz":"gcp","email":"kylin@example.com","id":0,"answer":2,"correctAnswer":0,"timestamp":0}'
+----
+
+Query the Cloud Spanner via `SELECT * FROM SELECT * FROM Answers;`:
+
+image:etc/img/cloud-spanner-answers.png[]
