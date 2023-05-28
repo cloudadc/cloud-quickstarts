@@ -36,11 +36,11 @@ public class QuestionsController {
     public String submitQuestion(Question question) throws IOException {
     	
     	String imageUrl = imageService.saveImage(question.getImage());
-    	question.setImageUrl(imageUrl);
-    	
     	log.info("Image URL is " + imageUrl);
-    	    	
+    	  
+    	question.setImageUrl(imageUrl);
         questionService.createQuestion(question);
+        
         return "redirect:/";
     }
 }
