@@ -10,8 +10,8 @@
  
     <artifactId>quiz</artifactId>
     <packaging>jar</packaging>
-    <name>Quiz</name>
-    <description>Quiz Application Web</description>
+    <name>Quiz Frontend</name>
+    <description>Quiz Application Frontend</description>
 
 
 	<dependencies>

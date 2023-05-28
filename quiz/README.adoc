@@ -126,3 +126,12 @@ gcloud pubsub topics publish answers --message='{"answerId":"101","quiz":"gcp","
 Query the Cloud Spanner via `SELECT * FROM SELECT * FROM Answers;`:
 
 image:etc/img/cloud-spanner-answers.png[]
+
+=== Start Frontend
+
+[source, bash]
+----
+java -jar quiz/target/quiz-0.0.1.jar 
+----
+
+Access Quiz Application from HOST:8080.
