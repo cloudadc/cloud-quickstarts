@@ -109,6 +109,22 @@ Query the Cloud Spanner via `SELECT * FROM Feedback`:
 
 image:etc/img/cloud-spanner-query.png[]
 
+=== Use Function as Feedback Handler
+
+[source, bash]
+.*Deploy From UI*
+----
+cd feedback-handler-function
+zip cf.zip *.js*
+gsutil cp cf.zip gs://$GCLOUD_BUCKET/
+----
+
+[source, bash]
+.*Deploy From CLI*
+----
+gcloud functions deploy process-feedback --runtime nodejs18 --trigger-topic feedback --source ./feedback-handler-function --stage-bucket $GCLOUD_BUCKET --entry-point subscribe
+----
+
 === Start Answers Handler
 
 [source, bash]
@@ -127,6 +143,13 @@ Query the Cloud Spanner via `SELECT * FROM SELECT * FROM Answers;`:
 
 image:etc/img/cloud-spanner-answers.png[]
 
+=== Use Function as Answers Handler
+
+[source, bash]
+----
+gcloud functions deploy process-answer --runtime nodejs18 --trigger-topic answers --source ./answers-handler-function --stage-bucket $GCLOUD_BUCKET --entry-point subscribe
+----
+
 === Start Frontend
 
 [source, bash]
@@ -135,3 +158,4 @@ java -jar quiz/target/quiz-0.0.1.jar
 ----
 
 Access Quiz Application from HOST:8080.
+
