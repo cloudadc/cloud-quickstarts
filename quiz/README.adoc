@@ -3,51 +3,58 @@
 
 Quiz is a cloud native application build an run cloud.
 
-== Cloud Development
+== Prerequisites
+
+=== Build on Cloud Shell
 
 [source, bash]
-.*1. Creating App Engine app*
+----
+git clone https://github.com/cloudadc/cloud-quickstarts.git
+ln -s cloud-quickstarts/quiz quiz
+cd quiz
+mvn clean install
+----
+
+=== Enabling required services
+
+[source, bash]
+----
+gcloud services enable datastore.googleapis.com
+----
+
+=== Set Environment Viarables
+
+[source, bash]
+----
+export GCLOUD_PROJECT=$DEVSHELL_PROJECT_ID
+export GCLOUD_BUCKET=$DEVSHELL_PROJECT_ID-media
+----
+
+=== Create Cloud Storage Bucket
+
+[source, bash]
+----
+gsutil mb gs://$GCLOUD_BUCKET
+----
+
+=== Create App Engine
+
+[source, bash]
 ----
 gcloud app create --region "us-central"
 ----
 
-[source, bash]
-.*2. set GCLOUD_PROJECT*
-----
-export GCLOUD_PROJECT=$DEVSHELL_PROJECT_ID
-----
-
-[source, bash]
-.*3. Build Locally*
-----
-mvn clean install
-----
-
-=== Setup Datastore & Load data
-
-[source, bash]
-.*Creating Datastore entities*
-----
-mvn exec:java@create-entities
-----
-
-=== Setup Cloud Storage
-
-[source, bash]
-.*1. Create Bucket*
-----
-gsutil mb gs://$DEVSHELL_PROJECT_ID-media
-----
-
-[source, bash]
-.*2. set GCLOUD_BUCKET*
-----
-export GCLOUD_BUCKET=$DEVSHELL_PROJECT_ID-media
-----
-
-=== Run App locally
+=== Load Questions Data to Datastore
 
 [source, bash]
 ----
-mvn spring-boot:run
+java -jar questions-loader/target/quiz-questions-loader-0.0.1.jar 
 ----
+
+NOTE: The above will create 5 questions and upload link:etc/img/libai.png[etc/img/libai.png] to Cloud Storage.
+
+Query the datastore via `SELECT * FROM Question`:
+
+image:etc/img/datastore-query.png[]
+
+Access the Cloud Storage Bucket Image via *imageUrl* in above query results.

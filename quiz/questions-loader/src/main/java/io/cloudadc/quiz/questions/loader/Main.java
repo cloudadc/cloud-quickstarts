@@ -31,6 +31,9 @@ public class Main implements CommandLineRunner {
 			throw new RuntimeException("Can not get GCLOUD_PROJECT and GCLOUD_BUCKET from evn");
 		}
 		
+		System.setProperty("google.project.id", GCLOUD_PROJECT);
+		System.setProperty("google.storage.bucket", GCLOUD_BUCKET);
+		
 	}
 	
 	Logger log = LoggerFactory.getLogger(Main.class);
