@@ -91,9 +91,9 @@
     </dependencyManagement>
 
     <modules>
-      <module>quiz-model</module>  
-      <module>quiz-questions-loader</module>  
-      <module>quiz-web</module>  
+      <module>model</module>  
+      <module>questions-loader</module>  
+      <module>quiz</module>  
     </modules>
 
     <build>

@@ -7,6 +7,9 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.google.cloud.datastore.Datastore;
 import com.google.cloud.datastore.DatastoreOptions;
 import com.google.cloud.datastore.Entity;
@@ -15,16 +18,14 @@ import com.google.cloud.datastore.KeyFactory;
 import com.google.cloud.datastore.Query;
 import com.google.cloud.datastore.StructuredQuery;
 
-
 public class QuestionsLoader {
 	
 	public static QuestionsLoader create() {
 		return new QuestionsLoader();
 	}
 	
-	private QuestionsLoader() {
-		
-	}
+	Logger log = LoggerFactory.getLogger(Main.class);
+	
 
     private Datastore datastore = DatastoreOptions.newBuilder().build().getService();
     
@@ -50,6 +51,8 @@ public class QuestionsLoader {
         
         datastore.put(questionEntity);
         
+        log.info("insert quiz " + question.getQuiz() + "/" + question.getTitle() + ", " + key);
+        
         return key;
     }
 
@@ -62,7 +65,11 @@ public class QuestionsLoader {
         
         Iterator<Entity> entities = datastore.run(query);
         
-        return buildQuestions(entities);
+        List<Question> list = buildQuestions(entities);
+        
+        log.info("query quiz " + quiz + ", total size: " + list.size());
+        
+        return list;
     }
 
     private List<Question> buildQuestions(Iterator<Entity> entities){
