@@ -24,9 +24,6 @@ public class QuizResult {
 
     @Override
     public String toString() {
-        return "QuizResult{" +
-                "correct=" + correct +
-                ", total=" + total +
-                '}';
+        return "QuizResult{" + "correct=" + correct + ", total=" + total + '}';
     }
 }

@@ -4,11 +4,16 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import com.google.api.core.ApiFuture;
+import com.google.api.core.ApiFutureCallback;
+import com.google.api.core.ApiFutures;
 import com.google.cloud.ServiceOptions;
 import com.google.cloud.pubsub.v1.Publisher;
+import com.google.common.util.concurrent.MoreExecutors;
 import com.google.protobuf.ByteString;
 import com.google.pubsub.v1.PubsubMessage;
 import com.google.pubsub.v1.TopicName;
@@ -24,6 +29,8 @@ public class PublishService {
     private static final String FEEDBACK_TOPIC_NAME = "feedback";
     
     public static final String ANSWER_TOPIC_NAME = "answers";
+    
+    Logger logger = LoggerFactory.getLogger(PublishService.class);
     
     
     public void publishFeedback(Feedback feedback) throws Exception {
@@ -44,27 +51,34 @@ public class PublishService {
     }
 
 
-	private void publishMessage(String feedbackMessage, String topic) throws Exception {
+	private void publishMessage(String message, String topic) throws Exception {
 
 		TopicName topicName = TopicName.of(PROJECT_ID, topic);
 		
         Publisher publisher = null;
-        ApiFuture<String> messageIdFuture = null;
         
         try {
         	
 			publisher = Publisher.newBuilder(topicName).build();
 			
-			ByteString data = ByteString.copyFromUtf8(feedbackMessage);
+			ByteString data = ByteString.copyFromUtf8(message);
 			PubsubMessage pubsubMessage = PubsubMessage.newBuilder().setData(data).build();
 			
-			messageIdFuture = publisher.publish(pubsubMessage);
+			ApiFuture<String> future = publisher.publish(pubsubMessage);
+			
+			ApiFutures.addCallback(future, new ApiFutureCallback<String>() {
+
+				@Override
+				public void onFailure(Throwable t) {
+					logger.error("Error publishing message : " + message + ", " + t.getMessage());
+				}
+
+				@Override
+				public void onSuccess(String messageId) {
+					logger.info("Published message ID: " + messageId);
+				}}, MoreExecutors.directExecutor());
 			
 		} finally {
-			
-			String messageId = messageIdFuture.get();
-			
-			System.out.println("published with message ID: " + messageId);
 			
 			if (publisher != null) {
 				publisher.shutdown();

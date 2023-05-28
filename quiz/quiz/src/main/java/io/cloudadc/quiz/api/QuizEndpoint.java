@@ -13,6 +13,8 @@ import io.cloudadc.quiz.model.QuizResult;
 import io.cloudadc.quiz.services.gcp.datastore.QuestionService;
 import io.cloudadc.quiz.services.gcp.pubsub.PublishService;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -26,6 +28,8 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping(value = "/api/quizzes")
 public class QuizEndpoint {
+	
+	Logger logger = LoggerFactory.getLogger(QuizEndpoint.class);
 
     @Autowired
     private QuestionService questionService;
@@ -52,6 +56,8 @@ public class QuizEndpoint {
         QuizResult result = new QuizResult();
         result.setCorrect(correctAnswers);
         result.setTotal(questions.size());
+        
+        logger.info("push " + result + " to answers topic");
         
         publishService.publishAnswers(answers, quiz);
         
