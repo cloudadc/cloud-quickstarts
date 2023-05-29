@@ -1,0 +1,17 @@
+apiVersion: k8s.nginx.org/v1
+kind: VirtualServer
+metadata:
+  name: vs-203
+  namespace: gw-203
+spec:
+  host: gw203.example.com
+  policies:
+  - name: jwt-policy
+  upstreams:
+  - name: foo
+    service: foo-svc
+    port: 80
+  routes:
+  - path: /
+    action:
+      pass: foo

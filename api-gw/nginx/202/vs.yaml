@@ -1,0 +1,17 @@
+apiVersion: k8s.nginx.org/v1
+kind: VirtualServer
+metadata:
+  name: vs-202
+  namespace: gw-202
+spec:
+  host: gw202.example.com
+  policies:
+  - name: basic-auth-policy
+  upstreams:
+  - name: foo
+    service: foo-svc
+    port: 80
+  routes:
+  - path: /
+    action:
+      pass: foo

@@ -746,10 +746,223 @@ kubectl apply -f 201/vs.yaml
 curl -H "Host: gw201.example.com" http://$IP/foo
 ----
 
+=== Basic Authentication
+
+[source, bash]
+.*App*
+----
+kubectl apply -f 202/app.yaml
+----
+
+* link:202/app.yaml[202/app.yaml]
+
+[source, bash]
+.*Policy*
+----
+// 1. use https://wtools.io/generate-htpasswd-online to generate credential pair, add pairs to secret.yaml
+
+// 2. create secret
+kubectl apply -f 202/secret.yaml 
+
+// 3. create policy
+kubectl apply -f 202/policy.yaml 
+----
+
+* link:202/secret.yaml[202/secret.yaml]
+* link:202/policy.yaml[202/policy.yaml]
+
+[source, bash]
+.*VirtualServer*
+----
+kubectl apply -f 202/vs.yaml 
+----
+
+* link:202/vs.yaml[202/vs.yaml]
+
+[source, bash]
+.*Test*
+----
+curl -u "admin:admin" -H "Host: gw202.example.com" http://$IP/foo
+curl -u "user:user" -H "Host: gw202.example.com" http://$IP/foo
+curl -u "kylin:default" -H "Host: gw202.example.com" http://$IP/foo
+----
+
+=== JWT Validation
+
+[source, bash]
+.*App*
+----
+kubectl apply -f 203/app.yaml
+----
+
+* link:203/app.yaml[203/app.yaml]
+
+[source, bash]
+.*Policy*
+----
+kubectl apply -f 203/jwk-secret.yaml 
+kubectl apply -f 203/jwt.yaml 
+----
+
+* link:203/jwk-secret.yaml[203/jwk-secret.yaml]
+* link:203/jwt.yaml[203/jwt.yaml]
+
+[source, bash]
+.*VirtualServer*
+----
+kubectl apply -f 203/vs.yaml
+----
+
+* link:203/vs.yaml[203/vs.yaml]
+
+[source, bash]
+.*Test*
+----
+curl -H "Host: gw203.example.com" -H "token: `cat 203/token.jwt`" http://$IP/foo 
+----
+
+== API Rate Limit
+
 === TD
 
 [source, bash]
 .*App*
+----
+
+----
+
+[source, bash]
+.*Policy*
+----
+
+----
+
+[source, bash]
+.*VirtualServer*
+----
+
+----
+
+[source, bash]
+.*Test*
+----
+
+----
+
+=== TD
+
+[source, bash]
+.*App*
+----
+
+----
+
+[source, bash]
+.*Policy*
+----
+
+----
+
+[source, bash]
+.*VirtualServer*
+----
+
+----
+
+[source, bash]
+.*Test*
+----
+
+----
+
+=== TD
+
+[source, bash]
+.*App*
+----
+
+----
+
+[source, bash]
+.*Policy*
+----
+
+----
+
+[source, bash]
+.*VirtualServer*
+----
+
+----
+
+[source, bash]
+.*Test*
+----
+
+----
+
+=== TD
+
+[source, bash]
+.*App*
+----
+
+----
+
+[source, bash]
+.*Policy*
+----
+
+----
+
+[source, bash]
+.*VirtualServer*
+----
+
+----
+
+[source, bash]
+.*Test*
+----
+
+----
+
+=== TD
+
+[source, bash]
+.*App*
+----
+
+----
+
+[source, bash]
+.*Policy*
+----
+
+----
+
+[source, bash]
+.*VirtualServer*
+----
+
+----
+
+[source, bash]
+.*Test*
+----
+
+----
+
+=== TD
+
+[source, bash]
+.*App*
+----
+
+----
+
+[source, bash]
+.*Policy*
 ----
 
 ----
