@@ -1,8 +1,8 @@
 apiVersion: k8s.nginx.org/v1alpha1
 kind: GlobalConfiguration 
 metadata:
-  name: nginx-listeners
-  namespace: gw-105
+  name: nginx-configuration
+  namespace: nginx-ingress
 spec:
   listeners:
   - name: dns-udp
@@ -11,3 +11,9 @@ spec:
   - name: dns-tcp
     port: 5353
     protocol: TCP
+  - name: ttcp-tcp
+    port: 5001
+    protocol: TCP
+  - name: ttcp-udp
+    port: 5001
+    protocol: UDP

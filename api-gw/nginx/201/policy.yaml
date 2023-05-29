@@ -1,0 +1,9 @@
+apiVersion: k8s.nginx.org/v1
+kind: Policy
+metadata:
+  name: allow-subnets
+  namespace: gw-201
+spec:
+  accessControl:
+    allow:
+    - 10.0.0.0/8

@@ -1,0 +1,17 @@
+apiVersion: k8s.nginx.org/v1
+kind: VirtualServer
+metadata:
+  name: vs-201
+  namespace: gw-201
+spec:
+  host: gw201.example.com
+  policies:
+  - name: allow-subnets
+  upstreams:
+  - name: foo
+    service: foo-svc
+    port: 80
+  routes:
+  - path: /foo
+    action:
+      pass: foo

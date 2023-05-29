@@ -1,0 +1,15 @@
+apiVersion: k8s.nginx.org/v1alpha1
+kind: TransportServer
+metadata:
+  name: ttcp
+  namespace: gw-105
+spec:
+  listener:
+    name: ttcp-tcp 
+    protocol: TCP
+  upstreams:
+  - name: ttcp
+    service: ttcp-svc
+    port: 5001
+  action:
+    pass: ttcp

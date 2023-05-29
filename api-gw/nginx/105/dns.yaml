@@ -32,7 +32,7 @@ spec:
     spec:
       containers:
       - name: coredns
-        image: us-central1-docker.pkg.dev/playground-s-11-e8df3222/nginx/coredns
+        image: coredns/coredns:1.10.0
         args: [ "-conf", "/etc/coredns/Corefile" ]
         volumeMounts:
         - name: config-volume

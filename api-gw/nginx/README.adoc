@@ -6,18 +6,6 @@
 === Prepare Projects
 
 [source, bash]
-.*Get Current project*
-----
-$ gcloud config configurations list
-NAME: cloudshell-31353
-IS_ACTIVE: True
-ACCOUNT: 
-PROJECT: playground-s-11-74402444
-COMPUTE_DEFAULT_ZONE:
-COMPUTE_DEFAULT_REGION:
-----
-
-[source, bash]
 .*Set PROJECT as Virable*
 ----
 export PROJECT=$(gcloud config configurations list | grep PROJECT | awk '{print $2}')
@@ -278,6 +266,10 @@ kubectl apply -f 102/vs.yaml
 [source, bash]
 .*Test*
 ----
+// firewall
+gcloud compute firewall-rules create allow-external-https-443 --direction=INGRESS --priority=1000 --network=default --action=ALLOW --rules=tcp:443 --source-ranges=0.0.0.0/0
+
+// access
 curl -H "Host: gw102.example.com" https://$IP --insecure
 ----
 
@@ -338,26 +330,49 @@ image:104/gw104.png[]
 .*App*
 ----
 kubectl apply -f 105/dns.yaml
+kubectl apply -f 105/ttcp.yaml 
 ----
 
-* link:105/dns.yaml
+* link:105/dns.yaml[105/dns.yaml]
+* link:105/ttcp.yaml[105/ttcp.yaml]
+
+[source, bash]
+.*GlobalConfiguration*
+----
+kubectl apply -f 105/listeners.yaml
+----
+
+* link:105/listeners.yaml[105/listeners.yaml]
+
+NOTE: `-global-configuration` is necessary to use GlobalConfiguration.
 
 [source, bash]
 .*TransportServer*
 ----
-kubectl apply -f 105/listeners.yaml 
 kubectl apply -f 105/transport-server-tcp.yaml 
 kubectl apply -f 105/transport-server-udp.yaml 
+kubectl apply -f 105/transport-server-ttcp.yaml
 ----
 
-* link:105/listeners.yaml[105/listeners.yaml]
 * link:105/transport-server-tcp.yaml[105/transport-server-tcp.yaml]
 * link:105/transport-server-udp.yaml[105/transport-server-udp.yaml]
+* link:105/transport-server-ttcp.yaml[105/transport-server-ttcp.yaml]
 
 [source, bash]
 .*Test*
 ----
-nslookup
+// 1. firewall
+gcloud compute firewall-rules create allow-external-dns-5353 --direction=INGRESS --priority=1000 --network=default --action=ALLOW --rules=tcp:5353,udp:5353 --source-ranges=0.0.0.0/0
+gcloud compute firewall-rules create allow-external-tcp-5001 --direction=INGRESS --priority=1000 --network=default --action=ALLOW --rules=tcp:5001 --source-ranges=0.0.0.0/0
+
+// 2. dns lookup tcp
+dig @$IP -p 5353 ksoong.org +tcp
+
+// 3. dns lookup udp
+dig @$IP -p 5353 ksoong.org
+
+// 4. ttcp
+docker run --rm  cloudadc/ttcp:1.14-2-cli ttcp -t $IP
 ----
 
 
@@ -697,24 +712,38 @@ $ curl -H "X-Forwarded-For: 1.1.1.1, 1.1.1.2" -H "Host: gw011.example.com" http:
     Request Headers: x-real-ip: [111.223.104.76] x-forwarded-host: [gw011.example.com] x-forwarded-proto: [http] host: [gw011.example.com] x-forwarded-port: [80] connection: [close] x-forwarded-for: [1.1.1.1,1.1.1.2] user-agent: [curl/7.64.1] accept: [*/*] 
 ----
 
-=== TD
+== API Access Control
+
+=== Allow specified IP addresses/subnets
 
 [source, bash]
 .*App*
 ----
-
+kubectl apply -f 201/app.yaml 
 ----
+
+* link:201/app.yaml[201/app.yaml]
+
+[source, bash]
+.*Policy*
+----
+kubectl apply -f 201/policy.yaml
+----
+
+* link:201/policy.yaml[201/policy.yaml]
 
 [source, bash]
 .*VirtualServer*
 ----
-
+kubectl apply -f 201/vs.yaml 
 ----
+
+* link:201/vs.yaml[201/vs.yaml]
 
 [source, bash]
 .*Test*
 ----
-
+curl -H "Host: gw201.example.com" http://$IP/foo
 ----
 
 === TD
