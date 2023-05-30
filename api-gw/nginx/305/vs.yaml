@@ -1,0 +1,17 @@
+apiVersion: k8s.nginx.org/v1
+kind: VirtualServer
+metadata:
+  name: vs-305
+  namespace: gw-305
+spec:
+  host: gw305.example.com
+  policies:
+  - name: rate-limit-arg
+  upstreams:
+  - name: foo
+    service: foo-svc
+    port: 80
+  routes:
+  - path: /
+    action:
+      pass: foo

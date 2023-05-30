@@ -1,0 +1,10 @@
+apiVersion: k8s.nginx.org/v1
+kind: Policy
+metadata:
+  name: rate-limit-cookie
+  namespace: gw-304
+spec:
+  rateLimit:
+    rate: 1r/s
+    zoneSize: 10M
+    key: ${cookie_ratelimit}

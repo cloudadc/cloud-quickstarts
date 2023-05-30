@@ -1,0 +1,10 @@
+apiVersion: k8s.nginx.org/v1
+kind: Policy
+metadata:
+  name: rate-limit-header
+  namespace: gw-303
+spec:
+  rateLimit:
+    rate: 1r/s
+    zoneSize: 10M
+    key: ${http_ratelimit}

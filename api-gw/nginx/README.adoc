@@ -823,134 +823,165 @@ curl -H "Host: gw203.example.com" -H "token: `cat 203/token.jwt`" http://$IP/foo
 
 == API Rate Limit
 
-=== TD
+=== Source Address Based Rate Limit
 
 [source, bash]
 .*App*
 ----
-
+kubectl apply -f 301/app.yaml
 ----
+
+* link:301/app.yaml[301/app.yaml]
 
 [source, bash]
 .*Policy*
 ----
-
+kubectl apply -f 301/policy.yaml 
 ----
+
+* link:301/policy.yaml[301/policy.yaml]
 
 [source, bash]
 .*VirtualServer*
 ----
-
+kubectl apply -f 301/vs.yaml
 ----
+
+* link:301/vs.yaml[301/vs.yaml]
 
 [source, bash]
 .*Test*
 ----
-
+for i in {1..10} ; do curl -H "Host: gw301.example.com" http://$IP -I ; done
 ----
 
-=== TD
+=== URI Based Based Rate Limit
 
 [source, bash]
 .*App*
 ----
-
+kubectl apply -f 302/app.yaml 
 ----
+
+* link:302/app.yaml[302/app.yaml]
 
 [source, bash]
 .*Policy*
 ----
-
+kubectl apply -f 302/policy.yaml 
 ----
+
+* link:302/policy.yaml[302/policy.yaml]
 
 [source, bash]
 .*VirtualServer*
 ----
-
+kubectl apply -f 302/vs.yaml
 ----
+
+* link:302/vs.yaml[302/vs.yaml]
 
 [source, bash]
 .*Test*
 ----
-
+for i in {1..10} ; do curl -H "Host: gw302.example.com" http://$IP/test -I ; done
+for i in {1..10} ; do curl -H "Host: gw302.example.com" http://$IP/test$i -I ; done
 ----
 
-=== TD
+=== Header Based Rate Limit
 
 [source, bash]
 .*App*
 ----
-
+kubectl apply -f 303/app.yaml
 ----
+
+* link:303/app.yaml[303/app.yaml]
 
 [source, bash]
 .*Policy*
 ----
-
+kubectl apply -f 303/policy.yaml
 ----
+
+* link:303/policy.yaml[303/policy.yaml]
 
 [source, bash]
 .*VirtualServer*
 ----
-
+kubectl apply -f 303/vs.yaml
 ----
+
+* link:303/vs.yaml[303/vs.yaml]
 
 [source, bash]
 .*Test*
 ----
-
+for i in {1..10} ; do curl -H "Host: gw303.example.com" -H "ratelimit: 1" http://$IP/test -I ; done
 ----
 
-=== TD
+=== Cookie Based Rate Limit
 
 [source, bash]
 .*App*
 ----
-
+kubectl apply -f 304/app.yaml
 ----
+
+* link:304/app.yaml[304/app.yaml]
 
 [source, bash]
 .*Policy*
 ----
-
+kubectl apply -f 304/policy.yaml 
 ----
+
+* link:304/policy.yaml[304/policy.yaml]
 
 [source, bash]
 .*VirtualServer*
 ----
-
+kubectl apply -f 304/vs.yaml
 ----
+
+* link:304/vs.yaml[304/vs.yaml]
 
 [source, bash]
 .*Test*
 ----
-
+for i in {1..10} ; do curl -H "Host: gw304.example.com"  --cookie "ratelimit=1" http://$IP/test -I ; done
 ----
 
-=== TD
+=== Argument Based Rate Limit
 
 [source, bash]
 .*App*
 ----
-
+kubectl apply -f 305/app.yaml
 ----
+
+* link:305/app.yaml[305/app.yaml]
 
 [source, bash]
 .*Policy*
 ----
-
+kubectl apply -f 305/policy.yaml
 ----
+
+* link:305/policy.yaml[305/policy.yaml]
 
 [source, bash]
 .*VirtualServer*
 ----
-
+kubectl apply -f 305/vs.yaml 
 ----
+
+* link:305/vs.yaml[305/vs.yaml]
 
 [source, bash]
 .*Test*
 ----
-
+for i in {1..10} ; do curl -H "Host: gw305.example.com" "http://$IP/test?ratelimit=1" -I ; done
 ----
 
 === TD
