@@ -1,0 +1,17 @@
+apiVersion: k8s.nginx.org/v1
+kind: VirtualServer
+metadata:
+  name: vs-401
+  namespace: gw-401
+spec:
+  host: gw401.example.com
+  policies:
+  - name: rate-limit-source-addr
+  upstreams:
+  - name: foo
+    service: foo-svc
+    port: 80
+  routes:
+  - path: /
+    action:
+      pass: foo
