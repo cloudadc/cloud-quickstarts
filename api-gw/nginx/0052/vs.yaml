@@ -1,0 +1,31 @@
+apiVersion: k8s.nginx.org/v1
+kind: VirtualServer
+metadata:
+  name: vs-0052
+  namespace: gw-0052
+spec:
+  host: gw0052.example.com
+  upstreams:
+  - name: foo-v1
+    service: foo-v1-svc
+    port: 80
+  - name: foo-v2
+    service: foo-v2-svc
+    port: 80
+  routes:
+  - path: /variables
+    action:
+      return:
+        code: 200
+        type: text/plain
+        body: "remote_addr: ${remote_addr}\nremote_port: ${remote_port}\nrequest_uri: ${request_uri}\nrequest_method: ${request_method}\n"
+  - path: /foo
+    matches:
+    - conditions:
+      - variable: $remote_addr
+        value: ~^42.61.112
+      action:
+        pass: foo-v2
+    action:
+      pass: foo-v1
+

@@ -435,7 +435,7 @@ curl -H "Host: gw002.example.com" http://$IP/bar/user
 curl -H "Host: gw002.example.com" http://$IP/bar/order
 ----
 
-=== Ratio based canary route
+=== Ratio Based Canary Route
 
 [source, bash]
 .*App*
@@ -468,7 +468,7 @@ $ cat out.log | grep v2 | wc -l
        7
 ----
 
-=== Cookie based canary route
+=== Cookie Based Canary Route
 
 [source, bash]
 .*App*
@@ -492,7 +492,7 @@ kubectl apply -f 004/vs.yaml
 curl --cookie "version=v2" -H "Host: gw004.example.com" http://$IP/foo
 ----
 
-=== Header based canary route
+=== Header Based Canary Route
 
 [source, bash]
 .*App*
@@ -512,6 +512,73 @@ kubectl apply -f 005/vs.yaml
 .*Test*
 ----
 curl -H "test: v2" -H "Host: gw005.example.com" http://$IP/foo
+----
+
+=== Argument Based Canary Route
+
+[source, bash]
+.*App*
+----
+kubectl apply -f 0051/app.yaml
+----
+
+* link:0051/app.yaml[0051/app.yaml]
+
+[source, bash]
+.*VirtualServer*
+----
+kubectl apply -f 0051/vs.yaml 
+----
+
+[source, bash]
+.*Test*
+----
+curl  -H "Host: gw0051.example.com" http://$IP/foo?test=v2
+----
+
+=== Source Address Based Canary Route
+
+[source, bash]
+.*App*
+----
+kubectl apply -f 0052/app.yaml
+----
+
+* link:0052/app.yaml[0052/app.yaml]
+
+[source, bash]
+.*VirtualServer*
+----
+kubectl apply -f 0052/vs.yaml
+----
+
+[source, bash]
+.*Test*
+----
+curl  -H "Host: gw0052.example.com" http://$IP/variables
+curl  -H "Host: gw0052.example.com" http://$IP/foo
+----
+
+=== Request URI Based Canary Route
+
+[source, bash]
+.*App*
+----
+kubectl apply -f 0053/app.yaml
+----
+
+* link:0053/app.yaml[0053/app.yaml]
+
+[source, bash]
+.*VirtualServer*
+----
+kubectl apply -f 0053/vs.yaml
+----
+
+[source, bash]
+.*Test*
+----
+curl  -H "Host: gw0053.example.com" http://$IP/v2
 ----
 
 === Health Check

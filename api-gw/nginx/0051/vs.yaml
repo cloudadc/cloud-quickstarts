@@ -1,0 +1,25 @@
+apiVersion: k8s.nginx.org/v1
+kind: VirtualServer
+metadata:
+  name: vs-0051
+  namespace: gw-0051
+spec:
+  host: gw0051.example.com
+  upstreams:
+  - name: foo-v1
+    service: foo-v1-svc
+    port: 80
+  - name: foo-v2
+    service: foo-v2-svc
+    port: 80
+  routes:
+  - path: /foo
+    matches:
+    - conditions:
+      - argument: test
+        value: v2
+      action:
+        pass: foo-v2
+    action:
+      pass: foo-v1
+
