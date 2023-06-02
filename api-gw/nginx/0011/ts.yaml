@@ -1,0 +1,34 @@
+apiVersion: k8s.nginx.org/v1alpha1
+kind: TransportServer
+metadata:
+  name: foo
+  namespace: gw-0011
+spec:
+  listener:
+    name: tls-passthrough
+    protocol: TLS_PASSTHROUGH
+  host: foo.gw0011.example.com
+  upstreams:
+    - name: foo-app
+      service: foo-svc
+      port: 8443
+  action:
+    pass: foo-app
+---
+apiVersion: k8s.nginx.org/v1alpha1
+kind: TransportServer
+metadata:
+  name: bar
+  namespace: gw-0011
+spec:
+  listener:
+    name: tls-passthrough
+    protocol: TLS_PASSTHROUGH
+  host: bar.gw0011.example.com
+  upstreams:
+    - name: bar-app
+      service: bar-svc
+      port: 8443
+  action:
+    pass: bar-app    
+

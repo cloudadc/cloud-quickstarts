@@ -1,0 +1,38 @@
+apiVersion: k8s.nginx.org/v1
+kind: VirtualServer
+metadata:
+  name: vs-00021
+  namespace: gw-0002
+spec:
+  host: gw00021.example.com
+  upstreams:
+  - name: user-app
+    service: user-svc
+    port: 80
+  - name: order-app
+    service: order-svc
+    port: 80
+  routes:
+  - path: /user
+    action:
+      pass: user-app
+  - path: /order
+    action:
+      pass: order-app
+---
+apiVersion: k8s.nginx.org/v1
+kind: VirtualServer
+metadata:
+  name: vs-00022
+  namespace: gw-0002
+spec:
+  host: gw00022.example.com
+  upstreams:
+  - name: cart-app
+    service: cart-svc
+    port: 80
+  routes:
+  - path: /
+    action:
+      pass: cart-app
+

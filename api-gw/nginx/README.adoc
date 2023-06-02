@@ -378,29 +378,128 @@ docker run --rm  cloudadc/ttcp:1.14-2-cli ttcp -t $IP
 
 == API Route
 
-=== Host and URL based Route
+=== URL Based Route
+
+image:0001/api-route-url.png[]
 
 [source, bash]
 .*App*
 ----
-kubectl apply -f 001/app.yaml 
+kubectl apply -f 0001/app.yaml
 ----
 
-* link:001/app.yaml[001/app.yaml]
+* link:0001/app.yaml[0001/app.yaml]
 
-[source, bash]
+[source, yaml]
 .*VirtualServer*
 ----
-kubectl apply -f 001/vs.yaml 
+  upstreams:
+  - name: user-app
+    service: user-svc
+    port: 80
+  - name: order-app
+    service: order-svc
+    port: 80
+  - name: cart-app
+    service: cart-svc
+    port: 80
+  routes:
+  - path: /user
+    action:
+      pass: user-app
+  - path: /order
+    action:
+      pass: order-app
+  - path: /cart
+    action:
+      pass: cart-app
 ----
 
-* link:001/vs.yaml[001/vs.yaml]
+* link:0001/vs.yaml[0001/vs.yaml]
 
 [source, bash]
 .*Test*
 ----
-curl -H "Host: gw001.example.com" http://$IP/foo
-curl -H "Host: gw001.example.com" http://$IP/bar
+curl -H "Host: gw0001.example.com" http://$IP/user
+curl -H "Host: gw0001.example.com" http://$IP/order
+curl -H "Host: gw0001.example.com" http://$IP/cart
+----
+
+=== Host and URL Based Route
+
+image:0002/pi-route-host-port.png[]
+
+[source, bash]
+.*App*
+----
+kubectl apply -f 0002/app.yaml 
+----
+
+* link:0002/app.yaml[0002/app.yaml]
+
+[source, yaml]
+.*VirtualServer*
+----
+  host: user.example.com
+  upstreams:
+  - name: user-app
+    service: user-svc
+    port: 80
+  - name: order-app
+    service: order-svc
+    port: 80
+  routes:
+  - path: /user
+    action:
+      pass: user-app
+  - path: /order
+    action:
+      pass: order-app
+
+  host: cart.example.com
+  upstreams:
+  - name: cart-app
+    service: cart-svc
+    port: 80
+  routes:
+  - path: /
+    action:
+      pass: cart-app
+----
+
+* link:0002/vs.yaml[0002/vs.yaml]
+
+[source, bash]
+.*Test*
+----
+curl -H "Host: gw00021.example.com" http://$IP/user
+curl -H "Host: gw00021.example.com" http://$IP/order
+curl -H "Host: gw00022.example.com" http://$IP
+----
+
+=== Host Based Route(HTTPS)
+
+[source, bash]
+.*App*
+----
+kubectl apply -f 0011/app.yaml 
+----
+
+* link:0011/app.yaml[0011/app.yaml]
+
+[source, bash]
+.*TransportServer*
+----
+kubectl apply -f 0011/ts.yaml
+----
+
+* link:0011/ts.yaml[0011/ts.yaml]
+
+[source, bash]
+.*Test*
+----
+curl --resolve foo.gw0011.example.com:443:$IP https://foo.gw0011.example.com --insecure
+curl --resolve bar.gw0011.example.com:443:$IP https://bar.gw0011.example.com --insecure
 ----
 
 === Host and URL based Route(Cross Namespace)
