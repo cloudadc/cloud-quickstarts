@@ -427,7 +427,7 @@ curl -H "Host: gw0001.example.com" http://$IP/cart
 
 === Host and URL Based Route
 
-image:0002/pi-route-host-port.png[]
+image:0002/api-route-host-port.png[]
 
 [source, bash]
 .*App*
