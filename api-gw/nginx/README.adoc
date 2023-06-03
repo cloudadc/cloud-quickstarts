@@ -322,7 +322,7 @@ kubectl apply -f 104/vs.yaml
 2. Enter `ws://gw104.example.com/rlzy/websocket` as connection URL, click *Connect* Button.
 3. Enter `TEXT` as message to send via websocket.
 
-image:104/gw104.png[]
+image:104/gw104.png[Image,500,200]
  
 === TCP/UDP
 
@@ -380,7 +380,7 @@ docker run --rm  cloudadc/ttcp:1.14-2-cli ttcp -t $IP
 
 === URL Based Route
 
-image:0001/api-route-url.png[]
+image:0001/api-route-url.png[Image,600,400]
 
 [source, bash]
 .*App*
@@ -427,7 +427,7 @@ curl -H "Host: gw0001.example.com" http://$IP/cart
 
 === Host and URL Based Route
 
-image:0002/api-route-host-port.png[]
+image:0002/api-route-host-port.png[Image,600,400]
 
 [source, bash]
 .*App*
