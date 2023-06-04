@@ -380,7 +380,7 @@ docker run --rm  cloudadc/ttcp:1.14-2-cli ttcp -t $IP
 
 === URL Based Route
 
-image:0001/api-route-url.png[Image,500,300]
+image:0001/api-route-url.png[Image,500,280]
 
 [source, bash]
 .*App*
@@ -427,7 +427,7 @@ curl -H "Host: gw0001.example.com" http://$IP/cart
 
 === Host and URL Based Route
 
-image:0002/api-route-host-port.png[Image,500,300]
+image:0002/api-route-host-port.png[Image,500,280]
 
 [source, bash]
 .*App*
