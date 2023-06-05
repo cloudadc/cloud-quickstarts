@@ -375,12 +375,11 @@ dig @$IP -p 5353 ksoong.org
 docker run --rm  cloudadc/ttcp:1.14-2-cli ttcp -t $IP
 ----
 
-
 == API Route
 
 === URL Based Route
 
-image:0001/api-route-url.png[Image,500,280]
+image:0001/api-route-url.png[Image,500,200]
 
 [source, bash]
 .*App*
@@ -427,7 +426,7 @@ curl -H "Host: gw0001.example.com" http://$IP/cart
 
 === Host and URL Based Route
 
-image:0002/api-route-host-port.png[Image,500,280]
+image:0002/api-route-host-port.png[Image,500,200]
 
 [source, bash]
 .*App*
@@ -479,6 +478,8 @@ curl -H "Host: gw00022.example.com" http://$IP
 
 === Host Based Route(HTTPS)
 
+image:0011/api-route-hosts-https.png[Image,500,200]
+
 [source, bash]
 .*App*
 ----
@@ -490,7 +491,21 @@ kubectl apply -f 0011/app.yaml
 [source, bash]
 .*TransportServer*
 ----
-kubectl apply -f 0011/ts.yaml
+  host: foo.gw0011.example.com
+  upstreams:
+    - name: foo-app
+      service: foo-svc
+      port: 8443
+  action:
+    pass: foo-app
+
+  host: bar.gw0011.example.com
+  upstreams:
+    - name: bar-app
+      service: bar-svc
+      port: 8443
+  action:
+    pass: bar-app
 ----
 
 * link:0011/ts.yaml[0011/ts.yaml]
@@ -503,6 +518,8 @@ curl --resolve bar.gw0011.example.com:443:$IP https://bar.gw0011.example.com --i
 ----
 
 === Host and URL based Route(Cross Namespace)
+
+image:002/api-route-muti-tenants.png[Image,500,250]
 
 [source, bash]
 .*App*
@@ -517,9 +534,42 @@ kubectl apply -f 002/bar.yaml
 [source, bash]
 .*VirtualServer, VirtualServerRoute*
 ----
-kubectl apply -f 002/foo-route.yaml 
-kubectl apply -f 002/bar-route.yaml 
-kubectl apply -f 002/vs.yaml 
+  upstreams:
+  - name: user
+    service: user-svc
+    port: 80
+  - name: order
+    service: order-svc
+    port: 80
+  subroutes:
+  - path: /foo/user
+    action:
+      pass: user
+  - path: /foo/order
+    action:
+      pass: order
+
+  upstreams:
+  - name: user
+    service: user-svc
+    port: 80
+  - name: order
+    service: order-svc
+    port: 80
+  subroutes:
+  - path: /bar/user
+    action:
+      pass: user
+  - path: /bar/order
+    action:
+      pass: order
+
+  host: gw002.example.com
+  routes:
+  - path: /foo
+    route: gw-002-1/foo-route
+  - path: /bar
+    route: gw-002-2/bar-route
 ----
 * link:002/foo-route.yaml[002/foo-route.yaml]
 * link:002/bar-route.yaml[002/bar-route.yaml]
@@ -534,7 +584,11 @@ curl -H "Host: gw002.example.com" http://$IP/bar/user
 curl -H "Host: gw002.example.com" http://$IP/bar/order
 ----
 
-=== Ratio Based Canary Route
+=== Canary Route
+
+image:003/api-route-canary.png[Image,500,250]
+
+==== Ratio
 
 [source, bash]
 .*App*
@@ -567,7 +621,7 @@ $ cat out.log | grep v2 | wc -l
        7
 ----
 
-=== Cookie Based Canary Route
+==== Cookie
 
 [source, bash]
 .*App*
@@ -591,7 +645,7 @@ kubectl apply -f 004/vs.yaml
 curl --cookie "version=v2" -H "Host: gw004.example.com" http://$IP/foo
 ----
 
-=== Header Based Canary Route
+==== Header
 
 [source, bash]
 .*App*
@@ -613,7 +667,7 @@ kubectl apply -f 005/vs.yaml
 curl -H "test: v2" -H "Host: gw005.example.com" http://$IP/foo
 ----
 
-=== Argument Based Canary Route
+==== Argument
 
 [source, bash]
 .*App*
@@ -635,7 +689,7 @@ kubectl apply -f 0051/vs.yaml
 curl  -H "Host: gw0051.example.com" http://$IP/foo?test=v2
 ----
 
-=== Source Address Based Canary Route
+==== Source Address
 
 [source, bash]
 .*App*
@@ -651,6 +705,8 @@ kubectl apply -f 0052/app.yaml
 kubectl apply -f 0052/vs.yaml
 ----
 
+* link:0052/vs.yaml[0052/vs.yaml]
+
 [source, bash]
 .*Test*
 ----
@@ -658,7 +714,7 @@ curl  -H "Host: gw0052.example.com" http://$IP/variables
 curl  -H "Host: gw0052.example.com" http://$IP/foo
 ----
 
-=== Request URI Based Canary Route
+==== Request URI
 
 [source, bash]
 .*App*
@@ -674,10 +730,74 @@ kubectl apply -f 0053/app.yaml
 kubectl apply -f 0053/vs.yaml
 ----
 
+* link:0053/vs.yaml[0053/vs.yaml]
+
 [source, bash]
 .*Test*
 ----
 curl  -H "Host: gw0053.example.com" http://$IP/v2
+----
+
+=== Blue/green Route
+
+image:0054/api-route-blue-green.png[Image,500,250]
+
+[source, bash]
+.*App*
+----
+kubectl apply -f 0054/blue.yaml 
+kubectl apply -f 0054/green.yaml
+----
+
+* link:0054/blue.yaml[0054/blue.yaml]
+* link:0054/green.yaml[0054/green.yaml]
+
+[source, bash]
+.*VirtualServer*
+----
+kubectl apply -f 0054/vs.yaml
+----
+
+* link:0054/vs.yaml[0054/vs.yaml]
+
+[source, bash]
+.*Test*
+----
+// access service, gateway will route to blue environment
+curl -H "Host: gw0054.example.com" http://$IP
+
+// switch to green
+$ curl -X GET http://$API_IP/api/8/http/keyvals/abswitch 
+{}
+
+
+// access service, gateway will route to green environment
+----
+
+=== Shadow Route
+
+image:0055/api-route-shadow.png[Image,500,250]
+
+[source, bash]
+.*App*
+----
+kubectl apply -f 0055/app.yaml 
+----
+
+* link:0055/app.yaml[0055/app.yaml]
+
+[source, bash]
+.*VirtualServer*
+----
+kubectl apply -f 0055/vs.yaml 
+----
+
+* link:0055/vs.yaml[0055/vs.yaml]
+
+[source, bash]
+.*Test*
+----
+curl -H "Host: gw0055.example.com" http://$IP/test
 ----
 
 === Health Check
