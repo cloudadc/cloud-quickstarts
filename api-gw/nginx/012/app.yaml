@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: Namespace
 metadata:
-  name: gw-0055
+  name: gw-012
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -9,7 +9,7 @@ metadata:
   labels:
     app: foo-v1
   name: foo-v1
-  namespace: gw-0055
+  namespace: gw-012
 spec:
   replicas: 1
   selector:
@@ -30,7 +30,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: foo-v1-svc
-  namespace: gw-0055
+  namespace: gw-012
 spec:
   ports:
   - port: 80
@@ -46,7 +46,7 @@ metadata:
   labels:
     app: foo-v2
   name: foo-v2
-  namespace: gw-0055
+  namespace: gw-012
 spec:
   replicas: 1
   selector:
@@ -67,7 +67,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: foo-v2-svc
-  namespace: gw-0055
+  namespace: gw-012
 spec:
   ports:
   - port: 80

@@ -4,12 +4,26 @@ metadata:
   name: vs-011
   namespace: gw-011
 spec:
+  http-snippets: |
+    keyval_zone zone=abswitchzone:64k ;
+    keyval abswitch $abswitchvalue zone=abswitchzone;
   host: gw011.example.com
+  server-snippets: |
+    add_header abswitch $abswitchvalue ;
   upstreams:
-  - name: foo
-    service: foo-svc
+  - name: blue
+    service: blue-svc
+    port: 80
+  - name: green
+    service: green-svc
     port: 80
   routes:
   - path: /
+    matches:
+    - conditions:
+      - header: abswitch
+        value: "yes"
+      action:
+        pass: green
     action:
-      pass: foo
+      pass: blue

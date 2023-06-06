@@ -760,64 +760,99 @@ curl  -H "Host: gw010.example.com" http://$IP/v2
 
 === Blue/green Route
 
-image:0054/api-route-blue-green.png[Image,500,250]
+image:011/api-route-blue-green.png[Image,500,250]
 
 [source, bash]
 .*App*
 ----
-kubectl apply -f 0054/blue.yaml 
-kubectl apply -f 0054/green.yaml
+kubectl apply -f 011/blue.yaml 
+kubectl apply -f 011/green.yaml
 ----
 
-* link:0054/blue.yaml[0054/blue.yaml]
-* link:0054/green.yaml[0054/green.yaml]
+* link:011/blue.yaml[011/blue.yaml]
+* link:011/green.yaml[011/green.yaml]
 
 [source, bash]
 .*VirtualServer*
 ----
-kubectl apply -f 0054/vs.yaml
+  http-snippets: |
+    keyval_zone zone=abswitchzone:64k ;
+    keyval abswitch $abswitchvalue zone=abswitchzone;
+  host: gw011.example.com
+  server-snippets: |
+    add_header abswitch $abswitchvalue ;
+  upstreams:
+  - name: blue
+    service: blue-svc
+    port: 80
+  - name: green
+    service: green-svc
+    port: 80
+  routes:
+  - path: /
+    matches:
+    - conditions:
+      - header: abswitch
+        value: "yes"
+      action:
+        pass: green
+    action:
+      pass: blue
 ----
 
-* link:0054/vs.yaml[0054/vs.yaml]
+* link:011/vs.yaml[011/vs.yaml]
 
 [source, bash]
 .*Test*
 ----
 // access service, gateway will route to blue environment
-curl -H "Host: gw0054.example.com" http://$IP
+curl -H "Host: gw011.example.com" http://$IP
 
 // switch to green
-$ curl -X GET http://$API_IP/api/8/http/keyvals/abswitch 
-{}
-
+curl -X POST http://$IP:8898/api/8/http/keyvals/abswitchzone -H "Content-Type: application/json" -d '{"abswitch": "yes"}'
+curl -X PATCH http://$IP:8898/api/8/http/keyvals/abswitchzone -H "Content-Type: application/json" -d '{"abswitch": "no"}'
 
 // access service, gateway will route to green environment
+curl -H "Host: gw011.example.com" http://$IP
 ----
 
 === Shadow Route
 
-image:0055/api-route-shadow.png[Image,500,250]
+image:012/api-route-shadow.png[Image,500,250]
 
 [source, bash]
 .*App*
 ----
-kubectl apply -f 0055/app.yaml 
+kubectl apply -f 012/app.yaml 
 ----
 
-* link:0055/app.yaml[0055/app.yaml]
+* link:012/app.yaml[012/app.yaml]
 
 [source, bash]
 .*VirtualServer*
 ----
-kubectl apply -f 0055/vs.yaml 
+  - path: /
+    location-snippets: "mirror /mirror;"
+    action:
+      pass: foo-v1
+  - path: /mirror
+    location-snippets: "internal;"
+    action:
+      pass: foo-v2
 ----
 
-* link:0055/vs.yaml[0055/vs.yaml]
+* link:012/vs.yaml[012/vs.yaml]
 
 [source, bash]
 .*Test*
 ----
-curl -H "Host: gw0055.example.com" http://$IP/test
+curl -H "Host: gw012.example.com" http://$IP/test
+
+// production traffic
+10.8.1.5 - - [06/Jun/2023:15:19:21 +0000] "GET /test HTTP/1.1" 200 413 "-" "curl/7.64.1" "111.223.104.76"
+
+// mirror traffic
+10.8.1.5 - - [06/Jun/2023:15:19:21 +0000] "GET /mirror HTTP/1.1" 200 416 "-" "curl/7.64.1" "111.223.104.76"
 ----
 
 === Health Check

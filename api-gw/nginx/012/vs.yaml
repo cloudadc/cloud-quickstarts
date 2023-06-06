@@ -1,10 +1,10 @@
 apiVersion: k8s.nginx.org/v1
 kind: VirtualServer
 metadata:
-  name: vs-0055
-  namespace: gw-0055
+  name: vs-012
+  namespace: gw-012
 spec:
-  host: gw0055.example.com
+  host: gw012.example.com
   upstreams:
   - name: foo-v1
     service: foo-v1-svc
