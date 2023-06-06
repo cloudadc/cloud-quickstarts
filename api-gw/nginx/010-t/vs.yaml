@@ -1,0 +1,16 @@
+apiVersion: k8s.nginx.org/v1
+kind: VirtualServer
+metadata:
+  name: vs-010
+  namespace: gw-010
+spec:
+  host: gw010.example.com
+  upstreams:
+  - name: foo
+    service: foo-svc
+    port: 80
+    lb-method: round_robin
+  routes:
+  - path: /
+    action:
+      pass: foo

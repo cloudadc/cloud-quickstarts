@@ -6,25 +6,21 @@ metadata:
 spec:
   host: gw006.example.com
   upstreams:
-  - name: foo
-    service: foo-svc
+  - name: foo-v1
+    service: foo-v1-svc
     port: 80
-    healthCheck:
-      enable: true
-      path: /health
-      interval: 20s
-      jitter: 3s
-      fails: 5
-      passes: 5
-      port: 8080
-      connect-timeout: 10s
-      read-timeout: 10s
-      send-timeout: 10s
-      headers:
-      - name: Host
-        value: test.nginx.com
-      statusMatch: "! 500"
+  - name: foo-v2
+    service: foo-v2-svc
+    port: 80
   routes:
   - path: /foo
+    matches:
+    - conditions:
+      - cookie: version
+        value: v2
+      action:
+        pass: foo-v2
     action:
-      pass: foo
+      pass: foo-v1
+
+

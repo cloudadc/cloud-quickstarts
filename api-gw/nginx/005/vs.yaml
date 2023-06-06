@@ -14,12 +14,11 @@ spec:
     port: 80
   routes:
   - path: /foo
-    matches:
-    - conditions:
-      - header: test
-        value: v2
+    splits:
+    - weight: 10
       action:
         pass: foo-v2
-    action:
-      pass: foo-v1
+    - weight: 90
+      action:
+        pass: foo-v1
 

@@ -1,0 +1,15 @@
+apiVersion: k8s.nginx.org/v1
+kind: VirtualServerRoute
+metadata:
+  name: cart-route
+  namespace: gw-004-2
+spec:
+  host: gw004.example.com
+  upstreams:
+  - name: cart
+    service: cart-svc
+    port: 80
+  subroutes:
+  - path: /cart
+    action:
+      pass: cart

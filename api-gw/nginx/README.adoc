@@ -379,15 +379,15 @@ docker run --rm  cloudadc/ttcp:1.14-2-cli ttcp -t $IP
 
 === URL Based Route
 
-image:0001/api-route-url.png[Image,500,200]
+image:001/api-route-url.png[Image,500,200]
 
 [source, bash]
 .*App*
 ----
-kubectl apply -f 0001/app.yaml
+kubectl apply -f 001/app.yaml
 ----
 
-* link:0001/app.yaml[0001/app.yaml]
+* link:001/app.yaml[001/app.yaml]
 
 [source, yaml]
 .*VirtualServer*
@@ -414,27 +414,27 @@ kubectl apply -f 0001/app.yaml
       pass: cart-app
 ----
 
-* link:0001/vs.yaml[0001/vs.yaml]
+* link:001/vs.yaml[001/vs.yaml]
 
 [source, bash]
 .*Test*
 ----
-curl -H "Host: gw0001.example.com" http://$IP/user
-curl -H "Host: gw0001.example.com" http://$IP/order
-curl -H "Host: gw0001.example.com" http://$IP/cart
+curl -H "Host: gw001.example.com" http://$IP/user
+curl -H "Host: gw001.example.com" http://$IP/order
+curl -H "Host: gw001.example.com" http://$IP/cart
 ----
 
 === Host and URL Based Route
 
-image:0002/api-route-host-port.png[Image,500,200]
+image:002/api-route-host-port.png[Image,500,200]
 
 [source, bash]
 .*App*
 ----
-kubectl apply -f 0002/app.yaml 
+kubectl apply -f 002/app.yaml 
 ----
 
-* link:0002/app.yaml[0002/app.yaml]
+* link:002/app.yaml[002/app.yaml]
 
 [source, yaml]
 .*VirtualServer*
@@ -466,32 +466,32 @@ kubectl apply -f 0002/app.yaml
       pass: cart-app
 ----
 
-* link:0002/vs.yaml[0002/vs.yaml]
+* link:002/vs.yaml[002/vs.yaml]
 
 [source, bash]
 .*Test*
 ----
-curl -H "Host: gw00021.example.com" http://$IP/user
-curl -H "Host: gw00021.example.com" http://$IP/order
-curl -H "Host: gw00022.example.com" http://$IP
+curl -H "Host: gw0021.example.com" http://$IP/user
+curl -H "Host: gw0021.example.com" http://$IP/order
+curl -H "Host: gw0022.example.com" http://$IP
 ----
 
 === Host Based Route(HTTPS)
 
-image:0011/api-route-hosts-https.png[Image,500,200]
+image:003/api-route-hosts-https.png[Image,500,200]
 
 [source, bash]
 .*App*
 ----
-kubectl apply -f 0011/app.yaml 
+kubectl apply -f 003/app.yaml 
 ----
 
-* link:0011/app.yaml[0011/app.yaml]
+* link:003/app.yaml[003/app.yaml]
 
 [source, bash]
 .*TransportServer*
 ----
-  host: foo.gw0011.example.com
+  host: foo.gw003.example.com
   upstreams:
     - name: foo-app
       service: foo-svc
@@ -499,7 +499,7 @@ kubectl apply -f 0011/app.yaml
   action:
     pass: foo-app
 
-  host: bar.gw0011.example.com
+  host: bar.gw003.example.com
   upstreams:
     - name: bar-app
       service: bar-svc
@@ -508,28 +508,30 @@ kubectl apply -f 0011/app.yaml
     pass: bar-app
 ----
 
-* link:0011/ts.yaml[0011/ts.yaml]
+* link:003/ts.yaml[003/ts.yaml]
+
+NOTE: `-enable-tls-passthrough` and `-enable-custom-resources=true` are necessary for Host based HTTPS routing.
 
 [source, bash]
 .*Test*
 ----
-curl --resolve foo.gw0011.example.com:443:$IP https://foo.gw0011.example.com --insecure
-curl --resolve bar.gw0011.example.com:443:$IP https://bar.gw0011.example.com --insecure
+curl --resolve foo.gw003.example.com:443:$IP https://foo.gw003.example.com --insecure
+curl --resolve bar.gw003.example.com:443:$IP https://bar.gw003.example.com --insecure
 ----
 
 === Host and URL based Route(Cross Namespace)
 
-image:002/api-route-muti-tenants.png[Image,500,250]
+image:004/api-route-muti-tenants.png[Image,500,250]
 
 [source, bash]
 .*App*
 ----
-kubectl apply -f 002/foo.yaml 
-kubectl apply -f 002/bar.yaml 
+kubectl apply -f 004/user-order.yaml  
+kubectl apply -f 004/cart.yaml
 ----
 
-* link:002/foo.yaml[002/foo.yaml]
-* link:002/bar.yaml[002/bar.yaml]
+* link:004/user-order.yaml[004/user-order.yaml]
+* link:004/cart.yaml[004/cart.yaml]
 
 [source, bash]
 .*VirtualServer, VirtualServerRoute*
@@ -542,74 +544,69 @@ kubectl apply -f 002/bar.yaml
     service: order-svc
     port: 80
   subroutes:
-  - path: /foo/user
+  - path: /user
     action:
       pass: user
-  - path: /foo/order
+  - path: /order
     action:
       pass: order
 
   upstreams:
-  - name: user
-    service: user-svc
-    port: 80
-  - name: order
-    service: order-svc
+  - name: cart
+    service: cart-svc
     port: 80
   subroutes:
-  - path: /bar/user
+  - path: /cart
     action:
-      pass: user
-  - path: /bar/order
-    action:
-      pass: order
+      pass: cart
 
-  host: gw002.example.com
+spec:
+  host: gw004.example.com
   routes:
-  - path: /foo
-    route: gw-002-1/foo-route
-  - path: /bar
-    route: gw-002-2/bar-route
+  - path: /
+    route: gw-004-1/user-order-route
+  - path: /cart
+    route: gw-004-2/cart-route
 ----
-* link:002/foo-route.yaml[002/foo-route.yaml]
-* link:002/bar-route.yaml[002/bar-route.yaml]
-* link:002/vs.yaml[002/vs.yaml]
+* link:004/user-order-route.yaml[004/user-order-route.yaml]
+* link:004/cart-route.yaml[004/cart-route.yaml]
+* link:004/vs.yaml[004/vs.yaml]
 
 [source, bash]
 .*Test*
 ----
-curl -H "Host: gw002.example.com" http://$IP/foo/user
-curl -H "Host: gw002.example.com" http://$IP/foo/order
-curl -H "Host: gw002.example.com" http://$IP/bar/user
-curl -H "Host: gw002.example.com" http://$IP/bar/order
+curl -H "Host: gw004.example.com" http://$IP/user
+curl -H "Host: gw004.example.com" http://$IP/order
+curl -H "Host: gw004.example.com" http://$IP/user
+curl -H "Host: gw004.example.com" http://$IP/order
 ----
 
 === Canary Route
 
-image:003/api-route-canary.png[Image,500,250]
+image:005/api-route-canary.png[Image,500,250]
 
 ==== Ratio
 
 [source, bash]
 .*App*
 ----
-kubectl apply -f 003/app.yaml 
+kubectl apply -f 005/app.yaml 
 ----
 
-* link:003/app.yaml[003/app.yaml]
+* link:005/app.yaml[005/app.yaml]
 
 [source, bash]
 .*VirtualServer*
 ----
-kubectl apply -f 003/vs.yaml 
+kubectl apply -f 005/vs.yaml 
 ----
 
-* link:003/vs.yaml[003/vs.yaml]
+* link:005/vs.yaml[005/vs.yaml]
 
 [source, bash]
 .*Test*
 ----
-$ for i in {1..100} ; do curl -s -H "Host: gw003.example.com" http://$IP/foo | grep name ; done > out.log
+$ for i in {1..100} ; do curl -s -H "Host: gw005.example.com" http://$IP/foo | grep name ; done > out.log
 
 $ cat out.log | wc -l
      100
@@ -626,23 +623,29 @@ $ cat out.log | grep v2 | wc -l
 [source, bash]
 .*App*
 ----
-kubectl apply -f 004/app.yaml 
+kubectl apply -f 006/app.yaml 
 ----
 
-* link:004/app.yaml[004/app.yaml]
+* link:006/app.yaml[006/app.yaml]
 
 [source, bash]
 .*VirtualServer*
 ----
-kubectl apply -f 004/vs.yaml
+    - conditions:
+      - cookie: version
+        value: v2
+      action:
+        pass: foo-v2
+    action:
+      pass: foo-v1
 ----
 
-* link:004/vs.yaml
+* link:006/vs.yaml[006/vs.yaml]
 
 [source, bash]
 .*Test*
 ----
-curl --cookie "version=v2" -H "Host: gw004.example.com" http://$IP/foo
+curl --cookie "version=v2" -H "Host: gw006.example.com" http://$IP/foo
 ----
 
 ==== Header
@@ -650,21 +653,30 @@ curl --cookie "version=v2" -H "Host: gw004.example.com" http://$IP/foo
 [source, bash]
 .*App*
 ----
-kubectl apply -f 005/app.yaml 
+kubectl apply -f 007/app.yaml 
 ----
 
-* link:005/app.yaml[005/app.yaml]
+* link:007/app.yaml[007/app.yaml]
 
 [source, bash]
 .*VirtualServer*
 ----
-kubectl apply -f 005/vs.yaml 
+    matches:
+    - conditions:
+      - header: test
+        value: v2
+      action:
+        pass: foo-v2
+    action:
+      pass: foo-v1
 ----
+
+* link:007/vs.yaml[007/vs.yaml]
 
 [source, bash]
 .*Test*
 ----
-curl -H "test: v2" -H "Host: gw005.example.com" http://$IP/foo
+curl -H "test: v2" -H "Host: gw007.example.com" http://$IP/foo
 ----
 
 ==== Argument
@@ -672,21 +684,30 @@ curl -H "test: v2" -H "Host: gw005.example.com" http://$IP/foo
 [source, bash]
 .*App*
 ----
-kubectl apply -f 0051/app.yaml
+kubectl apply -f 008/app.yaml
 ----
 
-* link:0051/app.yaml[0051/app.yaml]
+* link:008/app.yaml[008/app.yaml]
 
 [source, bash]
 .*VirtualServer*
 ----
-kubectl apply -f 0051/vs.yaml 
+    matches:
+    - conditions:
+      - argument: test
+        value: v2
+      action:
+        pass: foo-v2
+    action:
+      pass: foo-v1
 ----
+
+* link:008/vs.yaml[008/vs.yaml]
 
 [source, bash]
 .*Test*
 ----
-curl  -H "Host: gw0051.example.com" http://$IP/foo?test=v2
+curl  -H "Host: gw008.example.com" http://$IP/foo?test=v2
 ----
 
 ==== Source Address
@@ -694,24 +715,30 @@ curl  -H "Host: gw0051.example.com" http://$IP/foo?test=v2
 [source, bash]
 .*App*
 ----
-kubectl apply -f 0052/app.yaml
+kubectl apply -f 009/app.yaml
 ----
 
-* link:0052/app.yaml[0052/app.yaml]
+* link:009/app.yaml[009/app.yaml]
 
 [source, bash]
 .*VirtualServer*
 ----
-kubectl apply -f 0052/vs.yaml
+    - conditions:
+      - variable: $remote_addr
+        value: ~^42.61.112
+      action:
+        pass: foo-v2
+    action:
+      pass: foo-v1
 ----
 
-* link:0052/vs.yaml[0052/vs.yaml]
+* link:009/vs.yaml[009/vs.yaml]
 
 [source, bash]
 .*Test*
 ----
-curl  -H "Host: gw0052.example.com" http://$IP/variables
-curl  -H "Host: gw0052.example.com" http://$IP/foo
+curl  -H "Host: gw009.example.com" http://$IP/variables
+curl  -H "Host: gw009.example.com" http://$IP/foo
 ----
 
 ==== Request URI
@@ -719,23 +746,23 @@ curl  -H "Host: gw0052.example.com" http://$IP/foo
 [source, bash]
 .*App*
 ----
-kubectl apply -f 0053/app.yaml
+kubectl apply -f 010/app.yaml
 ----
 
-* link:0053/app.yaml[0053/app.yaml]
+* link:010/app.yaml[010/app.yaml]
 
 [source, bash]
 .*VirtualServer*
 ----
-kubectl apply -f 0053/vs.yaml
+kubectl apply -f 010/vs.yaml
 ----
 
-* link:0053/vs.yaml[0053/vs.yaml]
+* link:010/vs.yaml[010/vs.yaml]
 
 [source, bash]
 .*Test*
 ----
-curl  -H "Host: gw0053.example.com" http://$IP/v2
+curl  -H "Host: gw010.example.com" http://$IP/v2
 ----
 
 === Blue/green Route

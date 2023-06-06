@@ -1,17 +1,38 @@
-apiVersion: v1
-kind: Namespace
+apiVersion: k8s.nginx.org/v1
+kind: VirtualServer
 metadata:
-  name: gw-002-3
+  name: vs-0021
+  namespace: gw-002
+spec:
+  host: gw0021.example.com
+  upstreams:
+  - name: user-app
+    service: user-svc
+    port: 80
+  - name: order-app
+    service: order-svc
+    port: 80
+  routes:
+  - path: /user
+    action:
+      pass: user-app
+  - path: /order
+    action:
+      pass: order-app
 ---
 apiVersion: k8s.nginx.org/v1
 kind: VirtualServer
 metadata:
-  name: vs-002
-  namespace: gw-002-3
+  name: vs-0022
+  namespace: gw-002
 spec:
-  host: gw002.example.com
+  host: gw0022.example.com
+  upstreams:
+  - name: cart-app
+    service: cart-svc
+    port: 80
   routes:
-  - path: /foo
-    route: gw-002-1/foo-route
-  - path: /bar
-    route: gw-002-2/bar-route
+  - path: /
+    action:
+      pass: cart-app
+

@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: Namespace
 metadata:
-  name: gw-002-1
+  name: gw-002
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -9,7 +9,7 @@ metadata:
   labels:
     app: user
   name: user
-  namespace: gw-002-1
+  namespace: gw-002
 spec:
   replicas: 1
   selector:
@@ -21,7 +21,7 @@ spec:
         app: user
     spec:
       containers:
-      - image: us-central1-docker.pkg.dev/playground-s-11-559ebbb3/nginx/cafe:1.1
+      - image: cloudadc/cafe:1.4
         name: backend
         ports:
         - containerPort: 8080
@@ -30,7 +30,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: user-svc
-  namespace: gw-002-1
+  namespace: gw-002
 spec:
   ports:
   - port: 80
@@ -46,7 +46,7 @@ metadata:
   labels:
     app: order
   name: order
-  namespace: gw-002-1
+  namespace: gw-002
 spec:
   replicas: 1
   selector:
@@ -58,7 +58,7 @@ spec:
         app: order
     spec:
       containers:
-      - image: us-central1-docker.pkg.dev/playground-s-11-559ebbb3/nginx/cafe:1.1
+      - image: cloudadc/cafe:1.4
         name: backend
         ports:
         - containerPort: 8080
@@ -67,7 +67,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: order-svc
-  namespace: gw-002-1
+  namespace: gw-002
 spec:
   ports:
   - port: 80
@@ -75,4 +75,41 @@ spec:
     targetPort: 8080
   selector:
     app: order
+  type: ClusterIP
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: cart
+  name: cart
+  namespace: gw-002
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: cart
+  template:
+    metadata:
+      labels:
+        app: cart
+    spec:
+      containers:
+      - image: cloudadc/cafe:1.4
+        name: backend
+        ports:
+        - containerPort: 8080
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: cart-svc
+  namespace: gw-002
+spec:
+  ports:
+  - port: 80
+    protocol: TCP
+    targetPort: 8080
+  selector:
+    app: cart
   type: ClusterIP

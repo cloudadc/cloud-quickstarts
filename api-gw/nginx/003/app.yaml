@@ -7,72 +7,72 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   labels:
-    app: foo-v1
-  name: foo-v1
+    app: foo
+  name: foo
   namespace: gw-003
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: foo-v1
+      app: foo
   template:
     metadata:
       labels:
-        app: foo-v1
+        app: foo
     spec:
       containers:
-      - image: us-central1-docker.pkg.dev/playground-s-11-559ebbb3/nginx/cafe:1.1
+      - image: cloudadc/cafe:1.4
         name: backend
         ports:
-        - containerPort: 8080
+        - containerPort: 8443
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: foo-v1-svc
+  name: foo-svc
   namespace: gw-003
 spec:
   ports:
-  - port: 80
+  - port: 8443
     protocol: TCP
-    targetPort: 8080
+    targetPort: 8443
   selector:
-    app: foo-v1
+    app: foo
   type: ClusterIP
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   labels:
-    app: foo-v2
-  name: foo-v2
+    app: bar
+  name: bar
   namespace: gw-003
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: foo-v2
+      app: bar
   template:
     metadata:
       labels:
-        app: foo-v2
+        app: bar
     spec:
       containers:
-      - image: us-central1-docker.pkg.dev/playground-s-11-559ebbb3/nginx/cafe:1.1
+      - image: cloudadc/cafe:1.4
         name: backend
         ports:
-        - containerPort: 8080
+        - containerPort: 8443
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: foo-v2-svc
+  name: bar-svc
   namespace: gw-003
 spec:
   ports:
-  - port: 80
+  - port: 8443
     protocol: TCP
-    targetPort: 8080
+    targetPort: 8443
   selector:
-    app: foo-v2
+    app: bar
   type: ClusterIP

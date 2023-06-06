@@ -13,13 +13,19 @@ spec:
     service: foo-v2-svc
     port: 80
   routes:
-  - path: /
-    location-snippets: "mirror /mirror;"
+  - path: /variables
+    action:
+      return:
+        code: 200
+        type: text/plain
+        body: "remote_addr: ${remote_addr}\nremote_port: ${remote_port}\nrequest_uri: ${request_uri}\nrequest_method: ${request_method}\n"
+  - path: /foo
+    matches:
+    - conditions:
+      - variable: $remote_addr
+        value: ~^42.61.112
+      action:
+        pass: foo-v2
     action:
       pass: foo-v1
-  - path: /mirror
-    location-snippets: "internal;"
-    action:
-      pass: foo-v2
-
 

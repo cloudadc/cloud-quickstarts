@@ -2,12 +2,12 @@ apiVersion: k8s.nginx.org/v1alpha1
 kind: TransportServer
 metadata:
   name: foo
-  namespace: gw-0011
+  namespace: gw-003
 spec:
   listener:
     name: tls-passthrough
     protocol: TLS_PASSTHROUGH
-  host: foo.gw0011.example.com
+  host: foo.gw003.example.com
   upstreams:
     - name: foo-app
       service: foo-svc
@@ -19,12 +19,12 @@ apiVersion: k8s.nginx.org/v1alpha1
 kind: TransportServer
 metadata:
   name: bar
-  namespace: gw-0011
+  namespace: gw-003
 spec:
   listener:
     name: tls-passthrough
     protocol: TLS_PASSTHROUGH
-  host: bar.gw0011.example.com
+  host: bar.gw003.example.com
   upstreams:
     - name: bar-app
       service: bar-svc
