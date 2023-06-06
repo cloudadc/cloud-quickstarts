@@ -860,25 +860,43 @@ curl -H "Host: gw012.example.com" http://$IP/test
 [source, bash]
 .*App*
 ----
-kubectl apply -f 006/app.yaml
+kubectl apply -f 013/app.yaml
 ----
 
-* link:006/app.yaml[006/app.yaml]
+* link:013/app.yaml[013/app.yaml]
 
 [source, bash]
 .*VirtualServer*
 ----
-kubectl apply -f 006/vs.yaml
+  upstreams:
+  - name: foo
+    service: foo-svc
+    port: 80
+    healthCheck:
+      enable: true
+      path: /health
+      interval: 20s
+      jitter: 3s
+      fails: 5
+      passes: 5
+      port: 8080
+      connect-timeout: 10s
+      read-timeout: 10s
+      send-timeout: 10s
+      headers:
+      - name: Host
+        value: test.nginx.com
+      statusMatch: "! 500"
 ----
 
-* link:006/vs.yaml[006/vs.yaml]
+* link:013/vs.yaml[013/vs.yaml]
 
 [source, bash]
 .*Test*
 ----
-$ curl  -H "Host: gw006.example.com" http://$IP/foo
+$ curl  -H "Host: gw013.example.com" http://$IP/foo
 
-$ curl -s -X 'GET' http:/$IP_DA:8898//api/8/http/upstreams/vs_gw-006_vs-006_foo | jq .peers[].health_checks
+$ curl -s -X 'GET' http:/$IP:8898//api/8/http/upstreams/vs_gw-013_vs-013_foo | jq .peers[].health_checks
 {
   "checks": 18,
   "fails": 0,
@@ -898,30 +916,132 @@ $ curl -s -X 'GET' http:/$IP_DA:8898//api/8/http/upstreams/vs_gw-006_vs-006_foo 
 [source, bash]
 .*App*
 ----
-kubectl apply -f 007/app.yaml 
+kubectl apply -f 014/app.yaml 
 ----
+
+* link:014/app.yaml[014/app.yaml]
 
 [source, bash]
 .*VirtualServer*
 ----
-kubectl apply -f 007/vs.yaml 
+    sessionCookie:
+      enable: true
+      name: srv_id
+      path: /
+      expires: 1h
+      domain: .example.com
+      httpOnly: false
+      secure: true
 ----
+
+* link:014/vs.yaml[014/vs.yaml]
 
 [source, bash]
 .*Test*
 ----
-$ curl -H "Host: gw007.example.com" http://$IP/foo -v
+$ curl -H "Host: gw014.example.com" http://$IP/foo -v
 ...
 < Set-Cookie: srv_id=1d26bd38d10f1410bb8bd037ce631270; expires=Sat, 20-May-23 06:07:01 GMT; max-age=3600; domain=.example.com; secure; path=/
 ...
         server addr: 10.8.0.17:8080
 
-$ for i in {1..5} ; do curl -s --cookie "srv_id=1d26bd38d10f1410bb8bd037ce631270; expires=Sat, 20-May-23 06:07:01 GMT; max-age=3600; domain=.example.com; secure; path=/" -H "Host: gw007.example.com" http://$IP/foo | grep "server addr" ; done
+$ for i in {1..5} ; do curl -s --cookie "srv_id=1d26bd38d10f1410bb8bd037ce631270; expires=Sat, 20-May-23 06:07:01 GMT; max-age=3600; domain=.example.com; secure; path=/" -H "Host: gw014.example.com" http://$IP/foo | grep "server addr" ; done
         server addr: 10.8.0.17:8080
         server addr: 10.8.0.17:8080
         server addr: 10.8.0.17:8080
         server addr: 10.8.0.17:8080
         server addr: 10.8.0.17:8080
+----
+
+=== Load Balancing Algorithm
+
+[source, bash]
+.*App*
+----
+kubectl apply -f 015/app.yaml 
+----
+
+* link:015/app.yaml[015/app.yaml]
+
+[source, bash]
+.*VirtualServer*
+----
+    lb-method: round_robin
+----
+
+* link:015/vs.yaml[015/vs.yaml]
+
+[source, bash]
+.*Test*
+----
+$ for i in {1..5} ; do curl -s -H "Host: gw015.example.com" http://$IP/test | grep "server addr" ; done
+        server addr: 10.8.1.21:8080
+        server addr: 10.8.0.20:8080
+        server addr: 10.8.1.21:8080
+        server addr: 10.8.0.20:8080
+        server addr: 10.8.1.21:8080
+----
+
+=== Client Source Address Disclose
+
+[source, bash]
+.*App*
+----
+kubectl apply -f 016/app.yaml
+----
+
+* link:016/app.yaml[016/app.yaml]
+
+[source, bash]
+.*VirtualServer*
+----
+kubectl apply -f 016/vs.yaml
+----
+
+* link:016/vs.yaml[016/vs.yaml]
+
+[source, bash]
+.*Test*
+----
+$ curl -s -H "Host: gw016.example.com" http://$IP/foo
+...
+    Request Headers: x-real-ip: [111.223.104.76] x-forwarded-host: [gw016.example.com] x-forwarded-proto: [http] host: [gw016.example.com] x-forwarded-port: [80] connection: [close] user-agent: [curl/7.64.1] accept: [*/*]
+
+$ curl -H "X-Forwarded-For: 1.1.1.1, 1.1.1.2" -H "Host: gw016.example.com" http://$IP/foo
+...
+    Request Headers: x-real-ip: [111.223.104.76] x-forwarded-host: [gw016.example.com] x-forwarded-proto: [http] host: [gw016.example.com] x-forwarded-port: [80] connection: [close] x-forwarded-for: [1.1.1.1,1.1.1.2] user-agent: [curl/7.64.1] accept: [*/*]
+----
+
+=== HTTP Traffic Mirror
+
+[source, bash]
+.*App*
+----
+kubectl apply -f 017/app.yaml
+----
+
+* link:017/app.yaml[017/app.yaml]
+
+[source, bash]
+.*VirtualServer*
+----
+kubectl apply -f 017/vs.yaml
+----
+
+* link:017/vs.yaml[017/vs.yaml]
+
+[source, bash]
+.*Test*
+----
+$ curl -H "Host: gw017.example.com" http://$IP/foo/test/mirror
+
+$ POD=$(kubectl get pods -n gw-009 | grep v1 | awk '{print $1}') ; kubectl logs -f $POD -n gw-009
+...
+10.8.0.19 - - [20/May/2023:05:45:25 +0000] "GET /foo/test/mirror HTTP/1.1" 200 437 "-" "curl/7.64.1" "111.223.104.76"
+
+$ POD=$(kubectl get pods -n gw-009 | grep v2 | awk '{print $1}') ; kubectl logs -f $POD -n gw-009
+...
+10.8.0.19 - - [20/May/2023:05:45:25 +0000] "GET /mirror HTTP/1.1" 200 419 "-" "curl/7.64.1" "111.223.104.76"
 ----
 
 === URL Rewrite
@@ -929,23 +1049,23 @@ $ for i in {1..5} ; do curl -s --cookie "srv_id=1d26bd38d10f1410bb8bd037ce631270
 [source, bash]
 .*App*
 ----
-kubectl apply -f 008/app.yaml 
+kubectl apply -f 018/app.yaml 
 ----
 
-* link:008/app.yaml[008/app.yaml]
+* link:018/app.yaml[018/app.yaml]
 
 [source, bash]
 .*VirtualServer*
 ----
-kubectl apply -f 008/vs.yaml
+kubectl apply -f 018/vs.yaml
 ----
 
-* link:008/vs.yaml[008/vs.yaml]
+* link:018/vs.yaml[018/vs.yaml]
 
 [source, bash]
 .*Test*
 ----
-$ curl -H "Host: gw008.example.com" http://$IP/foo
+$ curl -H "Host: gw018.example.com" http://$IP/foo
 
             request: GET /bar HTTP/1.1
                 uri: /bar
@@ -960,97 +1080,6 @@ $ curl -H "Host: gw008.example.com" http://$IP/foo
              cookie: 
                 xff: 
          user agent: curl/7.64.1
-----
-
-=== HTTP Traffic Mirror
-
-[source, bash]
-.*App*
-----
-kubectl apply -f 009/app.yaml
-----
-
-* link:009/app.yaml[009/app.yaml]
-
-[source, bash]
-.*VirtualServer*
-----
-kubectl apply -f 009/vs.yaml 
-----
-
-* link:009/vs.yaml[009/vs.yaml]
-
-[source, bash]
-.*Test*
-----
-$ curl -H "Host: gw009.example.com" http://$IP/foo/test/mirror
-
-$ POD=$(kubectl get pods -n gw-009 | grep v1 | awk '{print $1}') ; kubectl logs -f $POD -n gw-009
-...
-10.8.0.19 - - [20/May/2023:05:45:25 +0000] "GET /foo/test/mirror HTTP/1.1" 200 437 "-" "curl/7.64.1" "111.223.104.76"
-
-$ POD=$(kubectl get pods -n gw-009 | grep v2 | awk '{print $1}') ; kubectl logs -f $POD -n gw-009
-...
-10.8.0.19 - - [20/May/2023:05:45:25 +0000] "GET /mirror HTTP/1.1" 200 419 "-" "curl/7.64.1" "111.223.104.76"
-----
-
-=== Load Balancing Algorithm
-
-[source, bash]
-.*App*
-----
-kubectl apply -f 010/app.yaml 
-----
-
-* link:010/app.yaml[010/app.yaml]
-
-[source, bash]
-.*VirtualServer*
-----
-kubectl apply -f 010/vs.yaml 
-----
-
-* link:010/vs.yaml[010/vs.yaml]
-
-[source, bash]
-.*Test*
-----
-$ for i in {1..5} ; do curl -s -H "Host: gw010.example.com" http://$IP/test | grep "server addr" ; done
-        server addr: 10.8.1.21:8080
-        server addr: 10.8.0.20:8080
-        server addr: 10.8.1.21:8080
-        server addr: 10.8.0.20:8080
-        server addr: 10.8.1.21:8080
-----
-
-=== Client Source Address Disclose
-
-[source, bash]
-.*App*
-----
-kubectl apply -f 011/app.yaml 
-----
-
-* link:011/app.yaml[011/app.yaml]
-
-[source, bash]
-.*VirtualServer*
-----
-kubectl apply -f 011/vs.yaml 
-----
-
-* link:011/vs.yaml[011/vs.yaml]
-
-[source, bash]
-.*Test*
-----
-$ curl -s -H "Host: gw011.example.com" http://$IP/foo 
-...
-    Request Headers: x-real-ip: [111.223.104.76] x-forwarded-host: [gw011.example.com] x-forwarded-proto: [http] host: [gw011.example.com] x-forwarded-port: [80] connection: [close] user-agent: [curl/7.64.1] accept: [*/*] 
-
-$ curl -H "X-Forwarded-For: 1.1.1.1, 1.1.1.2" -H "Host: gw011.example.com" http://$IP/foo
-...
-    Request Headers: x-real-ip: [111.223.104.76] x-forwarded-host: [gw011.example.com] x-forwarded-proto: [http] host: [gw011.example.com] x-forwarded-port: [80] connection: [close] x-forwarded-for: [1.1.1.1,1.1.1.2] user-agent: [curl/7.64.1] accept: [*/*] 
 ----
 
 == API Access Control

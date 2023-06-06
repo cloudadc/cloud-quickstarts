@@ -1,15 +1,17 @@
 apiVersion: k8s.nginx.org/v1
 kind: VirtualServer
 metadata:
-  name: vs-011
-  namespace: gw-011
+  name: vs-018
+  namespace: gw-018
 spec:
-  host: gw011.example.com
+  host: gw018.example.com
   upstreams:
   - name: foo
     service: foo-svc
     port: 80
   routes:
-  - path: /
+  - path: /foo
     action:
-      pass: foo
+      proxy:
+        upstream: foo
+        rewritePath: /bar

@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: Namespace
 metadata:
-  name: gw-010
+  name: gw-013
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -9,7 +9,7 @@ metadata:
   labels:
     app: foo
   name: foo
-  namespace: gw-010
+  namespace: gw-013
 spec:
   replicas: 2
   selector:
@@ -21,7 +21,7 @@ spec:
         app: foo
     spec:
       containers:
-      - image: us-central1-docker.pkg.dev/playground-s-11-559ebbb3/nginx/cafe:1.1
+      - image: cloudadc/cafe:1.1
         name: backend
         ports:
         - containerPort: 8080
@@ -30,7 +30,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: foo-svc
-  namespace: gw-010
+  namespace: gw-013
 spec:
   ports:
   - port: 80
