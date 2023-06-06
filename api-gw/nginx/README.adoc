@@ -11,6 +11,39 @@
 export PROJECT=$(gcloud config configurations list | grep PROJECT | awk '{print $2}')
 ----
 
+=== Prepare Kubernetes
+
+[source, bash]
+.*1. Enable Container API*
+----
+gcloud services enable container.googleapis.com
+----
+
+[source, bash]
+.*2. set the zone to run cluster and the cluster name*
+----
+export my_zone=us-central1-a
+export my_cluster=standard-cluster-1
+----
+
+[source, bash]
+.*3. Create cluster*
+----
+gcloud container clusters create $my_cluster --num-nodes=2 --zone=$my_zone --cluster-version=1.24.12-gke.500 --enable-ip-alias
+----
+
+[source, bash]
+.*4. Verify Install*
+----
+kubectl get nodes -o wide
+----
+
+[source, bash]
+.*5. Fetching cluster endpoint and auth data*
+----
+gcloud container clusters get-credentials $my_cluster --zone $my_zone
+----
+
 === Prepare Artifact Registry
 
 [source, bash]
@@ -32,42 +65,6 @@ gcloud auth configure-docker us-central1-docker.pkg.dev
 ----
 
 NOTE: Before you can push or pull images, configure Docker to use the Google Cloud CLI to authenticate requests to Artifact Registry.
-
-=== Prepare Kubernetes
-
-[source, bash]
-.*1. Enable Container API*
-----
-gcloud services enable container.googleapis.com
-----
-
-[source, bash]
-.*2. set the zone to run cluster and the cluster name*
-----
-export my_zone=us-central1-a
-export my_cluster=standard-cluster-1
-----
-
-[source, bash]
-.*3. Create cluster*
-----
-gcloud container clusters create $my_cluster --num-nodes=2 --zone=$my_zone --cluster-version=1.22.17-gke.7500 --enable-ip-alias
-----
-
-[source, bash]
-.*4. Verify Install*
-----
-$ kubectl get nodes -o wide
-NAME                                                STATUS   ROLES    AGE   VERSION             INTERNAL-IP   EXTERNAL-IP       OS-IMAGE                             KERNEL-VERSION   CONTAINER-RUNTIME
-gke-standard-cluster-1-default-pool-96a64d1f-4h7q   Ready    <none>   29s   v1.22.17-gke.7500   10.128.0.3    104.198.201.247   Container-Optimized OS from Google   5.10.162+        containerd://1.5.18
-gke-standard-cluster-1-default-pool-96a64d1f-jhb2   Ready    <none>   29s   v1.22.17-gke.7500   10.128.0.2    34.67.181.117     Container-Optimized OS from Google   5.10.162+        containerd://1.5.18
-----
-
-[source, bash]
-.*5. Fetching cluster endpoint and auth data*
-----
-gcloud container clusters get-credentials $my_cluster --zone $my_zone
-----
 
 == Installation
 
@@ -184,7 +181,7 @@ NOTE: Replace the default `nginx-plus-ingress:2.4.2` to `us-central1-docker.pkg.
 [source, bash]
 ----
 gcloud compute firewall-rules create allow-external-http-80 --direction=INGRESS --priority=1000 --network=default --action=ALLOW --rules=tcp:80 --source-ranges=0.0.0.0/0
-gcloud compute firewall-rules create allow-external-http-8080 --direction=INGRESS --priority=1000 --network=default --action=ALLOW --rules=tcp:8080 --source-ranges=0.0.0.0/0
+gcloud compute firewall-rules create allow-external-http-443 --direction=INGRESS --priority=1000 --network=default --action=ALLOW --rules=tcp:443 --source-ranges=0.0.0.0/0
 gcloud compute firewall-rules create allow-external-http-8898 --direction=INGRESS --priority=1000 --network=default --action=ALLOW --rules=tcp:8898 --source-ranges=0.0.0.0/0
 ----
 
@@ -266,10 +263,6 @@ kubectl apply -f 102/vs.yaml
 [source, bash]
 .*Test*
 ----
-// firewall
-gcloud compute firewall-rules create allow-external-https-443 --direction=INGRESS --priority=1000 --network=default --action=ALLOW --rules=tcp:443 --source-ranges=0.0.0.0/0
-
-// access
 curl -H "Host: gw102.example.com" https://$IP --insecure
 ----
 
