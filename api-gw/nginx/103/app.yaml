@@ -21,10 +21,10 @@ spec:
         app: grpc-app
     spec:
       containers:
-      - image: us-central1-docker.pkg.dev/$PROJECT/nginx/grpc-go-greeting:0.1
+      - image: cloudadc/grpc-go-greeting:1.1
         name: backend
         ports:
-        - containerPort: 8009
+        - containerPort: 50051
 ---
 apiVersion: v1
 kind: Service
@@ -33,9 +33,9 @@ metadata:
   namespace: gw-103
 spec:
   ports:
-  - port: 80
+  - port: 50051
     protocol: TCP
-    targetPort: 8009
+    targetPort: 50051
   selector:
     app: grpc-app
   type: ClusterIP

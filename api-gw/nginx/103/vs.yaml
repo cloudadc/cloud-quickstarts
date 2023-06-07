@@ -5,12 +5,14 @@ metadata:
   namespace: gw-103
 spec:
   host: gw103.example.com
+  tls:
+    secret: grpc-secret
   upstreams:
   - name: grpc-app
     service: grpc-app-svc
-    port: 80
+    port: 50051
     type: grpc
   routes:
-  - path: /
+  - path: /helloworld.Greeter
     action:
       pass: grpc-app

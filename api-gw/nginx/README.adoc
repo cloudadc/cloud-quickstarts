@@ -66,6 +66,61 @@ gcloud auth configure-docker us-central1-docker.pkg.dev
 
 NOTE: Before you can push or pull images, configure Docker to use the Google Cloud CLI to authenticate requests to Artifact Registry.
 
+=== Firewall Setting Up
+
+[source, bash]
+----
+gcloud compute firewall-rules create allow-external-ingress --direction=INGRESS --priority=1000 --network=default --action=ALLOW --rules=tcp:80,tcp:443,tcp:8898 --source-ranges=0.0.0.0/0
+----
+
+=== Test Application Iamge
+
+|===
+|NAME |x86 |aarch64
+
+|cafe
+|cloudadc/cafe:1.4
+|cloudadc/cafe:1.4-aarch64
+
+|backend
+|cloudadc/backend:0.1.5
+|cloudadc/backend:0.1.5-aarch64
+
+|ttcp
+|cloudadc/ttcp:1.14-2
+|
+
+|ttcp-cli
+|cloudadc/ttcp:1.14-2-cli
+|
+
+|ttcp-udp
+|cloudadc/ttcp:1.14-2-cli
+|
+
+|greetings
+|cloudadc/grpc-go-greeting:1.1
+|cloudadc/grpc-go-greeting:1.1-aarch64
+
+|coredns
+|coredns/coredns:1.10.0
+|
+|===
+
+=== Troubleshooting Scripts
+
+[source, bash]
+.*Log Overview*
+----
+IC_POD=$(kubectl get pods -n nginx-ingress --no-headers | head -n 1 | awk '{print $1}') && kubectl logs -f $IC_POD -n nginx-ingress
+----
+
+[source, bash]
+.*Dump configuration*
+----
+IC_POD=$(kubectl get pods -n nginx-ingress --no-headers | head -n 1 | awk '{print $1}') && kubectl exec $IC_POD -n nginx-ingress -- nginx -T 2>&1 | grep -v '^[[:space:]]*$' > nginx.conf
+----
+
 == Installation
 
 === Docker Image Build
@@ -106,40 +161,6 @@ docker tag us-central1-docker.pkg.dev/$PROJECT/nginx/nginx-plus-ingress:2.4.2-SN
 docker push us-central1-docker.pkg.dev/$PROJECT/nginx/nginx-plus-ingress:2.4.2
 ----
 
-=== Prepare Test Image
-
-[source, bash]
-.*cafe*
-----
-docker pull cloudadc/cafe:1.1
-docker tag cloudadc/cafe:1.1 us-central1-docker.pkg.dev/$PROJECT/nginx/cafe:1.1
-docker push us-central1-docker.pkg.dev/$PROJECT/nginx/cafe:1.1
-----
-
-[source, bash]
-.*backend*
-----
-docker pull cloudadc/backend:0.1.5
-docker tag cloudadc/backend:0.1.5 us-central1-docker.pkg.dev/$PROJECT/nginx/backend:0.1.5
-docker push us-central1-docker.pkg.dev/$PROJECT/nginx/backend:0.1.5
-----
-
-[source, bash]
-.*ttcp*
-----
-docker pull cloudadc/ttcp:1.14-2
-docker tag cloudadc/ttcp:1.14-2 us-central1-docker.pkg.dev/$PROJECT/nginx/ttcp:1.14-2
-docker push us-central1-docker.pkg.dev/$PROJECT/nginx/ttcp:1.14-2
-
-docker pull cloudadc/ttcp:1.14-2-cli
-docker tag cloudadc/ttcp:1.14-2-cli us-central1-docker.pkg.dev/$PROJECT/nginx/ttcp:1.14-2-cli
-docker push us-central1-docker.pkg.dev/$PROJECT/nginx/ttcp:1.14-2-cli
-
-docker pull cloudadc/ttcp:1.14-2-udp
-docker tag cloudadc/ttcp:1.14-2-udp us-central1-docker.pkg.dev/$PROJECT/nginx/ttcp:1.14-2-udp
-docker push us-central1-docker.pkg.dev/$PROJECT/nginx/ttcp:1.14-2-udp
-----
-
 === Installation
 
 NOTE: The installation scripts are under `kubernetes-ingress/deployments`.
@@ -175,15 +196,6 @@ kubectl apply -f daemon-set/nginx-plus-ingress.yaml
 ----
 
 NOTE: Replace the default `nginx-plus-ingress:2.4.2` to `us-central1-docker.pkg.dev/playground-s-11-74402444/nginx/nginx-plus-ingress:2.4.2`, and comment out `-default-server-tls-secret`.
-
-=== Enable Firewall for ingress HTTP request
-
-[source, bash]
-----
-gcloud compute firewall-rules create allow-external-http-80 --direction=INGRESS --priority=1000 --network=default --action=ALLOW --rules=tcp:80 --source-ranges=0.0.0.0/0
-gcloud compute firewall-rules create allow-external-http-443 --direction=INGRESS --priority=1000 --network=default --action=ALLOW --rules=tcp:443 --source-ranges=0.0.0.0/0
-gcloud compute firewall-rules create allow-external-http-8898 --direction=INGRESS --priority=1000 --network=default --action=ALLOW --rules=tcp:8898 --source-ranges=0.0.0.0/0
-----
 
 === Verify Installation
 
@@ -263,7 +275,7 @@ kubectl apply -f 102/vs.yaml
 [source, bash]
 .*Test*
 ----
-curl -H "Host: gw102.example.com" https://$IP --insecure
+curl --resolve gw102.example.com:443:$IP https://gw102.example.com --insecure
 ----
 
 === gRPC HTTP2
@@ -279,16 +291,19 @@ kubectl apply -f 103/app.yaml
 [source, bash]
 .*VirtualServer*
 ----
+kubectl apply -f 103/secret.yaml 
 kubectl apply -f 103/vs.yaml 
 ----
 
+* link:103/secret.yaml[103/secret.yaml]
 * link:103/vs.yaml[103/vs.yaml]
 
 [source, bash]
 .*Test*
 ----
-echo "ADDRESS=gw103.example.com:80" > env.list
-docker run --env-file ./env.list cloudadc/grpc-go-greeting:0.1 greeter_client "kylin SONG"
+git clone https://github.com/cloudadc/grpc-helloworld.git
+cd grpc-helloworld/go/
+grpcurl -proto helloworld/helloworld.proto -v -plaintext -d '{"name":"go Tester"}' gw103.example.com:80 helloworld.Greeter/SayHello
 ----
 
 === WebSocket
@@ -317,6 +332,18 @@ kubectl apply -f 104/vs.yaml
 
 image:104/gw104.png[Image,400,150]
  
+Alternatively, test websocket use node client code:
+
+[source, bash]
+----
+$ cd 104/client/ && npm install ws
+
+$ node client.js ws://gw104.example.com/rlzy/websocket "Hello, World"
+Connect to Server via  ws://gw104.example.com/rlzy/websocket
+39e2cfd1-0a19-fdf6-7f77-f08a8ff58bfa join in !
+{"session": "39e2cfd1-0a19-fdf6-7f77-f08a8ff58bfa", "msg": "Hello, World", "date": "Wed Jun 07 02:30:42 UTC 2023"}
+----
+
 === TCP/UDP
 
 [source, bash]

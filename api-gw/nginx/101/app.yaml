@@ -21,7 +21,7 @@ spec:
         app: http-app
     spec:
       containers:
-      - image: us-central1-docker.pkg.dev/playground-s-11-e8df3222/nginx/cafe:1.1
+      - image: cloudadc/cafe:1.4
         name: backend
         ports:
         - containerPort: 8080

@@ -21,7 +21,7 @@ spec:
         app: ws-app
     spec:
       containers:
-      - image: us-central1-docker.pkg.dev/playground-s-11-e8df3222/nginx/backend:0.1.5
+      - image: cloudadc/backend:0.1.5
         name: backend
         ports:
         - containerPort: 8080
