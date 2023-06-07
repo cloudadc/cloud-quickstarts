@@ -1,0 +1,16 @@
+apiVersion: k8s.nginx.org/v1alpha1
+kind: TransportServer
+metadata:
+  name: l4-app
+  namespace: gw-405
+spec:
+  listener:
+    name: https-tcp
+    protocol: TCP
+  upstreams:
+  - name: l4-app
+    service: app-svc
+    port: 8443
+    maxConns: 100
+  action:
+    pass: l4-app

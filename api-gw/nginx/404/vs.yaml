@@ -1,0 +1,19 @@
+apiVersion: k8s.nginx.org/v1
+kind: VirtualServer
+metadata:
+  name: vs-404
+  namespace: gw-404
+spec:
+  host: gw404.example.com
+  upstreams:
+  - name: foo
+    service: foo-svc
+    port: 80
+    max-conns: 100
+    queue:
+      size: 10
+      timeout: 60s
+  routes:
+  - path: /
+    action:
+      pass: foo

@@ -1383,28 +1383,142 @@ for i in {1..10} ; do curl -H "Host: gw305.example.com" "http://$IP/test?ratelim
 
 == API Circuit Breaker
 
-=== Max Connection 
+=== Max Requests(Server) 
 
 [source, bash]
 .*App*
 ----
-
+kubectl apply -f 401/app.yaml 
 ----
 
-[source, bash]
-.*Policy*
-----
-
-----
+* link:401/app.yaml[401/app.yaml]
 
 [source, bash]
 .*VirtualServer*
 ----
-
+  http-snippets: |
+    limit_req_zone $server_name zone=max_req_zone:10m rate=1000r/s;
+  server-snippets: |
+    limit_req zone=max_req_zone;
 ----
+
+link:401/vs.yaml[401/vs.yaml]
 
 [source, bash]
 .*Test*
 ----
+curl -H "Host: gw401.example.com" http://$IP/test
+----
 
+=== Max Connection(Server)
+
+[source, bash]
+.*App*
+----
+kubectl apply -f 402/app.yaml 
+----
+
+* link:402/app.yaml[402/app.yaml]
+
+[source, bash]
+.*VirtualServer*
+----
+  http-snippets: |
+    limit_conn_zone $server_name zone=perserver:10m;
+  server-snippets: |
+    limit_conn perserver 1000;
+----
+
+* link:402/vs.yaml[402/vs.yaml]
+
+[source, bash]
+.*Test*
+----
+curl -H "Host: gw402.example.com" http://$IP/test
+----
+
+=== Max Connection(Upstream)
+
+[source, bash]
+.*App*
+----
+kubectl apply -f 403/app.yaml
+----
+
+* link:403/app.yaml[403/app.yaml]
+
+[source, bash]
+.*VirtualServer*
+----
+  - name: foo
+    service: foo-svc
+    port: 80
+    max-conns: 100
+----
+
+* link:403/vs.yaml[403/vs.yaml]
+
+[source, bash]
+.*Test*
+----
+curl -H "Host: gw403.example.com" http://$IP/test
+----
+
+=== Queue Based Max Connection(Upstream)
+
+[source, bash]
+.*App*
+----
+kubectl apply -f 404/app.yaml 
+----
+
+* link:404/app.yaml[404/app.yaml]
+
+[source, bash]
+.*VirtualServer*
+----
+  - name: foo
+    service: foo-svc
+    port: 80
+    max-conns: 100
+    queue:
+      size: 10
+      timeout: 60s
+----
+
+* link:404/vs.yaml[404/vs.yaml]
+
+[source, bash]
+.*Test*
+----
+curl -H "Host: gw404.example.com" http://$IP/test
+----
+
+=== L4 App Max Connection(Upstream)
+
+[source, bash]
+.*App*
+----
+kubectl apply -f 405/app.yaml 
+----
+
+* link:405/app.yaml[405/app.yaml]
+
+[source, bash]
+.*TransportServer*
+----
+  upstreams:
+  - name: l4-app
+    service: app-svc
+    port: 8443
+    maxConns: 100
+----
+
+* link:405/listeners.yaml[405/listeners.yaml]
+* link:405/ts.yaml[405/ts.yaml]
+
+[source, bash]
+.*Test*
+----
+curl https://IP:8443
 ----

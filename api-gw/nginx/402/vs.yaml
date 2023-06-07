@@ -1,14 +1,14 @@
 apiVersion: k8s.nginx.org/v1
 kind: VirtualServer
 metadata:
-  name: vs-401
-  namespace: gw-401
+  name: vs-402
+  namespace: gw-402
 spec:
   http-snippets: |
-    limit_req_zone $server_name zone=max_req_zone:10m rate=1000r/s;
-  host: gw401.example.com
+    limit_conn_zone $server_name zone=max_conn_zone:10m;
+  host: gw402.example.com
   server-snippets: |
-    limit_req zone=max_req_zone;
+    limit_conn max_conn_zone 1000;
   upstreams:
   - name: foo
     service: foo-svc

@@ -1,0 +1,16 @@
+apiVersion: k8s.nginx.org/v1
+kind: VirtualServer
+metadata:
+  name: vs-403
+  namespace: gw-403
+spec:
+  host: gw403.example.com
+  upstreams:
+  - name: foo
+    service: foo-svc
+    port: 80
+    max-conns: 100
+  routes:
+  - path: /
+    action:
+      pass: foo
