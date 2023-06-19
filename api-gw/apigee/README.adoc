@@ -1,7 +1,9 @@
 = Apigee
 :toc: manual
 
-== Generating an API Proxy Using an OpenAPI Specification
+== API Proxy
+
+This section will generate an API Proxy using an OpenAPI Specification
 
 === OpenAPI specification
 
@@ -38,3 +40,7 @@ $ curl https://api-test-qwiklabs-gcp-02-02aae115af99.apiservices.dev/retail/v1/c
 
 image:img/api-proxy-access-debug.png[Image,1000,475]
 
+== Target Server
+
+
+== Route Rules
