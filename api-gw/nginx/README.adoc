@@ -29,7 +29,7 @@ export my_cluster=standard-cluster-1
 [source, bash]
 .*3. Create cluster*
 ----
-gcloud container clusters create $my_cluster --num-nodes=2 --zone=$my_zone --cluster-version=1.24.12-gke.500 --enable-ip-alias
+gcloud container clusters create $my_cluster --num-nodes=2 --zone=$my_zone --cluster-version=1.24.12-gke.1000 --enable-ip-alias
 ----
 
 [source, bash]
@@ -1522,3 +1522,49 @@ kubectl apply -f 405/app.yaml
 ----
 curl https://IP:8443
 ----
+
+== Advanced Usage Case
+
+=== Cookie persistence across instances
+
+[source, bash]
+.*App*
+----
+kubectl apply -f 501/app.yaml
+----
+
+link:501/app.yaml[501/app.yaml]
+
+[source, bash]
+.*VirtualServer*
+----
+    sessionCookie:
+      enable: true
+      name: srv_id
+      path: /
+      expires: 1h
+      domain: .example.com
+      httpOnly: false
+      secure: true
+----
+
+* link:501/vs.yaml[501/vs.yaml]
+
+[source, bash]
+.*Test*
+----
+$ curl -H "Host: gw014.example.com" http://$IP/foo -v
+...
+< Set-Cookie: srv_id=1d26bd38d10f1410bb8bd037ce631270; expires=Sat, 20-May-23 06:07:01 GMT; max-age=3600; domain=.example.com; secure; path=/
+...
+        server addr: 10.8.0.17:8080
+
+$ for i in {1..5} ; do curl -s --cookie "srv_id=1d26bd38d10f1410bb8bd037ce631270; expires=Sat, 20-May-23 06:07:01 GMT; max-age=3600; domain=.example.com; secure; path=/" -H "Host: gw014.example.com" http://$IP/foo | grep "server addr" ; done
+        server addr: 10.8.0.17:8080
+        server addr: 10.8.0.17:8080
+        server addr: 10.8.0.17:8080
+        server addr: 10.8.0.17:8080
+        server addr: 10.8.0.17:8080
+----
+
+
