@@ -1550,21 +1550,192 @@ link:501/app.yaml[501/app.yaml]
 
 * link:501/vs.yaml[501/vs.yaml]
 
+==== 分别轮询访问NGINX节点，验证会话保持
+
+image:501/nginx-cookie-arch-a.png[Image,400,140]
+
 [source, bash]
-.*Test*
+.*1. View the user services*
 ----
-$ curl -H "Host: gw014.example.com" http://$IP/foo -v
-...
-< Set-Cookie: srv_id=1d26bd38d10f1410bb8bd037ce631270; expires=Sat, 20-May-23 06:07:01 GMT; max-age=3600; domain=.example.com; secure; path=/
-...
-        server addr: 10.8.0.17:8080
-
-$ for i in {1..5} ; do curl -s --cookie "srv_id=1d26bd38d10f1410bb8bd037ce631270; expires=Sat, 20-May-23 06:07:01 GMT; max-age=3600; domain=.example.com; secure; path=/" -H "Host: gw014.example.com" http://$IP/foo | grep "server addr" ; done
-        server addr: 10.8.0.17:8080
-        server addr: 10.8.0.17:8080
-        server addr: 10.8.0.17:8080
-        server addr: 10.8.0.17:8080
-        server addr: 10.8.0.17:8080
+$ kubectl get pods -n gw-501 -o wide
+NAME                    READY   STATUS    RESTARTS   AGE     IP          NODE                                                NOMINATED NODE   READINESS GATES
+user-74756c6c6f-89z69   1/1     Running   0          7m34s   10.8.1.9    gke-standard-cluster-1-default-pool-d44fc03b-3rtg   <none>           <none>
+user-74756c6c6f-9l5p9   1/1     Running   0          7m34s   10.8.1.10   gke-standard-cluster-1-default-pool-d44fc03b-3rtg   <none>           <none>
+user-74756c6c6f-wfqnc   1/1     Running   0          7m34s   10.8.0.10   gke-standard-cluster-1-default-pool-d44fc03b-9sz8   <none>           <none>
 ----
 
+[source, bash]
+.*2. View the nginx ingress*
+----
+$ kubectl get pods -n nginx-ingress -o wide
+NAME                  READY   STATUS    RESTARTS   AGE     IP         NODE                                                NOMINATED NODE   READINESS GATES
+nginx-ingress-h8cgq   1/1     Running   0          3h15m   10.8.1.6   gke-standard-cluster-1-default-pool-d44fc03b-3rtg   <none>           <none>
+nginx-ingress-tpmhm   1/1     Running   0          3h15m   10.8.0.8   gke-standard-cluster-1-default-pool-d44fc03b-9sz8   <none>           <none>
+----
+
+[source, bash]
+.*3. Access nginx ingress 1, and record the cookie*
+----
+% curl -s -H "Host: gw501.example.com" http://$IP_NODE1/user -v | grep addr
+*   Trying 34.121.161.61:80...
+* Connected to 34.121.161.61 (34.121.161.61) port 80 (#0)
+> GET /user HTTP/1.1
+> Host: gw501.example.com
+> User-Agent: curl/7.88.1
+> Accept: */*
+> 
+< HTTP/1.1 200 OK
+< Server: nginx/1.23.2
+< Date: Mon, 10 Jul 2023 06:17:12 GMT
+< Content-Type: text/plain
+< Content-Length: 412
+< Connection: keep-alive
+< Set-Cookie: srv_id=cdceac31c829aeb3227c893c7e2962cc; expires=Mon, 10-Jul-23 07:17:12 GMT; max-age=3600; domain=.example.com; secure; path=/
+< 
+{ [412 bytes data]
+* Connection #0 to host 34.121.161.61 left intact
+        client addr: 10.8.1.6:45816
+        server addr: 10.8.0.10:8080
+----
+
+NOTE: `srv_id=cdceac31c829aeb3227c893c7e2962cc; expires=Mon, 10-Jul-23 07:17:12 GMT; max-age=3600; domain=.example.com; secure; path=/` is the cookie.
+
+[source, bash]
+.*4. Access nginx ingress 1 with cookie*
+----
+% for i in {1..5} ; do curl -s --cookie "srv_id=cdceac31c829aeb3227c893c7e2962cc; expires=Mon, 10-Jul-23 07:17:12 GMT; max-age=3600; domain=.example.com; secure; path=/" -H "Host: gw501.example.com" http://$IP_NODE1/user   | grep "addr" ; echo; done
+        client addr: 10.8.1.6:34846
+        server addr: 10.8.0.10:8080
+
+        client addr: 10.8.1.6:34860
+        server addr: 10.8.0.10:8080
+
+        client addr: 10.8.1.6:34868
+        server addr: 10.8.0.10:8080
+
+        client addr: 10.8.1.6:34880
+        server addr: 10.8.0.10:8080
+
+        client addr: 10.8.1.6:34894
+        server addr: 10.8.0.10:8080
+----
+
+[source, bash]
+.*5. Access nginx ingress 2 with cookie*
+----
+% for i in {1..5} ; do curl -s --cookie "srv_id=cdceac31c829aeb3227c893c7e2962cc; expires=Mon, 10-Jul-23 07:17:12 GMT; max-age=3600; domain=.example.com; secure; path=/" -H "Host: gw501.example.com" http://$IP_NODE2/user   | grep "addr" ; echo; done
+        client addr: 10.8.0.8:40986
+        server addr: 10.8.0.10:8080
+
+        client addr: 10.8.0.8:40992
+        server addr: 10.8.0.10:8080
+
+        client addr: 10.8.0.8:41000
+        server addr: 10.8.0.10:8080
+
+        client addr: 10.8.0.8:41004
+        server addr: 10.8.0.10:8080
+
+        client addr: 10.8.0.8:41006
+        server addr: 10.8.0.10:8080
+----
+
+==== NLB 负载 NGINX 场景
+
+image:501/nginx-cookie-arch-b.png[Image,400,178]
+
+[source, bash]
+.*1. View the user services*
+----
+$ kubectl get pods -n gw-501 -o wide
+NAME                    READY   STATUS    RESTARTS   AGE   IP          NODE                                                NOMINATED NODE   READINESS GATES
+user-74756c6c6f-89z69   1/1     Running   0          69m   10.8.1.9    gke-standard-cluster-1-default-pool-d44fc03b-3rtg   <none>           <none>
+user-74756c6c6f-9l5p9   1/1     Running   0          69m   10.8.1.10   gke-standard-cluster-1-default-pool-d44fc03b-3rtg   <none>           <none>
+user-74756c6c6f-wfqnc   1/1     Running   0          69m   10.8.0.10   gke-standard-cluster-1-default-pool-d44fc03b-9sz8   <none>           <none>
+----
+
+[source, bash]
+.*2. View the nginx ingress*
+----
+$ kubectl get pods -n nginx-ingress -o wide
+NAME                             READY   STATUS    RESTARTS   AGE   IP          NODE                                                NOMINATED NODE   READINESS GATES
+nginx-ingress-7796869d48-895br   1/1     Running   0          50s   10.8.1.11   gke-standard-cluster-1-default-pool-d44fc03b-3rtg   <none>           <none>
+nginx-ingress-7796869d48-gl6s2   1/1     Running   0          17s   10.8.0.11   gke-standard-cluster-1-default-pool-d44fc03b-9sz8   <none>           <none>
+----
+
+[source, bash]
+.*3. View NLB Endpoint*
+----
+$ kubectl get svc -n nginx-ingress                                                                                                                                                                                
+NAME       TYPE           CLUSTER-IP    EXTERNAL-IP     PORT(S)        AGE
+nginx-lb   LoadBalancer   10.12.6.218   34.132.61.145   80:31216/TCP   39s
+----
+
+[source, bash]
+.*4. Access NLB, and record the cookie*
+----
+% curl -s -H "Host: gw501.example.com" http://$LB/user -v
+*   Trying 34.132.61.145:80...
+* Connected to 34.132.61.145 (34.132.61.145) port 80 (#0)
+> GET /user HTTP/1.1
+> Host: gw501.example.com
+> User-Agent: curl/7.88.1
+> Accept: */*
+> 
+< HTTP/1.1 200 OK
+< Server: nginx/1.23.2
+< Date: Mon, 10 Jul 2023 06:58:16 GMT
+< Content-Type: text/plain
+< Content-Length: 413
+< Connection: keep-alive
+< Set-Cookie: srv_id=cdceac31c829aeb3227c893c7e2962cc; expires=Mon, 10-Jul-23 07:58:16 GMT; max-age=3600; domain=.example.com; secure; path=/
+< 
+
+            request: GET /user HTTP/1.1
+                uri: /user
+         request id: 1835d23f1dd5a28e1352efc937b8e464
+               host: gw501.example.com
+               date: 10/Jul/2023:06:58:16 +0000
+
+        server name: user-74756c6c6f-wfqnc
+        client addr: 10.8.0.11:60974
+        server addr: 10.8.0.10:8080
+----
+
+NOTE: `srv_id=cdceac31c829aeb3227c893c7e2962cc; expires=Mon, 10-Jul-23 07:58:16 GMT; max-age=3600; domain=.example.com; secure; path=/` is the cookie.
+
+[source, bash]
+.*5. Access NLB with cookie*
+----
+% for i in {1..10} ; do curl -s --cookie "srv_id=cdceac31c829aeb3227c893c7e2962cc; expires=Mon, 10-Jul-23 07:58:16 GMT; max-age=3600; domain=.example.com; secure; path=/" -H "Host: gw501.example.com" http://$LB/user   | grep "addr" ; echo; done
+        client addr: 10.8.1.11:56906
+        server addr: 10.8.0.10:8080
+
+        client addr: 10.8.0.11:36064
+        server addr: 10.8.0.10:8080
+
+        client addr: 10.8.1.11:49850
+        server addr: 10.8.0.10:8080
+
+        client addr: 10.8.1.11:49856
+        server addr: 10.8.0.10:8080
+
+        client addr: 10.8.1.11:49868
+        server addr: 10.8.0.10:8080
+
+        client addr: 10.8.0.11:38428
+        server addr: 10.8.0.10:8080
+
+        client addr: 10.8.1.11:49874
+        server addr: 10.8.0.10:8080
+
+        client addr: 10.8.0.11:38442
+        server addr: 10.8.0.10:8080
+
+        client addr: 10.8.1.11:49884
+        server addr: 10.8.0.10:8080
+
+        client addr: 10.8.1.11:49896
+        server addr: 10.8.0.10:8080
+----
 

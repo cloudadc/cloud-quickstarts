@@ -7,18 +7,18 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   labels:
-    app: foo
-  name: foo
+    app: user
+  name: user
   namespace: gw-501
 spec:
   replicas: 3
   selector:
     matchLabels:
-      app: foo
+      app: user
   template:
     metadata:
       labels:
-        app: foo
+        app: user
     spec:
       containers:
       - image: cloudadc/cafe:1.1
@@ -29,7 +29,7 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: foo-svc
+  name: user-svc
   namespace: gw-501
 spec:
   ports:
@@ -37,5 +37,5 @@ spec:
     protocol: TCP
     targetPort: 8080
   selector:
-    app: foo
+    app: user
   type: ClusterIP
