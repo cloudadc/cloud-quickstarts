@@ -29,7 +29,7 @@ export my_cluster=standard-cluster-1
 [source, bash]
 .*3. Create cluster*
 ----
-gcloud container clusters create $my_cluster --num-nodes=2 --zone=$my_zone --cluster-version=1.24.12-gke.1000 --enable-ip-alias
+gcloud container clusters create $my_cluster --num-nodes=2 --zone=$my_zone --cluster-version=1.24.16-gke.500 --enable-ip-alias
 ----
 
 [source, bash]
@@ -79,8 +79,8 @@ gcloud compute firewall-rules create allow-external-ingress --direction=INGRESS 
 |NAME |x86 |aarch64
 
 |cafe
-|cloudadc/cafe:1.4
-|cloudadc/cafe:1.4-aarch64
+|cloudadc/cafe:1.5
+|cloudadc/cafe:1.5-aarch64
 
 |backend
 |cloudadc/backend:0.1.5
