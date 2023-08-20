@@ -1739,3 +1739,124 @@ NOTE: `srv_id=cdceac31c829aeb3227c893c7e2962cc; expires=Mon, 10-Jul-23 07:58:16 
         server addr: 10.8.0.10:8080
 ----
 
+== Ingress Resource
+
+=== Standard Ingress Process
+
+[source, bash]
+.*1. Deploy Ingress Controller*
+----
+kubectl apply test-01/ns-and-sa.yaml
+kubectl apply test-01/nginx-plus-ingress.yaml
+----
+
+* link:test-01/ns-and-sa.yaml[test-01/ns-and-sa.yaml]
+* link:test-01/nginx-plus-ingress.yaml[test-01/nginx-plus-ingress.yaml]
+
+[source, bash]
+.*2. Deploy App*
+----
+kubectl apply test-01/app.yaml
+----
+
+* link:test-01/app.yaml[test-01/app.yaml]
+
+[source, bash]
+.*3. Deploy Ingress*
+----
+kubectl apply -f test-01/ingress.yaml
+----
+
+* link:test-01/ingress.yaml[test-01/ingress.yaml]
+
+[source, bash]
+.*4. Test*
+----
+ % curl -H "Host: test01.example.com" http://35.232.140.121/coffee
+
+            request: GET /coffee HTTP/1.1
+                uri: /coffee
+         request id: c503fd30898547ca238d21aeb5051baf
+               host: test01.example.com
+               date: 20/Aug/2023:13:20:47 +0000
+
+        server name: coffee-865fd8b9d8-b9x9z
+        client addr: 10.8.1.11:37510
+        server addr: 10.8.1.12:8080
+
+             cookie: 
+                xff: 
+         user agent: curl/7.88.1
+
+ % curl -H "Host: test01.example.com" http://35.232.140.121/tea   
+
+            request: GET /tea HTTP/1.1
+                uri: /tea
+         request id: 17e8f6e6c88e1aa02433ca615ce6124c
+               host: test01.example.com
+               date: 20/Aug/2023:13:20:57 +0000
+
+        server name: tea-794b6fc64-x8nsf
+        client addr: 10.8.0.7:43904
+        server addr: 10.8.0.9:8080
+
+             cookie: 
+                xff: 
+         user agent: curl/7.88.1
+----
+
+=== TDOD 
+
+[source, bash]
+.**
+----
+
+----
+
+[source, bash]
+.**
+----
+
+----
+
+[source, bash]
+.**
+----
+
+----
+
+[source, bash]
+.**
+----
+
+----
+
+[source, bash]
+.**
+----
+
+----
+
+[source, bash]
+.**
+----
+
+----
+
+[source, bash]
+.**
+----
+
+----
+
+[source, bash]
+.**
+----
+
+----
+
+[source, bash]
+.**
+----
+
+----
