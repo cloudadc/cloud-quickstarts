@@ -119,6 +119,13 @@ IC_POD=$(kubectl get pods -n nginx-ingress --no-headers | head -n 1 | awk '{prin
 .*Dump configuration*
 ----
 IC_POD=$(kubectl get pods -n nginx-ingress --no-headers | head -n 1 | awk '{print $1}') && kubectl exec $IC_POD -n nginx-ingress -- nginx -T 2>&1 | grep -v '^[[:space:]]*$' > nginx.conf
+
+// If Ingress Pod are in application pod
+NS=test-02
+IC_POD=$(kubectl get pods -n $NS -l app=nginx-ingress --no-headers | head -n 1 | awk '{print $1}')
+kubectl exec $IC_POD -n $NS -- nginx -T 2>&1 | grep -v '^[[:space:]]*$'
+
+NS=test-02 && IC_POD=$(kubectl get pods -n $NS -l app=nginx-ingress --no-headers | head -n 1 | awk '{print $1}') && kubectl exec $IC_POD -n $NS -- nginx -T 2>&1 | grep -v '^[[:space:]]*$'
 ----
 
 == Installation
@@ -1746,11 +1753,11 @@ NOTE: `srv_id=cdceac31c829aeb3227c893c7e2962cc; expires=Mon, 10-Jul-23 07:58:16 
 [source, bash]
 .*1. Deploy Ingress Controller*
 ----
-kubectl apply test-01/ns-and-sa.yaml
+kubectl apply test-01/ns-sa-cm.yaml
 kubectl apply test-01/nginx-plus-ingress.yaml
 ----
 
-* link:test-01/ns-and-sa.yaml[test-01/ns-and-sa.yaml]
+* link:test-01/ns-sa-cm.yaml[test-01/ns-sa-cm.yaml]
 * link:test-01/nginx-plus-ingress.yaml[test-01/nginx-plus-ingress.yaml]
 
 [source, bash]
@@ -1805,31 +1812,111 @@ kubectl apply -f test-01/ingress.yaml
          user agent: curl/7.88.1
 ----
 
-=== TDOD 
+=== Cookie Session Persistence 
 
 [source, bash]
-.**
+.*1. Deploy Ingress Controller*
+----
+kubectl apply -f test-02/ns-sa-cm.yaml 
+kubectl apply -f test-02/nginx-plus-ingress.yaml 
 ----
 
-----
-
-[source, bash]
-.**
-----
-
-----
+* link:test-02/ns-sa-cm.yaml[test-02/ns-sa-cm.yaml]
+* link:test-02/nginx-plus-ingress.yaml[test-02/nginx-plus-ingress.yaml]
 
 [source, bash]
-.**
+.*2. Deploy App*
+----
+kubectl apply -f test-02/app.yaml
 ----
 
-----
+* link:test-02/app.yaml[test-02/app.yaml]
 
 [source, bash]
-.**
+.*3. Deploy Ingress*
+----
+kubectl apply -f test-02/ingress.yaml
 ----
 
+* link:test-02/ingress.yaml[test-02/ingress.yaml]
+
+[source, bash]
+.*4. Test*
 ----
+// 1. Get cookie
+% curl -H "Host: test02.example.com" http://$LB/coffee -v
+*   Trying 34.135.3.93:80...
+* Connected to 34.135.3.93 (34.135.3.93) port 80 (#0)
+> GET /coffee HTTP/1.1
+> Host: test02.example.com
+> User-Agent: curl/7.88.1
+> Accept: */*
+> 
+< HTTP/1.1 200 OK
+< Server: nginx/1.23.2
+< Date: Sun, 20 Aug 2023 15:01:35 GMT
+< Content-Type: text/plain
+< Content-Length: 420
+< Connection: keep-alive
+< Set-Cookie: srv_id=8755b11e774743dcb825f2681132b16d; expires=Sun, 20-Aug-23 16:01:35 GMT; max-age=3600; path=/coffee
+< 
+
+            request: GET /coffee HTTP/1.1
+                uri: /coffee
+         request id: ceda1aefba64e87132262560baca3a1b
+               host: test02.example.com
+               date: 20/Aug/2023:15:01:35 +0000
+
+        server name: coffee-865fd8b9d8-pzvnl
+        client addr: 10.8.1.20:50866
+        server addr: 10.8.0.13:8080
+
+
+// 2. Access the application 5 times with the cookie srv_id:
+% for i in {1..5} ; do curl -s -H "Host: test02.example.com" --cookie "srv_id=8755b11e774743dcb825f2681132b16d; expires=Sun, 20-Aug-23 16:01:35 GMT; max-age=3600; path=/coffee" http://$LB/coffee | grep "addr" ; echo ; done
+        client addr: 10.8.0.15:39212
+        server addr: 10.8.0.13:8080
+
+        client addr: 10.8.0.15:39224
+        server addr: 10.8.0.13:8080
+
+        client addr: 10.8.1.20:52322
+        server addr: 10.8.0.13:8080
+
+        client addr: 10.8.1.20:52332
+        server addr: 10.8.0.13:8080
+
+        client addr: 10.8.1.20:52348
+        server addr: 10.8.0.13:8080
+
+// 3. Analysis
+
+    1) The step 1 response the 'Set-Cookie' the value is '8755b11e774743dcb825f2681132b16d', the '10.8.1.20' is NGINX INGRESS CONTROLLER POD IP, the '10.8.0.13:8080' is selected Application entrypoint.
+
+    2) The Cookie Hash Algorithm:
+
+        % echo -n "10.8.0.13:8080" | md5
+          8755b11e774743dcb825f2681132b16d          
+
+      The '8755b11e774743dcb825f2681132b16d' are same as Set-Cookie response.
+
+    3) The NGINX INGRESS CONTROLLER IP are 10.8.0.15 and 10.8.1.20
+
+        $ kubectl get pods -n test-02 -l app=nginx-ingress -o wide --no-headers
+          nginx-ingress-f8cf6b98b-fcf8v   1/1   Running   0     34m   10.8.1.20   gke-standard-cluster-1-default-pool-49336727-1l9t 
+          nginx-ingress-f8cf6b98b-xdfhb   1/1   Running   0     34m   10.8.0.15   gke-standard-cluster-1-default-pool-49336727-lx4p
+
+    4) The Application has 3 pods, and IPs are 10.8.0.11, 10.8.0.13 and 10.8.1.15
+
+        $ kubectl get pods -n test-02 -l app=coffee -o wide --no-headers
+          coffee-865fd8b9d8-b9dmk   1/1   Running   0     60m   10.8.1.15   gke-standard-cluster-1-default-pool-49336727-1l9t
+          coffee-865fd8b9d8-lj6np   1/1   Running   0     60m   10.8.0.11   gke-standard-cluster-1-default-pool-49336727-lx4p 
+          coffee-865fd8b9d8-pzvnl   1/1   Running   0     41m   10.8.0.13   gke-standard-cluster-1-default-pool-49336727-lx4p
+
+    5) The step 2 has 5 times application access, and all goes into application pod `10.8.0.13:8080` 
+----
+
+
 
 [source, bash]
 .**
