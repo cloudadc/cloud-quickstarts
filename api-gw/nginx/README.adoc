@@ -1552,7 +1552,7 @@ link:501/app.yaml[501/app.yaml]
 
 ==== 分别轮询访问NGINX节点，验证会话保持
 
-image:501/nginx-cookie-arch-a.png[Image,400,140]
+image:501/nginx-cookie-arch-a.png[Image,500,175]
 
 [source, bash]
 .*1. View the user services*
@@ -1642,7 +1642,7 @@ NOTE: `srv_id=cdceac31c829aeb3227c893c7e2962cc; expires=Mon, 10-Jul-23 07:17:12 
 
 ==== NLB 负载 NGINX 场景
 
-image:501/nginx-cookie-arch-b.png[Image,400,178]
+image:501/nginx-cookie-arch-b.png[Image,500,223]
 
 [source, bash]
 .*1. View the user services*
