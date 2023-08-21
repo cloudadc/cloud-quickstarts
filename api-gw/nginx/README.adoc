@@ -1972,25 +1972,44 @@ image:test-03/nic-dashboard.jpg[Image,500,200]
 [source, bash]
 .*1. Deploy Ingress Controller*
 ----
-
+kubectl apply -f test-04/ns-sa-cm.yaml 
+kubectl apply -f test-04/nginx-plus-ingress.yaml 
 ----
 
 [source, bash]
 .*2. Deploy App*
 ----
-
+kubectl apply -f test-04/app.yaml
 ----
 
 [source, bash]
 .*3. Deploy Ingress*
 ----
-
+kubectl apply -f test-04/ingress.yaml 
 ----
 
 [source, bash]
 .*4. Test*
 ----
-
+ % curl -s -X GET http://$IP:8898/api/8/http/upstreams/test-04-cafe-ingress-test04.example.com-coffee-svc-80 | jq .peers | jq '.[].health_checks'         
+{
+  "checks": 497,
+  "fails": 0,
+  "unhealthy": 0,
+  "last_passed": true
+}
+{
+  "checks": 497,
+  "fails": 0,
+  "unhealthy": 0,
+  "last_passed": true
+}
+{
+  "checks": 497,
+  "fails": 0,
+  "unhealthy": 0,
+  "last_passed": true
+}
 ----
 
 === TODO--
