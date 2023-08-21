@@ -2288,6 +2288,50 @@ upstream test-05-cafe-ingress-test05.example.com-coffee-svc-80 {
 
 * Because request to same uri, so all request goes to one server.
 
+=== Server Slow-Start
+
+[source, bash]
+.*1. Deploy Ingress Controller*
+----
+kubectl apply -f test-06/ns-sa-cm.yaml
+kubectl apply -f test-06/nginx-plus-ingress.yaml
+----
+
+* link:test-06/ns-sa-cm.yaml[test-06/ns-sa-cm.yaml]
+* link:test-06/nginx-plus-ingress.yaml[test-06/nginx-plus-ingress.yaml]
+
+[source, bash]
+.*2. Deploy App*
+----
+kubectl apply -f test-06/app.yaml 
+----
+
+* link:test-06/app.yaml[test-06/app.yaml]
+
+[source, bash]
+.*3. Deploy Ingress*
+----
+kubectl apply -f test-06/ingress.yaml
+----
+
+* link:test-06/ingress.yaml[test-06/ingress.yaml]
+
+[source, bash]
+.*4. Test*
+----
+% curl -s -H "Host: test06.example.com" http://$IP/coffee
+
+            request: GET /coffee HTTP/1.1
+                uri: /coffee
+         request id: aff2a478b2524a3954db8da92dcab979
+               host: test06.example.com
+               date: 21/Aug/2023:11:07:11 +0000
+
+        server name: coffee-567c786db-vdpdc
+        client addr: 10.8.0.27:54184
+        server addr: 10.8.0.29:8080
+----
+
 === TODO--
 
 [source, bash]
