@@ -112,20 +112,23 @@ gcloud compute firewall-rules create allow-external-ingress --direction=INGRESS 
 [source, bash]
 .*Log Overview*
 ----
-IC_POD=$(kubectl get pods -n nginx-ingress --no-headers | head -n 1 | awk '{print $1}') && kubectl logs -f $IC_POD -n nginx-ingress
+NS=test-02
+IC_POD=$(kubectl get pods -n $NS --no-headers | head -n 1 | awk '{print $1}')
+kubectl logs -f $IC_POD -n $NS
+
+NS=test-02 && IC_POD=$(kubectl get pods -n $NS --no-headers | head -n 1 | awk '{print $1}') && kubectl logs -f $IC_POD -n $NS
 ----
 
 [source, bash]
 .*Dump configuration*
 ----
-IC_POD=$(kubectl get pods -n nginx-ingress --no-headers | head -n 1 | awk '{print $1}') && kubectl exec $IC_POD -n nginx-ingress -- nginx -T 2>&1 | grep -v '^[[:space:]]*$' > nginx.conf
-
-// If Ingress Pod are in application pod
 NS=test-02
 IC_POD=$(kubectl get pods -n $NS -l app=nginx-ingress --no-headers | head -n 1 | awk '{print $1}')
 kubectl exec $IC_POD -n $NS -- nginx -T 2>&1 | grep -v '^[[:space:]]*$'
 
 NS=test-02 && IC_POD=$(kubectl get pods -n $NS -l app=nginx-ingress --no-headers | head -n 1 | awk '{print $1}') && kubectl exec $IC_POD -n $NS -- nginx -T 2>&1 | grep -v '^[[:space:]]*$'
+
+NS=test-02 && IC_POD=$(kubectl get pods -n $NS -l app=nginx-ingress --no-headers | head -n 1 | awk '{print $1}') && kubectl exec $IC_POD -n $NS -- nginx -T 2>&1 | grep -v '^[[:space:]]*$' > nginx.conf
 ----
 
 == Installation
@@ -1916,34 +1919,102 @@ kubectl apply -f test-02/ingress.yaml
     5) The step 2 has 5 times application access, and all goes into application pod `10.8.0.13:8080` 
 ----
 
-
-
-[source, bash]
-.**
-----
-
-----
+=== NGINX Management API and Dashboard
 
 [source, bash]
-.**
+.*1. Deploy Ingress Controller*
+----
+kubectl apply -f test-03/ns-sa-cm.yaml
+kubectl apply -f test-03/nginx-plus-ingress.yaml 
 ----
 
-----
+* link:test-03/ns-sa-cm.yaml[test-03/ns-sa-cm.yaml]
+* link:test-03/nginx-plus-ingress.yaml[test-03/nginx-plus-ingress.yaml]
 
 [source, bash]
-.**
+.*2. Deploy App*
 ----
-
+kubectl apply -f test-03/app.yaml
 ----
 
 [source, bash]
-.**
+.*3. Deploy Ingress*
+----
+kubectl apply -f test-03/ingress.yaml 
+----
+
+[source, bash]
+.*4. Test*
+----
+curl -s -X GET  http://$LB:8898/api/8/ -H "accept: application/json" 
+
+curl -s -X GET  http://$LB:8898/api/8/nginx -H "accept: application/json"
+
+curl -s -X GET  http://$LB:8898/api/8/connections -H "accept: application/json"
+
+curl -s -X GET  http://$LB:8898/api/8/http/server_zones -H "accept: application/json"
+curl -s -X GET  http://$LB:8898/api/8/http/server_zones/test03.example.com -H "accept: application/json"
+
+curl -s -X GET  http://$LB:8898/api/8/http/location_zones -H "accept: application/json"
+curl -s -X GET  http://$LB:8898/api/8/http/location_zones/test03.example.com -H "accept: application/json"
+
+curl -s -X GET  http://$LB:8898/api/8/http/upstreams -H "accept: application/json"
+curl -s -X GET  http://$LB:8898/api/8/http/upstreams/test-03-cafe-ingress-test03.example.com-coffee-svc-80 -H "accept: application/json"
+curl -s -X GET  http://$LB:8898/api/8/http/upstreams/test-03-cafe-ingress-test03.example.com-coffee-svc-80/servers -H "accept: application/json"
+----
+
+* https://demo.nginx.com/swagger-ui/
+
+image:test-03/nic-dashboard.jpg[Image,500,200]
+
+=== Active Health Checks
+
+[source, bash]
+.*1. Deploy Ingress Controller*
 ----
 
 ----
 
 [source, bash]
-.**
+.*2. Deploy App*
+----
+
+----
+
+[source, bash]
+.*3. Deploy Ingress*
+----
+
+----
+
+[source, bash]
+.*4. Test*
+----
+
+----
+
+=== TODO--
+
+[source, bash]
+.*1. Deploy Ingress Controller*
+----
+
+----
+
+[source, bash]
+.*2. Deploy App*
+----
+
+----
+
+[source, bash]
+.*3. Deploy Ingress*
+----
+
+----
+
+[source, bash]
+.*4. Test*
 ----
 
 ----
