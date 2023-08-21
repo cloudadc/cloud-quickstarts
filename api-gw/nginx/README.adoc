@@ -2012,6 +2012,282 @@ kubectl apply -f test-04/ingress.yaml
 }
 ----
 
+=== Load-Balancing Method
+
+[source, bash]
+.*1. Deploy Ingress Controller*
+----
+kubectl apply -f test-05/ns-sa-cm.yaml 
+kubectl apply -f test-05/nginx-plus-ingress.yaml 
+----
+
+* link:test-05/ns-sa-cm.yaml[test-05/ns-sa-cm.yaml]
+* link:test-05/nginx-plus-ingress.yaml[test-05/nginx-plus-ingress.yaml]
+
+[source, bash]
+.*2. Deploy App*
+----
+kubectl apply -f test-05/app-v1.yaml
+
+----
+
+* link:test-05/app.yaml[test-05/app-v1.yaml]
+
+[source, bash]
+.*3. Deploy Ingress*
+----
+kubectl apply -f test-05/ingress.yaml 
+----
+
+==== Default Behavior(random + least_conn)
+
+[source, bash]
+.*1. NGINX Configuration*
+----
+upstream test-05-cafe-ingress-test05.example.com-coffee-svc-80 {
+        zone test-05-cafe-ingress-test05.example.com-coffee-svc-80 512k;
+        random two least_conn;
+        server 10.8.0.22:8080 max_fails=1 fail_timeout=10s max_conns=0;
+        server 10.8.0.23:8080 max_fails=1 fail_timeout=10s max_conns=0;
+        server 10.8.0.24:8080 max_fails=1 fail_timeout=10s max_conns=0;
+        server 10.8.1.23:8080 max_fails=1 fail_timeout=10s max_conns=0;
+        server 10.8.1.24:8080 max_fails=1 fail_timeout=10s max_conns=0;
+        queue 500 timeout=4s;
+}
+----
+
+* *two* parameter instructs nginx to randomly select two servers and then choose a server using the specified method. The default method is least_conn which passes a request to a server with the least number of active connections.
+
+[source, bash]
+.*2. Test*
+----
+% for i in {1..200} ; do curl -s -H "Host: test05.example.com" http://$IP/coffee | grep "server addr"; done > t.8
+
+% cat t.8 | grep 10.8.1.23 | wc -l
+      37
+
+% cat t.8 | grep 10.8.1.24 | wc -l
+      33
+
+% cat t.8 | grep 10.8.0.22 | wc -l
+      44
+
+% cat t.8 | grep 10.8.0.23 | wc -l
+      48
+
+% cat t.8 | grep 10.8.0.24 | wc -l
+      38
+----
+
+==== random + least_time
+
+[source, bash]
+.*1. Ingress Annotation*
+----
+nginx.org/lb-method: "random two least_time=last_byte"
+----
+
+[source, bash]
+.*2. NGINX Configuration*
+----
+upstream test-05-cafe-ingress-test05.example.com-coffee-svc-80 {
+        zone test-05-cafe-ingress-test05.example.com-coffee-svc-80 512k;
+        random two least_time=last_byte;
+        server 10.8.0.22:8080 max_fails=1 fail_timeout=10s max_conns=0;
+        server 10.8.0.23:8080 max_fails=1 fail_timeout=10s max_conns=0;
+        server 10.8.0.24:8080 max_fails=1 fail_timeout=10s max_conns=0;
+        server 10.8.1.23:8080 max_fails=1 fail_timeout=10s max_conns=0;
+        server 10.8.1.24:8080 max_fails=1 fail_timeout=10s max_conns=0;
+        queue 500 timeout=4s;
+}
+----
+
+image:test-05/nginx-lb-random.jpg[Image,600,140]
+
+==== least_time
+
+[source, bash]
+.*1. Ingress Annotation*
+----
+nginx.org/lb-method: "least_time last_byte"
+----
+
+[source, bash]
+.*2. NGINX Configuration*
+----
+upstream test-05-cafe-ingress-test05.example.com-coffee-svc-80 {
+        zone test-05-cafe-ingress-test05.example.com-coffee-svc-80 512k;
+        least_time last_byte;
+        server 10.8.0.22:8080 max_fails=1 fail_timeout=10s max_conns=0;
+        server 10.8.0.23:8080 max_fails=1 fail_timeout=10s max_conns=0;
+        server 10.8.0.24:8080 max_fails=1 fail_timeout=10s max_conns=0;
+        server 10.8.1.23:8080 max_fails=1 fail_timeout=10s max_conns=0;
+        server 10.8.1.24:8080 max_fails=1 fail_timeout=10s max_conns=0;
+        queue 500 timeout=4s;
+}
+----
+
+image:test-05/nginx-lb-least-time.jpg[Image,600,140]
+
+==== least_conn
+
+[source, bash]
+.*1. Ingress Annotation*
+----
+nginx.org/lb-method: "least_conn"
+----
+
+[source, bash]
+.*2. NGINX Configuration*
+----
+upstream test-05-cafe-ingress-test05.example.com-coffee-svc-80 {
+        zone test-05-cafe-ingress-test05.example.com-coffee-svc-80 512k;
+        least_conn;
+        server 10.8.0.22:8080 max_fails=1 fail_timeout=10s max_conns=0;
+        server 10.8.0.23:8080 max_fails=1 fail_timeout=10s max_conns=0;
+        server 10.8.0.24:8080 max_fails=1 fail_timeout=10s max_conns=0;
+        server 10.8.1.23:8080 max_fails=1 fail_timeout=10s max_conns=0;
+        server 10.8.1.24:8080 max_fails=1 fail_timeout=10s max_conns=0;
+        queue 500 timeout=4s;
+}
+----
+
+[source, bash]
+.*3. Test*
+----
+% for i in {1..10} ; do curl -s -H "Host: test05.example.com" http://$IP/coffee | grep "server addr"; done 
+        server addr: 10.8.0.23:8080
+        server addr: 10.8.0.24:8080
+        server addr: 10.8.1.23:8080
+        server addr: 10.8.1.24:8080
+        server addr: 10.8.0.22:8080
+        server addr: 10.8.0.23:8080
+        server addr: 10.8.0.24:8080
+        server addr: 10.8.1.23:8080
+        server addr: 10.8.1.24:8080
+        server addr: 10.8.0.22:8080
+----
+
+==== round_robin
+
+[source, bash]
+.*1. Ingress Annotation*
+----
+nginx.org/lb-method: "round_robin"
+----
+
+[source, bash]
+.*2. NGINX Configuration*
+----
+upstream test-05-cafe-ingress-test05.example.com-coffee-svc-80 {
+        zone test-05-cafe-ingress-test05.example.com-coffee-svc-80 512k;
+        server 10.8.0.22:8080 max_fails=1 fail_timeout=10s max_conns=0;
+        server 10.8.0.23:8080 max_fails=1 fail_timeout=10s max_conns=0;
+        server 10.8.0.24:8080 max_fails=1 fail_timeout=10s max_conns=0;
+        server 10.8.1.23:8080 max_fails=1 fail_timeout=10s max_conns=0;
+        server 10.8.1.24:8080 max_fails=1 fail_timeout=10s max_conns=0;
+        queue 500 timeout=4s;
+}
+----
+
+[source, bash]
+.*3. Test*
+----
+% for i in {1..10} ; do curl -s -H "Host: test05.example.com" http://$IP/coffee | grep "server addr"; done 
+        server addr: 10.8.0.22:8080
+        server addr: 10.8.0.23:8080
+        server addr: 10.8.0.24:8080
+        server addr: 10.8.1.23:8080
+        server addr: 10.8.1.24:8080
+        server addr: 10.8.0.22:8080
+        server addr: 10.8.0.23:8080
+        server addr: 10.8.0.24:8080
+        server addr: 10.8.1.23:8080
+        server addr: 10.8.1.24:8080
+----
+
+==== ip_hash
+
+[source, bash]
+.*1. Ingress Annotation*
+----
+nginx.org/lb-method: "ip_hash"
+----
+
+[source, bash]
+.*2. NGINX Configuration*
+----
+upstream test-05-cafe-ingress-test05.example.com-coffee-svc-80 {
+        zone test-05-cafe-ingress-test05.example.com-coffee-svc-80 512k;
+        ip_hash;
+        server 10.8.0.22:8080 max_fails=1 fail_timeout=10s max_conns=0;
+        server 10.8.0.23:8080 max_fails=1 fail_timeout=10s max_conns=0;
+        server 10.8.0.24:8080 max_fails=1 fail_timeout=10s max_conns=0;
+        server 10.8.1.23:8080 max_fails=1 fail_timeout=10s max_conns=0;
+        server 10.8.1.24:8080 max_fails=1 fail_timeout=10s max_conns=0;
+        queue 500 timeout=4s;
+}
+----
+
+[source, bash]
+.*3. Test*
+----
+% for i in {1..10} ; do curl -s -H "Host: test05.example.com" http://$IP/coffee | grep "server addr"; done 
+        server addr: 10.8.1.24:8080
+        server addr: 10.8.0.24:8080
+        server addr: 10.8.0.24:8080
+        server addr: 10.8.1.24:8080
+        server addr: 10.8.1.24:8080
+        server addr: 10.8.1.24:8080
+        server addr: 10.8.0.24:8080
+        server addr: 10.8.0.24:8080
+        server addr: 10.8.1.24:8080
+        server addr: 10.8.0.24:8080
+----
+
+* There are 2 potential source ip address, so the request goes into 2 server
+
+==== hash
+
+[source, bash]
+.*1. Ingress Annotation*
+----
+nginx.org/lb-method: "hash $request_uri consistent"
+----
+
+[source, bash]
+.*2. NGINX Configuration*
+----
+upstream test-05-cafe-ingress-test05.example.com-coffee-svc-80 {
+        zone test-05-cafe-ingress-test05.example.com-coffee-svc-80 512k;
+        hash $request_uri consistent;
+        server 10.8.0.22:8080 max_fails=1 fail_timeout=10s max_conns=0;
+        server 10.8.0.23:8080 max_fails=1 fail_timeout=10s max_conns=0;
+        server 10.8.0.24:8080 max_fails=1 fail_timeout=10s max_conns=0;
+        server 10.8.1.23:8080 max_fails=1 fail_timeout=10s max_conns=0;
+        server 10.8.1.24:8080 max_fails=1 fail_timeout=10s max_conns=0;
+        queue 500 timeout=4s;
+}
+----
+
+[source, bash]
+.*3. Test*
+----
+% for i in {1..10} ; do curl -s -H "Host: test05.example.com" http://$IP/coffee | grep "server addr"; done 
+        server addr: 10.8.0.23:8080
+        server addr: 10.8.0.23:8080
+        server addr: 10.8.0.23:8080
+        server addr: 10.8.0.23:8080
+        server addr: 10.8.0.23:8080
+        server addr: 10.8.0.23:8080
+        server addr: 10.8.0.23:8080
+        server addr: 10.8.0.23:8080
+        server addr: 10.8.0.23:8080
+        server addr: 10.8.0.23:8080
+----
+
+* Because request to same uri, so all request goes to one server.
+
 === TODO--
 
 [source, bash]
