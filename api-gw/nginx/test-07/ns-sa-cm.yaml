@@ -1,0 +1,20 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: test-07
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: nginx-ingress 
+  namespace: test-07
+---
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: nginx-config
+  namespace: test-07
+data:
+  access-log-off: "True"
+  error-log-level: "warn"
+  log-format:  '$remote_addr - $remote_user [$time_local] "$request" $status $body_bytes_sent "$http_referer"  "$http_user_agent"  "$http_host"  "$host"  "$http_x_forwarded_for" "$resource_name" "$resource_type" "$resource_namespace" "$service"'

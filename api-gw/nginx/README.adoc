@@ -2332,6 +2332,40 @@ kubectl apply -f test-06/ingress.yaml
         server addr: 10.8.0.29:8080
 ----
 
+=== Log Format
+
+[source, bash]
+.*1. Deploy Ingress Controller*
+----
+kubectl apply -f test-07/ns-sa-cm.yaml
+kubectl apply -f test-07/nginx-plus-ingress.yaml
+----
+
+* link:test-07/ns-sa-cm.yaml[test-07/ns-sa-cm.yaml]
+* link:test-07/nginx-plus-ingress.yaml[test-07/nginx-plus-ingress.yaml]
+
+[source, bash]
+.*2. Deploy App*
+----
+kubectl apply -f test-07/app.yaml 
+----
+
+* link:test-07/app.yaml[test-07/app.yaml]
+
+[source, bash]
+.*3. Deploy Ingress*
+----
+kubectl apply -f test-07/ingress.yaml
+----
+
+* link:test-07/ingress.yaml[test-07/ingress.yaml]
+
+[source, bash]
+.*4. Test*
+----
+for i in {1..5} ; do curl -s -H "Host: test07.example.com" http://$IP/coffee/test/log/format ; done 
+----
+
 === TODO--
 
 [source, bash]
