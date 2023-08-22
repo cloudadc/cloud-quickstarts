@@ -1,0 +1,24 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: cafe-ingress
+  namespace: test-08
+  annotations:
+     nginx.com/health-checks: "true"
+     nginx.com/health-checks-mandatory: "true"
+     nginx.com/health-checks-mandatory-queue: "500"
+     nginx.org/lb-method: "least_conn"
+     nginx.com/slow-start: "30s"
+spec:
+  ingressClassName: nginx
+  rules:
+  - host: test08.example.com
+    http:
+      paths:
+      - path: /coffee
+        pathType: Prefix
+        backend:
+          service:
+            name: coffee-svc
+            port:
+              number: 80

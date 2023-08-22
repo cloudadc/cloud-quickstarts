@@ -2366,6 +2366,33 @@ kubectl apply -f test-07/ingress.yaml
 for i in {1..5} ; do curl -s -H "Host: test07.example.com" http://$IP/coffee/test/log/format ; done 
 ----
 
+=== Programmable Capability - Custom Templates
+
+[source, bash]
+.*1. Deploy Ingress Controller*
+----
+kubectl apply -f test-08/ns-sa-cm.yaml
+kubectl apply -f test-08/nginx-plus-ingress.yaml
+----
+
+[source, bash]
+.*2. Deploy App*
+----
+
+----
+
+[source, bash]
+.*3. Deploy Ingress*
+----
+
+----
+
+[source, bash]
+.*4. Test*
+----
+
+----
+
 === TODO--
 
 [source, bash]
