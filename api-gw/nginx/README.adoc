@@ -2461,6 +2461,69 @@ kubectl apply -f test-08/ingress.yaml
 503
 ----
 
+=== Programmable Capability - Custom Annotations
+
+[source, bash]
+.*1. Deploy Ingress Controller*
+----
+kubectl apply -f test-09/ns-sa-cm.yaml
+kubectl apply -f test-09/nginx-plus-ingress.yaml
+----
+
+* link:test-09/ns-sa-cm.yaml[test-09/ns-sa-cm.yaml]
+* link:test-09/nginx-plus-ingress.yaml[test-09/nginx-plus-ingress.yaml]
+
+Key changes in tamplete
+
+[source, bash]
+----
+    # handling custom.nginx.org/rate-limiting` and custom.nginx.org/rate-limiting-rate
+    {{if index $.Ingress.Annotations "cmbc.com.cn/rate-limiting"}}
+    {{$rate := index $.Ingress.Annotations "cmbc.com.cn/rate-limiting-rate"}}
+    limit_req_zone $binary_remote_addr zone={{$.Ingress.Namespace}}-{{$.Ingress.Name}}:10m rate={{if $rate}}{{$rate}}{{else}}1r/s{{end}};
+    {{end}}
+
+    # handling custom.nginx.org/rate-limiting and custom.nginx.org/rate-limiting-burst
+    {{if index $.Ingress.Annotations "cmbc.com.cn/rate-limiting-burst"}}
+    {{$burst := index $.Ingress.Annotations "cmbc.com.cn/rate-limiting-burst"}}
+    limit_req zone={{$.Ingress.Namespace}}-{{$.Ingress.Name}} burst={{if $burst}}{{$burst}}{{else}}3{{end}} nodelay;
+    {{end}}
+----
+
+
+[source, bash]
+.*2. Deploy App*
+----
+kubectl apply -f test-09/app.yaml
+----
+
+* link:test-09/app.yaml[test-09/app.yaml]
+
+[source, bash]
+.*3. Deploy Ingress*
+----
+kubectl apply -f test-09/ingress.yaml
+----
+
+* link:test-09/ingress.yaml[test-09/ingress.yaml]
+
+Use the customized annotations:
+
+[source, bash]
+----
+     cmbc.com.cn/rate-limiting: "on"
+     cmbc.com.cn/rate-limiting-rate: "1r/s"
+     cmbc.com.cn/rate-limiting-burst: "1"
+----
+
+[source, bash]
+.*4. Test*
+----
+     cmbc.com.cn/rate-limiting: "on"
+     cmbc.com.cn/rate-limiting-rate: "1r/s"
+     cmbc.com.cn/rate-limiting-burst: "1"
+----
+
 === TODO--
 
 [source, bash]
