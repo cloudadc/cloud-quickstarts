@@ -12,15 +12,15 @@ spec:
     metadata:
       labels:
         app: nginx-ingress
-     #annotations:
-       #prometheus.io/scrape: "true"
-       #prometheus.io/port: "9113"
-       #prometheus.io/scheme: http
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "9113"
+        prometheus.io/scheme: http
     spec:
       serviceAccountName: nginx-ingress
       automountServiceAccountToken: true
       containers:
-      - image: us-central1-docker.pkg.dev/playground-s-11-31271749/nginx/nginx-plus-ingress:2.4.2
+      - image: us-central1-docker.pkg.dev/playground-s-11-839a6687/nginx/nginx-plus-ingress:2.4.2
         imagePullPolicy: IfNotPresent
         name: nginx-plus-ingress
         ports:
@@ -72,6 +72,13 @@ spec:
           - -nginx-status=true
           - -nginx-status-port=8898
           - -nginx-status-allow-cidrs=0.0.0.0/0
+          - -external-service=nginx-ingress-svc
+          - -report-ingress-status
+          - -enable-snippets
+          - -health-status
+          - -health-status-uri=/nginx-health 
+          - -enable-prometheus-metrics
+          - -prometheus-metrics-listen-port=9113
          # - -default-server-tls-secret=$(POD_NAMESPACE)/default-server-secret
          #- -include-year
          #- -enable-cert-manager

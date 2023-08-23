@@ -20,7 +20,7 @@ spec:
       serviceAccountName: nginx-ingress
       automountServiceAccountToken: true
       containers:
-      - image: us-central1-docker.pkg.dev/playground-s-11-d8632139/nginx/nginx-plus-ingress:2.4.2
+      - image: us-central1-docker.pkg.dev/playground-s-11-839a6687/nginx/nginx-plus-ingress:2.4.2
         imagePullPolicy: IfNotPresent
         name: nginx-plus-ingress
         ports:
@@ -72,6 +72,7 @@ spec:
           - -nginx-status=true
           - -nginx-status-port=8898
           - -nginx-status-allow-cidrs=0.0.0.0/0
+          - -enable-snippets
          # - -default-server-tls-secret=$(POD_NAMESPACE)/default-server-secret
          #- -include-year
          #- -enable-cert-manager
@@ -96,6 +97,22 @@ spec:
   - port: 80
     protocol: TCP
     targetPort: 80
+  selector:
+    app: nginx-ingress
+  type: LoadBalancer
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: nginx-ingress-api-svc
+  namespace: test-08
+  annotations:
+    cloud.google.com/l4-rbs: "enabled"
+spec:
+  ports:
+  - port: 8898
+    protocol: TCP
+    targetPort: 8898
   selector:
     app: nginx-ingress
   type: LoadBalancer

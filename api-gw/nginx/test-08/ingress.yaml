@@ -4,11 +4,8 @@ metadata:
   name: cafe-ingress
   namespace: test-08
   annotations:
-     nginx.com/health-checks: "true"
-     nginx.com/health-checks-mandatory: "true"
-     nginx.com/health-checks-mandatory-queue: "500"
-     nginx.org/lb-method: "least_conn"
-     nginx.com/slow-start: "30s"
+     nginx.org/location-snippets: |
+       limit_req zone=standard_zone nodelay;
 spec:
   ingressClassName: nginx
   rules:

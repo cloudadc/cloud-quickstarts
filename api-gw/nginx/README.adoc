@@ -2332,7 +2332,7 @@ kubectl apply -f test-06/ingress.yaml
         server addr: 10.8.0.29:8080
 ----
 
-=== Log Format
+=== Advanced Configuration
 
 [source, bash]
 .*1. Deploy Ingress Controller*
@@ -2363,7 +2363,24 @@ kubectl apply -f test-07/ingress.yaml
 [source, bash]
 .*4. Test*
 ----
-for i in {1..5} ; do curl -s -H "Host: test07.example.com" http://$IP/coffee/test/log/format ; done 
+// 1) Ingress status report 
+$ kubectl get ingress -n test-07
+NAME           CLASS   HOSTS                ADDRESS       PORTS   AGE
+cafe-ingress   nginx   test07.example.com   34.28.97.19   80      15s
+
+// 2) Content Health Check Path
+% curl -s -H "Host: test07.example.com" http://$LB/nginx-health   
+healthy
+
+// 3) Add load
+for i in {1..1000} ; do curl -s -H "Host: test07.example.com" http://$IP/coffee/test ; done
+
+// 4) Review Prometheus Metrics
+https://github.com/nginxinc/nginx-prometheus-exporter#exported-metrics
+
+// 5) Review Log
+
+// 6) Review KV Table, Limit Zone
 ----
 
 === Programmable Capability - Custom Templates
@@ -2375,22 +2392,73 @@ kubectl apply -f test-08/ns-sa-cm.yaml
 kubectl apply -f test-08/nginx-plus-ingress.yaml
 ----
 
+* link:test-08/ns-sa-cm.yaml[test-08/ns-sa-cm.yaml]
+* link:test-08/nginx-plus-ingress.yaml[test-08/nginx-plus-ingress.yaml]
+
+Key changes in tamplete:
+
+[source, bash]
+----
+        keyval_zone zone=tableKV:64k;
+        keyval abswitch $abswitchvalue zone=tableKV;
+        keyval $uri $enablelimit zone=tableKV;
+        keyval key1 $value1 zone=tableKV;
+        keyval key2 $value2 zone=tableKV;
+        keyval key3 $value3 zone=tableKV;
+
+        map $enablelimit $limit_key {
+            default "";
+            1  $binary_remote_addr;
+            2  "jwt_token_jwt_claim";
+        }
+
+        limit_req_zone $limit_key zone=standard_zone:1m rate=1r/s;
+        limit_req_zone $limit_key zone=premium_zone:1m rate=1000r/s;
+----
+
+
 [source, bash]
 .*2. Deploy App*
 ----
-
+kubectl apply -f test-08/app.yaml
 ----
+
+* link:test-08/app.yaml[test-08/app.yaml]
 
 [source, bash]
 .*3. Deploy Ingress*
 ----
-
+kubectl apply -f test-08/ingress.yaml 
 ----
+
+* link:test-08/ingress.yaml[test-08/ingress.yaml]
 
 [source, bash]
 .*4. Test*
 ----
+% for i in {1..5} ; do curl -s -H "Host: test08.example.com" http://$LB/coffee -o /dev/null -w "%{http_code}" ;echo; done
+200
+200
+200
+200
+200
 
+% curl -X POST http://$IP:8898/api/8/http/keyvals/tableKV -H "Content-Type: application/json" -d '{"/coffee": "1"}'
+% curl -X POST http://$IP:8898/api/8/http/keyvals/tableKV -H "Content-Type: application/json" -d '{"/api/users": "2"}' 
+% curl -X POST http://$IP:8898/api/8/http/keyvals/tableKV -H "Content-Type: application/json" -d '{"/api/orders": "2"}' 
+% curl -s -X GET http://$IP:8898/api/8/http/keyvals/tableKV 
+{
+  "/api/orders": "2",
+  "/coffee": "1",
+  "/api/users": "2"
+}
+
+% for i in {1..5} ; do curl -s -H "Host: test08.example.com" http://$LB/coffee -o /dev/null -w "%{http_code}" ;echo; done
+200
+200
+503
+200
+503
 ----
 
 === TODO--
