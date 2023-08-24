@@ -177,6 +177,36 @@ subjects:
 - kind: ServiceAccount
   name: nginx-ingress
   namespace: test-10
+- kind: ServiceAccount
+  name: nginx-ingress
+  namespace: test-11
+- kind: ServiceAccount
+  name: nginx-ingress
+  namespace: test-12
+- kind: ServiceAccount
+  name: nginx-ingress
+  namespace: test-13
+- kind: ServiceAccount
+  name: nginx-ingress
+  namespace: test-14
+- kind: ServiceAccount
+  name: nginx-ingress
+  namespace: test-15
+- kind: ServiceAccount
+  name: nginx-ingress
+  namespace: test-16
+- kind: ServiceAccount
+  name: nginx-ingress
+  namespace: test-17
+- kind: ServiceAccount
+  name: nginx-ingress
+  namespace: test-18
+- kind: ServiceAccount
+  name: nginx-ingress
+  namespace: test-19
+- kind: ServiceAccount
+  name: nginx-ingress
+  namespace: test-20
 roleRef:
   kind: ClusterRole
   name: nginx-ingress
