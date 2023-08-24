@@ -2519,9 +2519,147 @@ Use the customized annotations:
 [source, bash]
 .*4. Test*
 ----
-     cmbc.com.cn/rate-limiting: "on"
-     cmbc.com.cn/rate-limiting-rate: "1r/s"
-     cmbc.com.cn/rate-limiting-burst: "1"
+% for i in {1..5} ; do curl -s -H "Host: test09.example.com" http://$LB/coffee -o /dev/null -w "%{http_code}" ;echo; done
+200
+200
+200
+503
+200
+----
+
+=== HTTP Request Path Rewrite
+
+[source, bash]
+.*1. Deploy Ingress Controller*
+----
+kubectl apply -f test-10/ns-sa-cm.yaml
+kubectl apply -f test-10/nginx-plus-ingress.yaml 
+----
+
+* link:test-10/ns-sa-cm.yaml[test-10/ns-sa-cm.yaml]
+* link:test-10/nginx-plus-ingress.yaml[test-10/nginx-plus-ingress.yaml]
+
+[source, bash]
+.*2. Deploy App*
+----
+kubectl apply -f test-10/app.yaml
+----
+
+* link:test-10/app.yaml[test-10/app.yaml]
+
+[source, bash]
+.*3. Deploy Ingress*
+----
+kubectl apply -f test-10/ingress.yaml 
+----
+
+* link:test-10/ingress.yaml[test-10/ingress.yaml]
+
+[source, bash]
+.*4. Test*
+----
+% curl -s -H "Host: test10.example.com" http://$LB/coffee/ | grep request
+            request: GET /beans/ HTTP/1.1
+         request id: 1a0a31a4306ac8a81ee476d3690b50d0
+
+% curl -s -H "Host: test10.example.com" http://$LB/coffee/test | grep request
+            request: GET /beans/test HTTP/1.1
+         request id: 0957d124cba5060d2dc3b64201f1caf2
+
+% curl -s -H "Host: test10.example.com" http://$LB/tea/ | grep request       
+            request: GET / HTTP/1.1
+         request id: efdf0c583b7021d834c864ac47431b93
+
+% curl -s -H "Host: test10.example.com" http://$LB/tea/abc | grep request
+            request: GET /abc HTTP/1.1
+         request id: 363cbd85cfff4f15b090913ceddb9849
+----
+
+=== Host Path Route across multiple namespace
+
+[source, bash]
+.*1. Deploy Ingress Controller*
+----
+kubectl apply -f test-11/ns-sa-cm.yaml
+kubectl apply -f test-11/nginx-plus-ingress.yaml 
+----
+
+* link:test-11/ns-sa-cm.yaml[test-11/ns-sa-cm.yaml]
+* link:test-11/nginx-plus-ingress.yaml[test-11/nginx-plus-ingress.yaml]
+
+[source, bash]
+.*2. Deploy App*
+----
+kubectl apply -f test-11/app-coffee-tea.yaml
+kubectl apply -f test-11/app-user-order.yaml 
+kubectl apply -f test-11/app-cart.yaml 
+----
+
+* link:test-11/app-coffee-tea.yaml[test-11/app-coffee-tea.yaml]
+* link:test-11/app-user-order.yaml[test-11/app-user-order.yaml]
+* link:test-11/app-cart.yaml[test-11/app-cart.yaml]
+
+[source, bash]
+.*3. Deploy Ingress*
+----
+kubectl apply -f test-11/ingress-main.yaml
+kubectl apply -f test-11/ingress-coffee.yaml
+kubectl apply -f test-11/ingress-tea.yaml
+kubectl apply -f test-11/ingress-user.yaml
+kubectl apply -f test-11/ingress-order.yaml
+kubectl apply -f test-11/ingress-cart.yaml 
+----
+
+* link:test-11/ingress-main.yaml[test-11/ingress-main.yaml]
+* link:test-11/ingress-coffee.yaml[test-11/ingress-coffee.yaml]
+* link:test-11/ingress-tea.yaml[test-11/ingress-tea.yaml]
+* link:test-11/ingress-user.yaml[test-11/ingress-user.yaml]
+* link:test-11/ingress-order.yaml[test-11/ingress-order.yaml]
+* link:test-11/ingress-cart.yaml[test-11/ingress-cart.yaml]
+
+[source, bash]
+.*4. Test*
+----
+$ kubectl get ingress -n test-11
+coffee         nginx   test11.example.com             80      4m42s
+ingress-main   nginx   test11.example.com             80      5m9s
+tea            nginx   test11.example.com             80      4m17s
+
+$ kubectl get ingress -n test-11-1
+order   nginx   test11.example.com             80      2m43s
+user    nginx   test11.example.com             80      3m47s
+
+
+$ kubectl get ingress -n test-11-2
+cart   nginx   test11.example.com             80      2m54s
+
+for i in coffee tea user order cart ; do curl -s -H "Host: test11.example.com" http://$LB/$i ; done
+----
+
+=== ExternalName Services Ingress
+
+[source, bash]
+.*1. Deploy Ingress Controller*
+----
+
+----
+
+[source, bash]
+.*2. Deploy App*
+----
+
+----
+
+[source, bash]
+.*3. Deploy Ingress*
+----
+
+----
+
+[source, bash]
+.*4. Test*
+----
+
 ----
 
 === TODO--

@@ -1,0 +1,27 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: test-11
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: test-11-1
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: test-11-2
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: nginx-ingress 
+  namespace: test-11
+---
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: nginx-config
+  namespace: test-11
+data:
