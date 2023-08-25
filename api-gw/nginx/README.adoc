@@ -2638,6 +2638,8 @@ for i in coffee tea user order cart ; do curl -s -H "Host: test11.example.com" h
 
 === ExternalName Services Ingress
 
+image:test-12/external-name-arch.jpg[Image,600,257]
+
 ==== External Application
 
 [source, bash]
@@ -2748,6 +2750,7 @@ kubectl apply -f test-12/nginx-plus-ingress.yaml
 .*2. Deploy App*
 ----
 kubectl apply -f test-12/external-app.yaml 
+kubectl apply -f test-12/app.yaml
 ----
 
 * link:test-12/external-app.yaml[test-12/external-app.yaml]
