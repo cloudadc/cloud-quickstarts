@@ -2638,29 +2638,181 @@ for i in coffee tea user order cart ; do curl -s -H "Host: test11.example.com" h
 
 === ExternalName Services Ingress
 
+==== External Application
+
+[source, bash]
+.*1. Deploy Application*
+----
+gcloud compute instances create myservice-server01 \
+   --zone=us-central1-a \
+   --machine-type=e2-micro \
+   --network-interface=stack-type=IPV4_ONLY \
+   --create-disk=auto-delete=no,boot=yes,device-name=myservice,image=projects/debian-cloud/global/images/debian-11-bullseye-v20230814,mode=rw,size=10,type=pd-balanced \
+   --metadata=startup-script='#!/bin/bash
+      apt-get update
+      apt-get install -y nginx
+      curl -k -s https://raw.githubusercontent.com/cloudadc/cloud-quickstarts/main/gcp/network/lb/app.conf -o /etc/nginx/conf.d/app.conf
+      update-rc.d nginx enable
+      service nginx restart'
+
+gcloud compute instances create myservice-server02 \
+   --zone=us-central1-a \
+   --machine-type=e2-micro \
+   --network-interface=stack-type=IPV4_ONLY \
+   --create-disk=auto-delete=no,boot=yes,device-name=myservice,image=projects/debian-cloud/global/images/debian-11-bullseye-v20230814,mode=rw,size=10,type=pd-balanced \
+   --metadata=startup-script='#!/bin/bash
+      apt-get update
+      apt-get install -y nginx
+      curl -k -s https://raw.githubusercontent.com/cloudadc/cloud-quickstarts/main/gcp/network/lb/app.conf -o /etc/nginx/conf.d/app.conf
+      update-rc.d nginx enable
+      service nginx restart'
+----
+
+[source, bash]
+.*2. View Application IP address*
+----
+$ gcloud compute instances list | grep INTERNAL_IP:
+INTERNAL_IP: 10.128.0.8
+INTERNAL_IP: 10.128.0.9
+----
+
+[source, bash]
+.*3. Test Application*
+----
+$ curl 10.128.0.8:8080 | grep host
+
+               host: 10.128.0.8
+           hostname: myservice-server01
+
+$ curl 10.128.0.9:8080 | grep host
+
+               host: 10.128.0.9
+           hostname: myservice-server02
+----
+
+==== Internal DNS
+
+[source, bash]
+.*1. Enable Cloud DNS API*
+----
+gcloud services enable dns.googleapis.com
+----
+
+[source, bash]
+.*2. Create Zone*
+----
+gcloud dns managed-zones create example --description=test --dns-name=example.com --networks=default --visibility=private
+----
+
+[source, bash]
+.*3. Create A record*
+----
+gcloud dns record-sets create myservice.example.com. --zone=example --type=A --ttl=5 --rrdatas=10.128.0.8,10.128.0.9
+----
+
+[source, bash]
+.*4. Test Application via host*
+----
+$ curl http://myservice.example.com:8080/test
+
+            request: GET /test HTTP/1.1
+               host: myservice.example.com
+           hostname: myservice-server02
+
+        client addr: 10.128.0.3:57508
+        server addr: 10.128.0.9:8080
+
+$ curl http://myservice.example.com:8080/test
+
+            request: GET /test HTTP/1.1
+               host: myservice.example.com
+           hostname: myservice-server01
+
+        client addr: 10.128.0.3:46628
+        server addr: 10.128.0.8:8080
+----
+
+==== ExternalName Services Ingress
+
 [source, bash]
 .*1. Deploy Ingress Controller*
 ----
-
+kubectl apply -f test-12/ns-sa-cm.yaml 
+kubectl apply -f test-12/nginx-plus-ingress.yaml 
 ----
+
+* link:test-12/ns-sa-cm.yaml[test-12/ns-sa-cm.yaml]
+* link:test-12/nginx-plus-ingress.yaml[test-12/nginx-plus-ingress.yaml]
 
 [source, bash]
 .*2. Deploy App*
 ----
-
+kubectl apply -f test-12/external-app.yaml 
 ----
+
+* link:test-12/external-app.yaml[test-12/external-app.yaml]
 
 [source, bash]
 .*3. Deploy Ingress*
 ----
-
+kubectl apply -f test-12/ingress.yaml 
 ----
 
 [source, bash]
 .*4. Test*
 ----
-
+curl -s -H "Host: test12.example.com" http://$LB/test
 ----
+
+NGINX Configuration
+
+[source, bash]
+----
+upstream test-12-my-ingress-test12.example.com-external-service-8080 {
+        zone test-12-my-ingress-test12.example.com-external-service-8080 512k;
+        random two least_conn;
+        server myservice.example.com:8080 max_fails=1 fail_timeout=10s max_conns=0 resolve;
+}
+server {
+        listen 80;
+        listen [::]:80;
+        server_tokens "on";
+        server_name test12.example.com;
+        status_zone test12.example.com;
+        set $resource_type "ingress";
+        set $resource_name "my-ingress";
+        set $resource_namespace "test-12";
+        location / {
+                set $service "external-service";
+                proxy_http_version 1.1;
+                proxy_connect_timeout 60s;
+                proxy_read_timeout 60s;
+                proxy_send_timeout 60s;
+                client_max_body_size 1m;
+                proxy_set_header Host $host;
+                proxy_set_header X-Real-IP $remote_addr;
+                proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+                proxy_set_header X-Forwarded-Host $host;
+                proxy_set_header X-Forwarded-Port $server_port;
+                proxy_set_header X-Forwarded-Proto $scheme;
+                proxy_buffering on;
+                proxy_pass http://test-12-my-ingress-test12.example.com-external-service-8080;
+        }
+}
+----
+
+image:test-12/external-name-svc-1.jpg[Image,600,125]
+
+Add another server to DNS:
+
+[source, bash]
+----
+gcloud dns record-sets update myservice.example.com. --zone=example --type=A --rrdatas=10.128.0.8,10.128.0.9,10.128.0.10
+----
+
+image:test-12/external-name-svc-2.jpg[Image,600,140]
+
+
 
 === TODO--
 
