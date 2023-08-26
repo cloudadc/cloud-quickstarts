@@ -2816,6 +2816,108 @@ gcloud dns record-sets update myservice.example.com. --zone=example --type=A --r
 image:test-12/external-name-svc-2.jpg[Image,600,140]
 
 
+=== Cookie Session Persistence(Apache httpd Keepalive)
+
+==== Apache httpd reverse proxy
+
+[source, bash]
+.*1. Deploy App*
+----
+sudo docker run -it --rm --name app -d -p 8080:8080 cloudadc/cafe:1.5-aarch64
+----
+
+[source, bash]
+.*2. Test App*
+----
+% curl http://10.1.10.129:8080 -I           
+HTTP/1.1 200 OK
+Server: nginx/1.25.2
+Date: Sat, 26 Aug 2023 02:24:29 GMT
+Content-Type: text/plain
+Content-Length: 392
+Connection: keep-alive
+----
+
+[source, bash]
+.*3. Start httpd reverse proxy*
+----
+docker run -it --rm --name apache -p 8007:8007 -v $(pwd)/test-13/httpd.conf:/usr/local/apache2/conf/httpd.conf arm64v8/httpd:2.4
+----
+
+[source, bash]
+.*4. Test App via Proxy*
+----
+% curl http://10.1.10.129:8080 -I           
+HTTP/1.1 200 OK
+Server: nginx/1.25.2
+Date: Sat, 26 Aug 2023 02:24:29 GMT
+Content-Type: text/plain
+Content-Length: 392
+Connection: keep-alive
+----
+
+Access the following HTTP get 3 tiems in Broswer:
+
+* http://127.0.0.1:8007/test/apache/append1
+* http://127.0.0.1:8007/test/apache/append2
+* http://127.0.0.1:8007/test/apache/append3
+
+Overview the Http Packages:
+
+image:test-13/apache-httpd-connection.jpg[]
+
+
+==== TD
+
+[source, bash]
+.*1. Deploy Ingress Controller*
+----
+
+----
+
+[source, bash]
+.*2. Deploy App*
+----
+
+----
+
+[source, bash]
+.*3. Deploy Ingress*
+----
+
+----
+
+[source, bash]
+.*4. Test*
+----
+
+----
+
+=== TODO--
+
+[source, bash]
+.*1. Deploy Ingress Controller*
+----
+
+----
+
+[source, bash]
+.*2. Deploy App*
+----
+
+----
+
+[source, bash]
+.*3. Deploy Ingress*
+----
+
+----
+
+[source, bash]
+.*4. Test*
+----
+
+----
 
 === TODO--
 
