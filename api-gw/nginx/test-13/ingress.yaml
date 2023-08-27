@@ -1,0 +1,20 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: user-ingress
+  namespace: test-13
+  annotations:
+    nginx.com/sticky-cookie-services: "serviceName=user-svc srv_id"
+spec:
+  ingressClassName: nginx
+  rules:
+  - host: test13.example.com
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: user-svc
+            port:
+              number: 80

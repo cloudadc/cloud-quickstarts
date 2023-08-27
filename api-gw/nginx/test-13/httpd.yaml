@@ -1,0 +1,20 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: httpd-reverse-proxy
+  namespace: test-13
+spec:
+  hostNetwork: true
+  containers:
+    - name: httpd-container
+      image: httpd:2.4
+      ports:
+        - containerPort: 8007
+      volumeMounts:
+        - name: httpd-config
+          mountPath: /usr/local/apache2/conf/httpd.conf
+          subPath: httpd.conf
+  volumes:
+    - name: httpd-config
+      configMap:
+        name: httpd-reverse-proxy-config
