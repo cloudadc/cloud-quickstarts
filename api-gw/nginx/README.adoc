@@ -2967,6 +2967,44 @@ nginx-ingress-d998dd58-klzdx   1/1   Running   0     5m14s   10.8.0.11   gke-sta
 nginx-ingress-d998dd58-rsgpx   1/1   Running   0     35m     10.8.1.5    gke-standard-cluster-1-default-pool-d5754ed3-s0xl   <none>   <none>
 ----
 
+==== Set up Grafana
+
+[source, bash]
+.*1. Deploy Grafana*
+----
+kubectl apply -f test-14/grafana/deployment.yaml
+----
+
+* link:test-14/grafana/deployment.yaml[test-14/grafana/deployment.yaml]
+
+[source, bash]
+.*2. Get grafana endpoint*
+----
+$ kubectl get svc grafana -n test-14 --no-headers
+grafana   LoadBalancer   10.12.7.95   35.222.47.174   3000:32547/TCP   114s
+----
+
+*3. Login to Grafana*
+
+Login http://35.222.47.174:3000 via default username `admin` and default password `admin`.
+
+Configurating Data Source as the following steps:
+
+* Navigate to lefthand panel of grafana
+* Hover on the gearwheel icon for Connections and Click *Data Source*
+* Click *Add data source*
+* Select *Prometheus*
+* Set *prometheus-nginx* as Data Source name, and *http://prometheus-server:9090* as Prometheus Server URL
+* Click *Save & test*
+
+*4. Build Dashboard*
+
+* Left menu (hover over +) -> *Dashboard*
+* Click *Import*
+* Select the link:test-14/grafana/nginx.json[test-14/grafana/nginx.json]
+* Click *Import* and overview the Dashboard 
+
+
 === TODO--
 
 [source, bash]
