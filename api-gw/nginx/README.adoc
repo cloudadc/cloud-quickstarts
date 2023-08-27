@@ -2824,7 +2824,10 @@ image:test-12/external-name-svc-2.jpg[Image,600,140]
 .*1. Deploy App*
 ----
 sudo docker run -it --rm --name app -d -p 8080:8080 cloudadc/cafe:1.5-aarch64
+#sudo docker run -it --rm --name app -d -p 8080:8080 cloudadc/backend:0.1.5-aarch64
 ----
+
+NOTE: If you want backend do not reponse keep-alive, use `cloudadc/backend:0.1.5-aarch64`.
 
 [source, bash]
 .*2. Test App*
@@ -2893,30 +2896,75 @@ image:test-13/apache-httpd-connection.jpg[]
 
 ----
 
-=== TODO--
+=== Monitor with Prometheus
 
 [source, bash]
 .*1. Deploy Ingress Controller*
 ----
-
+kubectl apply -f test-14/ns-sa-cm.yaml 
+kubectl apply -f test-14/nginx-plus-ingress.yaml
 ----
+
+* link:test-14/ns-sa-cm.yaml[test-14/ns-sa-cm.yaml]
+* link:test-14/nginx-plus-ingress.yaml[test-14/nginx-plus-ingress.yaml]
 
 [source, bash]
 .*2. Deploy App*
 ----
-
+kubectl apply -f test-14/app.yaml
 ----
+
+link:test-14/app.yaml[test-14/app.yaml]
 
 [source, bash]
 .*3. Deploy Ingress*
 ----
-
+kubectl apply -f test-14/ingress.yaml
 ----
+
+* link:test-14/ingress.yaml[test-14/ingress.yaml]
 
 [source, bash]
 .*4. Test*
 ----
+for i in {1..10000} ; do curl -s -H "Host: test14.example.com" http://$LB/coffee ; curl -s -H "Host: test14.example.com" http://$LB/tea ; sleep 1 ; done
+----
 
+==== Set up Prometheus
+
+[source, bash]
+.*1. Deploy Prometheus*
+----
+kubectl create cm prometheus-config --from-file=test-14/prometheus/prometheus.yaml -n test-14
+kubectl apply -f test-14/prometheus/rbac.yaml 
+kubectl apply -f test-14/prometheus/deployment.yaml 
+kubectl apply -f test-14/prometheus/service.yaml
+----
+
+* link:test-14/prometheus/rbac.yaml[test-14/prometheus/rbac.yaml]
+* link:test-14/prometheus/deployment.yaml[test-14/prometheus/deployment.yaml]
+* link:test-14/prometheus/service.yaml[test-14/prometheus/service.yaml]
+
+[source, bash]
+.*2. Get prometheus-server endpoint*
+----
+$ kubectl get svc prometheus-server -n test-14 --no-headers
+prometheus-server   LoadBalancer   10.12.10.109   34.132.45.39   9090:32324/TCP   8m26s
+----
+
+*3. Review Targets*
+
+Access the http://34.132.45.39:9090/ from broswer, and navigate to target page:
+
+image:test-14/nginx-prometheus-targets.jpg[Image,800,195]
+
+Overview the NGINX POD IP address:
+
+[source, bash]
+----
+$ kubectl get pods -n test-14 -o wide -l app=nginx-ingress --no-headers
+nginx-ingress-d998dd58-klzdx   1/1   Running   0     5m14s   10.8.0.11   gke-standard-cluster-1-default-pool-d5754ed3-461z   <none>   <none>
+nginx-ingress-d998dd58-rsgpx   1/1   Running   0     35m     10.8.1.5    gke-standard-cluster-1-default-pool-d5754ed3-s0xl   <none>   <none>
 ----
 
 === TODO--
