@@ -3089,6 +3089,153 @@ Configurating Data Source as the following steps:
 * Click *Import* and overview the Dashboard 
 
 
+=== External Service Ingress with Configmap
+
+[source, bash]
+.*1. Deploy Ingress Controller*
+----
+kubectl apply -f test-15/ns-sa-cm.yaml
+kubectl apply -f test-15/nginx-plus-ingress.yaml
+----
+
+* link:test-15/ns-sa-cm.yaml[test-15/ns-sa-cm.yaml]
+* link:test-15/nginx-plus-ingress.yaml[test-15/nginx-plus-ingress.yaml]
+
+[source, bash]
+.*2. Deploy App*
+----
+kubectl apply -f test-15/app.yaml 
+----
+
+* link:test-15/app.yaml[test-15/app.yaml]
+
+[source, bash]
+.*3. Deploy Ingress*
+----
+kubectl apply -f test-15/ingress.yaml 
+----
+
+* link:test-15/ingress.yaml[test-15/ingress.yaml]
+
+[source, bash]
+.*4. Test*
+----
+curl -s -H "Host: test15.example.com" http://$IP/coffee 
+----
+
+[source, bash]
+.*5. Deploy External APP*
+----
+kubectl apply -f test-15/external-app-user.yaml 
+kubectl apply -f test-15/external-app-order.yaml 
+----
+
+* link:test-15/external-app-user.yaml[test-15/external-app-user.yaml]
+* link:test-15/external-app-order.yaml[test-15/external-app-order.yaml]
+
+[source, bash]
+.*6. Test External APP*
+----
+curl 10.128.0.3:31008
+curl 10.128.0.4:31008
+curl 10.128.0.3:31009
+curl 10.128.0.4:31009
+----
+
+[source, bash]
+.*7. External Service Ingress with Configmap*
+----
+  http-snippets: |
+    upstream test-15-user.test15.example.com-31008 {
+        zone test-15-user.test15.example.com-31008 512k;
+        random two least_conn;
+        server 10.128.0.3:31008 max_fails=1 fail_timeout=10s max_conns=0;
+        server 10.128.0.4:31008 max_fails=1 fail_timeout=10s max_conns=0;
+        sticky cookie nginx_user-svc_31008;
+        queue 500 timeout=4s;
+    }
+    match user_server_ok {
+        status 200-399;
+        body ~ "health";
+    }
+    server {
+        listen 80;
+        listen [::]:80;
+        server_tokens "off";
+        server_name user.test15.example.com;
+        status_zone user.test15.example.com;
+        location / {
+                proxy_http_version 1.1;
+                proxy_connect_timeout 60s;
+                proxy_read_timeout 60s;
+                proxy_send_timeout 60s;
+                client_max_body_size 1m;
+                proxy_set_header Host $host;
+                proxy_set_header X-Real-IP $remote_addr;
+                proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+                proxy_set_header X-Forwarded-Host $host;
+                proxy_set_header X-Forwarded-Port $server_port;
+                proxy_set_header X-Forwarded-Proto $scheme;
+                proxy_buffering on;
+                health_check interval=10 passes=2 fails=3 uri=/health match=user_server_ok;
+                proxy_pass http://test-15-user.test15.example.com-31008;
+        }
+    }
+
+    upstream test-15-order.test15.example.com-31009 {
+        zone test-15-order.test15.example.com-31009 512k;
+        random two least_conn;
+        server 10.128.0.3:31009 max_fails=1 fail_timeout=10s max_conns=0;
+        server 10.128.0.4:31009 max_fails=1 fail_timeout=10s max_conns=0;
+        sticky cookie nginx_order-svc_31009;
+        queue 500 timeout=4s;
+    }
+    match order_server_ok {
+        status 200-399;
+        body ~ "health";
+    }
+    server {
+        listen 80;
+        listen [::]:80;
+        server_tokens "off";
+        server_name order.test15.example.com;
+        status_zone order.test15.example.com;
+        location / {
+                proxy_http_version 1.1;
+                proxy_connect_timeout 60s;
+                proxy_read_timeout 60s;
+                proxy_send_timeout 60s;
+                client_max_body_size 1m;
+                proxy_set_header Host $host;
+                proxy_set_header X-Real-IP $remote_addr;
+                proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+                proxy_set_header X-Forwarded-Host $host;
+                proxy_set_header X-Forwarded-Port $server_port;
+                proxy_set_header X-Forwarded-Proto $scheme;
+                proxy_buffering on;
+                health_check interval=10 passes=2 fails=3 uri=/health match=order_server_ok;
+                proxy_pass http://test-15-order.test15.example.com-31009;
+        }
+    }
+----
+
+Apply the configmap to make external service be ingressed:
+
+[source, bash]
+----
+kubectl apply -f test-15/ns-sa-cm-v2.yaml
+----
+
+* link:test-15/ns-sa-cm-v2.yaml[test-15/ns-sa-cm-v2.yaml]
+
+[source, bash]
+.*8. Test*
+----
+curl -s -H "Host: test15.example.com" http://$IP/coffee 
+curl -s -H "Host: user.test15.example.com" http://$IP/user 
+curl -s -H "Host: order.test15.example.com" http://$IP/order
+----
+
 === TODO--
 
 [source, bash]
