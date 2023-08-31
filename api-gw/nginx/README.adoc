@@ -3367,6 +3367,93 @@ curl -s -H "Host: test16.example.com" http://$LB1/coffee
 curl -s -H "Host: test16.example.com" http://$LB2/tea 
 ----
 
+=== WebSocket Application Ingress
+
+[source, bash]
+.*1. Deploy Ingress Controller*
+----
+kubectl apply -f test-17/ns-sa-cm.yaml
+kubectl apply -f test-17/nginx-plus-ingress.yaml
+----
+
+* link:test-17/ns-sa-cm.yaml[test-17/ns-sa-cm.yaml]
+* link:test-17/nginx-plus-ingress.yaml[test-17/nginx-plus-ingress.yaml]
+
+[source, bash]
+.*2. Deploy App*
+----
+kubectl apply -f test-17/app.yaml 
+----
+
+* link:test-17/app.yaml[test-17/app.yaml]
+
+[source, bash]
+.*3. Deploy Ingress*
+----
+kubectl apply -f test-17/ingress.yaml
+----
+
+* link:test-17/ingress.yaml[test-17/ingress.yaml]
+
+*4. Test*
+
+Review the configuration difference:
+
+[source, bash]
+----
+        location /coffee {
+                set $service "coffee-svc";
+                proxy_http_version 1.1;
+                proxy_connect_timeout 60s;
+                proxy_read_timeout 60s;
+                proxy_send_timeout 60s;
+                client_max_body_size 1m;
+                proxy_set_header Host $host;
+                proxy_set_header X-Real-IP $remote_addr;
+                proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+                proxy_set_header X-Forwarded-Host $host;
+                proxy_set_header X-Forwarded-Port $server_port;
+                proxy_set_header X-Forwarded-Proto $scheme;
+                proxy_buffering on;
+                proxy_pass http://test-17-coffee-ingress-test17.example.com-coffee-svc-80;
+        }
+        location / {
+                set $service "ws-app-svc";
+                proxy_http_version 1.1;
+                proxy_set_header Upgrade $http_upgrade;
+                proxy_set_header Connection $connection_upgrade;
+                proxy_connect_timeout 60s;
+                proxy_read_timeout 60s;
+                proxy_send_timeout 60s;
+                client_max_body_size 1m;
+                proxy_set_header Host $host;
+                proxy_set_header X-Real-IP $remote_addr;
+                proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+                proxy_set_header X-Forwarded-Host $host;
+                proxy_set_header X-Forwarded-Port $server_port;
+                proxy_set_header X-Forwarded-Proto $scheme;
+                proxy_buffering on;
+                proxy_pass http://test-17-coffee-ingress-test17.example.com-ws-app-svc-80;
+        }
+----
+
+Test non websocket application:
+
+[source, bash]
+----
+curl -s -H "Host: test17.example.com" http://$LB/coffee
+curl -s -H "Host: test17.example.com" http://$LB/foo
+curl -s -H "Host: test17.example.com" http://$LB/bar
+----
+
+Test websocket application, open broswer, file http://test17.example.com/client.html, 
+
+* add `ws://test17.example.com/rlzy/ws` as websocket url
+* click `Connect button`
+* enter a txt, clieck `send`
+
+image:test-17/web-socket-test.jpg[Image,800,225]
+
 === TODO--
 
 [source, bash]

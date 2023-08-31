@@ -1,0 +1,27 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: coffee-ingress
+  namespace: test-17
+  annotations:
+    nginx.org/websocket-services: "ws-app-svc"
+spec:
+  ingressClassName: nginx
+  rules:
+  - host: test17.example.com
+    http:
+      paths:
+      - path: /coffee
+        pathType: Prefix
+        backend:
+          service:
+            name: coffee-svc
+            port:
+              number: 80
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: ws-app-svc
+            port:
+              number: 80
