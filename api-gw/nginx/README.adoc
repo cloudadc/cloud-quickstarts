@@ -3402,7 +3402,7 @@ Review the configuration difference:
 [source, bash]
 ----
         location /coffee {
-                set $service "coffee-svc";
+                set $service "coffee-svc"
                 proxy_http_version 1.1;
                 proxy_connect_timeout 60s;
                 proxy_read_timeout 60s;
@@ -3454,28 +3454,125 @@ Test websocket application, open broswer, file http://test17.example.com/client.
 
 image:test-17/web-socket-test.jpg[Image,800,225]
 
-=== TODO--
+=== Path regular expressions
 
 [source, bash]
 .*1. Deploy Ingress Controller*
 ----
-
+kubectl apply -f test-18/ns-sa-cm.yaml 
+kubectl apply -f test-18/nginx-plus-ingress.yaml
 ----
+
+* link:test-18/ns-sa-cm.yaml[test-18/ns-sa-cm.yaml]
 
 [source, bash]
 .*2. Deploy App*
 ----
-
+kubectl apply -f test-18/app.yaml 
 ----
+
+* link:test-18/app.yaml[test-18/app.yaml]
 
 [source, bash]
 .*3. Deploy Ingress*
 ----
+kubectl apply -f test-18/ingress.yaml
+----
 
+* link:test-18/ingress.yaml[test-18/ingress.yaml]
+
+[source, bash]
+.*4. NGINX Configuration*
+----
+location /coffee/[A-Z0-9]
 ----
 
 [source, bash]
-.*4. Test*
+.*5. Deploy Ingress*
+----
+kubectl apply -f test-18/ingress-2.yaml
 ----
 
+[source, bash]
+.*6. NGINX Configuration*
+----
+location /coffee/[A-Z0-9] 
+----
+
+[source, bash]
+.*7. Deploy Ingress*
+----
+kubectl apply -f test-18/ingress-3.yaml
+----
+
+[source, bash]
+.*8. NGINX Configuration*
+----
+location /coffee/ 
+----
+
+=== NGINX Keepalive
+
+[source, bash]
+.*1. Deploy Ingress Controller*
+----
+kubectl apply -f test-19/ns-sa-cm.yaml
+kubectl apply -f test-19/nginx-plus-ingress.yaml
+----
+
+* link:test-19/ns-sa-cm.yaml[test-19/ns-sa-cm.yaml]
+* link:test-19/nginx-plus-ingress.yaml[test-19/nginx-plus-ingress.yaml]
+
+[source, bash]
+.*2. Deploy App*
+----
+kubectl apply -f test-19/app.yaml
+----
+
+* link:test-19/app.yaml[test-19/app.yaml]
+
+[source, bash]
+.*3. Deploy Ingress*
+----
+kubectl apply -f test-19/ingress.yaml 
+----
+
+* link:test-19/ingress.yaml[test-19/ingress.yaml]
+
+[source, bash]
+.*4. NGINX Configuration*
+----
+upstream test-19-coffee-ingress-test19.example.com-coffee-svc-80 {
+        zone test-19-coffee-ingress-test19.example.com-coffee-svc-80 512k;
+        random two least_conn;
+        server 10.8.1.12:8080 max_fails=1 fail_timeout=10s max_conns=0;
+        keepalive 30;
+}
+server {
+        listen 80;
+        listen [::]:80;
+        server_tokens "on";
+        server_name test19.example.com;
+        status_zone test19.example.com;
+        set $resource_type "ingress";
+        set $resource_name "coffee-ingress";
+        set $resource_namespace "test-19";
+        location /coffee {
+                set $service "coffee-svc";
+                proxy_http_version 1.1;
+                proxy_set_header Connection "";
+                proxy_connect_timeout 60s;
+                proxy_read_timeout 60s;
+                proxy_send_timeout 60s;
+                client_max_body_size 1m;
+                proxy_set_header Host $host;
+                proxy_set_header X-Real-IP $remote_addr;
+                proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+                proxy_set_header X-Forwarded-Host $host;
+                proxy_set_header X-Forwarded-Port $server_port;
+                proxy_set_header X-Forwarded-Proto $scheme;
+                proxy_buffering on;
+                proxy_pass http://test-19-coffee-ingress-test19.example.com-coffee-svc-80;
+        }
+}
 ----
