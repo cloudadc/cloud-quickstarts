@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: external-dns-automation
+  namespace: test-21
+spec:
+  serviceAccountName: nginx-ingress
+  containers:
+  - name: external-dns-watch
+    image: cloudadc/external_dns:0.2
