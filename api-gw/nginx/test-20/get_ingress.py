@@ -16,13 +16,13 @@ def write_to_file(file_path, data):
         json_string = json.dumps(data, indent=4)
         with open(file_path, "w") as file:
             file.write(json_string)
-        print(f"reap to {file_path}")
+        print(f"{file_path}")
     except Exception as e:
         print(f"Error: {str(e)}")
 
-kubeconfig_file = "/home/cloud_user_p_39cae300/.kube/config"
+kubeconfig_file = "/home/cloud_user_p_827ce902/.kube/config"
 outputToConsole = False
-namespaces = "test-01,test-02"
+namespaces = "test-01,test-02,test-20"
 
 namespaces_raws = namespaces.split(",")
 namespaces_list = [i.strip() for i in namespaces_raws if len(i.strip()) > 0]

@@ -3576,3 +3576,39 @@ server {
         }
 }
 ----
+
+=== Control Plane Operation via K8S REST API
+
+[source, bash]
+.*1. create namespace*
+----
+kubectl apply -f test-20/ns-sa-cm.yaml
+----
+
+* link:test-20/ns-sa-cm.yaml[test-20/ns-sa-cm.yaml]
+
+[source, bash]
+.*2. create ingress*
+----
+$ ./test-20/create_ingress.py 
+gke_playground-s-11-856b83a7_us-central1-a_standard-cluster-1/test-20/networking.k8s.io/cafe-ingress created
+$ ./test-20/create_ingress.py 
+gke_playground-s-11-856b83a7_us-central1-a_standard-cluster-1/test-20/networking.k8s.io/cafe-ingress updated
+----
+
+[source, bash]
+.*3. get ingress*
+----
+$ ./test-20/get_ingress.py 
+gke_playground-s-11-856b83a7_us-central1-a_standard-cluster-1_test-01_cafe-ingress.json
+gke_playground-s-11-856b83a7_us-central1-a_standard-cluster-1_test-02_cafe-ingress.json
+gke_playground-s-11-856b83a7_us-central1-a_standard-cluster-1_test-20_cafe-ingress.json
+----
+
+[source, bash]
+.*4. delete ingress*
+----
+$ ./test-20/delete_ingress.py 
+gke_playground-s-11-856b83a7_us-central1-a_standard-cluster-1/test-20/networking.k8s.io/cafe-ingress deleted
+---- 
+
