@@ -16,7 +16,7 @@ spec:
       serviceAccountName: nginx-ingress
       automountServiceAccountToken: true
       containers:
-      - image: us-central1-docker.pkg.dev/playground-s-11-5ce19072/nginx/nginx-plus-ingress:2.4.2
+      - image: us-central1-docker.pkg.dev/playground-s-11-908284fd/nginx/nginx-plus-ingress:2.4.2
         imagePullPolicy: IfNotPresent
         name: nginx-plus-ingress
         ports:

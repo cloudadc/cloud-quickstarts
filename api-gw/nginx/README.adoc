@@ -3672,17 +3672,20 @@ Event Type: DELETED, Ingress: cafe-ingress, Namespace: test-21
 .*1. Build External DNS Container*
 ----
 cd test-21/external_dns
-docker build -t cloudadc/external_dns:0.2 .
-docker push cloudadc/external_dns:0.2 
+docker build -t cloudadc/external_dns:1.0 .
+docker push cloudadc/external_dns:1.0 
 ----
 
 [source, bash]
 .*2. Create External DNS Automation POD*
 ----
+kubectl create secret generic bigip-login --from-literal=username=admin --from-literal=password=admin -n test-21
+kubectl apply -f test-21/external_dns_config.yaml
 kubectl apply -f test-21/external_dns.yaml
 ----
 
 * link:test-21/external_dns.yaml[test-21/external_dns.yaml]
+* link:test-21/external_dns_config.yaml[test-21/external_dns_config.yaml]
 
 [source, bash]
 .*2. Execute create/modify/delete ingress resourc*
@@ -3692,9 +3695,21 @@ kubectl apply -f test-21/ingress.yaml
 kubectl delete -f test-21/ingress.yaml
 ----
 
+* link:test-21/ingress.yaml[test-21/ingress.yaml]
+
 [source, bash]
 .*4. Overview the Pod logs*
 ----
-kubectl logs  external-dns-automation -n test-21
+NS=test-21 && IC_POD=$(kubectl get pods -n $NS -l app=external-dns-automation --no-headers | head -n 1 | awk '{print $1}') && kubectl logs -f $IC_POD -n $NS
+2023-09-05 02:24:40,433 - INFO - DNS Automation Watcher Started
+2023-09-05 02:24:40,433 - DEBUG - Connect to BIG-IP DNS https://10.1.10.241 via admin/****
+2023-09-05 02:27:31,954 - DEBUG - Event Type: ADDED, Ingress: cafe-ingress, Namespace: test-21
+2023-09-05 02:27:31,955 - INFO -   test21.example.com ADDED
+2023-09-05 02:27:32,197 - DEBUG - Event Type: MODIFIED, Ingress: cafe-ingress, Namespace: test-21
+2023-09-05 02:27:32,197 - INFO -   test21.example.com 34.136.206.222 MODIFIED
+2023-09-05 02:28:07,179 - DEBUG - Event Type: MODIFIED, Ingress: cafe-ingress, Namespace: test-21
+2023-09-05 02:28:07,179 - INFO -   test21.example.com 34.136.206.222 MODIFIED
+2023-09-05 02:28:43,736 - DEBUG - Event Type: DELETED, Ingress: cafe-ingress, Namespace: test-21
+2023-09-05 02:28:43,737 - INFO -   test21.example.com 34.136.206.222 DELETED
 ----
 

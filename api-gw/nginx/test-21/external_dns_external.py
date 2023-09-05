@@ -2,7 +2,7 @@
 
 from kubernetes import client, config, watch
 
-kubeconfig_file = "/home/cloud_user_p_c8b1c4a9/.kube/config"
+kubeconfig_file = "/home/cloud_user_p_c12496e5/.kube/config"
 
 config.load_kube_config(config_file=kubeconfig_file)
 current_context = config.list_kube_config_contexts()[1]
