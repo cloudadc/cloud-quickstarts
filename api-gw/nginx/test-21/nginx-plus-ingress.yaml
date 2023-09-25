@@ -70,6 +70,7 @@ spec:
           - -nginx-status-allow-cidrs=0.0.0.0/0
           - -enable-prometheus-metrics
           - -external-service=nginx-ingress-svc
+         #- -ingresslink=f5-bigip
           - -report-ingress-status
          # - -enable-snippets
          # - -default-server-tls-secret=$(POD_NAMESPACE)/default-server-secret
