@@ -1,0 +1,6 @@
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: nginx-config-gw
+  namespace: f5-manage01
+data:

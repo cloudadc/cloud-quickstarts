@@ -31,13 +31,13 @@ NS=f5-manage01 && IC_POD=$(kubectl get pods -n $NS --no-headers -l app=nginx-ing
 [source, bash]
 .*APP*
 ----
-kubectl apply -f app.yaml 
+kubectl apply -f 3.1.1/app.yaml 
 ----
 
 [source, bash]
 .*Ingress*
 ----
-kubectl apply -f ingress.yaml
+kubectl apply -f 3.1.1/ingress.yaml
 ----
 
 [source, bash]
@@ -236,6 +236,51 @@ kubectl apply -f observability/grafana/deployment.yaml
 kubectl apply -f 3.1.4/nginx-plus-ingress.yaml
 ----
 
+== 3.1.5
+
+[source, bash]
+.**
+----
+
+----
+
+== 3.1.6
+
+[source, bash]
+.*IngressClass*
+----
+kubectl apply -f global/ingress-class.yaml
+----
+
+[source, bash]
+.*NGINX Group 1*
+----
+kubectl apply -f 3.1.6/ns-sa-cm.yaml
+kubectl apply -f 3.1.6/nginx-plus-ingress.yaml
+----
+
+[source, bash]
+.*NGINX Group 2*
+----
+kubectl apply -f 3.1.6/cm-gw.yaml
+kubectl apply -f 3.1.6/nginx-plus-gateway.yaml
+----
+
+[source, bash]
+.*Deploy VS to NGINX Group 2*
+----
+kubectl apply -f 3.1.6/vs.yaml
+----
+
+[source, bash]
+.*Dump Config*
+----
+NS=f5-manage01 && IC_POD=$(kubectl get pods -n $NS -l app=nginx-ingress --no-headers | head -n 1 | awk '{print $1}') && kubectl exec $IC_POD -n $NS -- nginx -T 2>&1 | grep -v '^[[:space:]]*$' > nginx-ingress.conf
+NS=f5-manage01 && IC_POD=$(kubectl get pods -n $NS -l app=nginx-gateway --no-headers | head -n 1 | awk '{print $1}') && kubectl exec $IC_POD -n $NS -- nginx -T 2>&1 | grep -v '^[[:space:]]*$' > nginx-gateway.conf
+----
+
+== 3.1.7
+
 [source, bash]
 .**
 ----
@@ -253,22 +298,3 @@ kubectl apply -f 3.1.4/nginx-plus-ingress.yaml
 ----
 
 ----
-
-[source, bash]
-.**
-----
-
-----
-
-[source, bash]
-.**
-----
-
-----
-
-[source, bash]
-.**
-----
-
-----
-
