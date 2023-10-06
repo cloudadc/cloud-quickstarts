@@ -282,10 +282,55 @@ NS=f5-manage01 && IC_POD=$(kubectl get pods -n $NS -l app=nginx-gateway --no-hea
 == 3.1.7
 
 [source, bash]
-.**
+.*Build Docker Image*
+----
+cd 3.1.7/external_dns
+docker build -t cloudadc/external_dns:1.0 .
+docker push cloudadc/external_dns:1.0
 ----
 
+[source, bash]
+.*Create Secret*
 ----
+kubectl create secret generic bigip-login --from-literal=username=admin --from-literal=password=admin -n f5-manage01
+----
+
+[source, bash]
+.*Create Configmap*
+----
+kubectl apply -f 3.1.7/external_dns_config.yaml
+----
+
+[source, bash]
+.*Deploy DNS Auto Ops Project*
+----
+kubectl apply -f 3.1.7/external_dns.yaml
+----
+
+[source, bash]
+.*Recreate Ingress*
+----
+kubectl delete -f 3.1.1/ingress.yaml
+kubectl apply -f 3.1.1/ingress.yaml
+----
+
+[source, bash]
+.*Review Log*
+----
+$ NS=f5-manage01 && IC_POD=$(kubectl get pods -n $NS -l app=external-dns-automation --no-headers | head -n 1 | awk '{print $1}') && kubectl logs -f $IC_POD -n $NS
+2023-10-06 13:23:10,087 - INFO - DNS Automation Watcher Started
+2023-10-06 13:23:10,087 - DEBUG - Connect to BIG-IP DNS https://10.1.10.241 via admin/****
+2023-10-06 13:23:10,115 - DEBUG - Event Type: ADDED, Ingress: ingress-3-1-1, Namespace: f5-manage01
+2023-10-06 13:23:10,115 - INFO -   f5manage01.example.com 34.42.166.88 ADDED
+2023-10-06 13:31:35,383 - DEBUG - Event Type: DELETED, Ingress: ingress-3-1-1, Namespace: f5-manage01
+2023-10-06 13:31:35,384 - INFO -   f5manage01.example.com 34.42.166.88 DELETED
+2023-10-06 13:31:51,369 - DEBUG - Event Type: ADDED, Ingress: ingress-3-1-1, Namespace: f5-manage01
+2023-10-06 13:31:51,370 - INFO -   f5manage01.example.com ADDED
+2023-10-06 13:31:51,531 - DEBUG - Event Type: MODIFIED, Ingress: ingress-3-1-1, Namespace: f5-manage01
+2023-10-06 13:31:51,532 - INFO -   f5manage01.example.com 34.42.166.88 MODIFIED
+----
+
+== TODO
 
 [source, bash]
 .**
