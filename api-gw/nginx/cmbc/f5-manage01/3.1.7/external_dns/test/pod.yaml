@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: python-pod
+  namespace: test-21
+spec:
+  containers:
+  - name: my-python-app
+    image: cloudadc/python-app-log:0.1
+

@@ -1,0 +1,112 @@
+{
+    "api_version": null,
+    "kind": null,
+    "metadata": {
+        "annotations": {
+            "kubectl.kubernetes.io/last-applied-configuration": "{\"apiVersion\":\"networking.k8s.io/v1\",\"kind\":\"Ingress\",\"metadata\":{\"annotations\":{},\"name\":\"ingress-3-1-1\",\"namespace\":\"f5-manage01\"},\"spec\":{\"ingressClassName\":\"nginx\",\"rules\":[{\"host\":\"f5manage01.example.com\",\"http\":{\"paths\":[{\"backend\":{\"service\":{\"name\":\"tea-svc\",\"port\":{\"number\":80}}},\"path\":\"/tea\",\"pathType\":\"Prefix\"},{\"backend\":{\"service\":{\"name\":\"coffee-svc\",\"port\":{\"number\":80}}},\"path\":\"/coffee\",\"pathType\":\"Prefix\"}]}}]}}\n"
+        },
+        "creation_timestamp": "2023-10-06T13:31:51+00:00",
+        "deletion_grace_period_seconds": null,
+        "deletion_timestamp": null,
+        "finalizers": null,
+        "generate_name": null,
+        "generation": 1,
+        "labels": null,
+        "managed_fields": [
+            {
+                "api_version": "networking.k8s.io/v1",
+                "fields_type": "FieldsV1",
+                "fields_v1": {
+                    "f:metadata": {
+                        "f:annotations": {
+                            ".": {},
+                            "f:kubectl.kubernetes.io/last-applied-configuration": {}
+                        }
+                    },
+                    "f:spec": {
+                        "f:ingressClassName": {},
+                        "f:rules": {}
+                    }
+                },
+                "manager": "kubectl-client-side-apply",
+                "operation": "Update",
+                "subresource": null,
+                "time": "2023-10-06T13:31:51+00:00"
+            },
+            {
+                "api_version": "networking.k8s.io/v1",
+                "fields_type": "FieldsV1",
+                "fields_v1": {
+                    "f:status": {
+                        "f:loadBalancer": {
+                            "f:ingress": {}
+                        }
+                    }
+                },
+                "manager": "nginx-ingress",
+                "operation": "Update",
+                "subresource": "status",
+                "time": "2023-10-06T13:31:51+00:00"
+            }
+        ],
+        "name": "ingress-3-1-1",
+        "namespace": "f5-manage01",
+        "owner_references": null,
+        "resource_version": "132405",
+        "self_link": null,
+        "uid": "c65d0be6-7d9e-44bf-9ce5-6aab7f31c305"
+    },
+    "spec": {
+        "default_backend": null,
+        "ingress_class_name": "nginx",
+        "rules": [
+            {
+                "host": "f5manage01.example.com",
+                "http": {
+                    "paths": [
+                        {
+                            "backend": {
+                                "resource": null,
+                                "service": {
+                                    "name": "tea-svc",
+                                    "port": {
+                                        "name": null,
+                                        "number": 80
+                                    }
+                                }
+                            },
+                            "path": "/tea",
+                            "path_type": "Prefix"
+                        },
+                        {
+                            "backend": {
+                                "resource": null,
+                                "service": {
+                                    "name": "coffee-svc",
+                                    "port": {
+                                        "name": null,
+                                        "number": 80
+                                    }
+                                }
+                            },
+                            "path": "/coffee",
+                            "path_type": "Prefix"
+                        }
+                    ]
+                }
+            }
+        ],
+        "tls": null
+    },
+    "status": {
+        "load_balancer": {
+            "ingress": [
+                {
+                    "hostname": null,
+                    "ip": "34.42.166.88",
+                    "ports": null
+                }
+            ]
+        }
+    }
+}

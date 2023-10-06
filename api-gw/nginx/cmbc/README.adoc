@@ -239,9 +239,25 @@ kubectl apply -f 3.1.4/nginx-plus-ingress.yaml
 == 3.1.5
 
 [source, bash]
-.**
+.*Create*
+----
+$ ./3.1.5/create_ingress.py 
+gke_playground-s-11-80f1abed_us-central1-a_standard-cluster-1/f5-manage01/networking.k8s.io/ingress-3-1-5 created
 ----
 
+[source, bash]
+.*Get*
+----
+$ ./3.1.5/get_ingress.py 
+gke_playground-s-11-80f1abed_us-central1-a_standard-cluster-1_f5-manage01_ingress-3-1-1.json
+gke_playground-s-11-80f1abed_us-central1-a_standard-cluster-1_f5-manage01_ingress-3-1-5.json
+----
+
+[source, bash]
+.*Delete*
+----
+$ ./3.1.5/delete_ingress.py 
+gke_playground-s-11-80f1abed_us-central1-a_standard-cluster-1/f5-manage01/networking.k8s.io/ingress-3-1-5 deleted
 ----
 
 == 3.1.6

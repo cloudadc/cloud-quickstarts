@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: external-dns-config
+  namespace: f5-manage01
+data:
+  url: 10.1.10.241
+  holder: holder

@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: external-dns-automation
+  namespace: f5-manage01
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: external-dns-automation
+  template:
+    metadata:
+      labels:
+        app: external-dns-automation
+    spec:
+      serviceAccountName: nginx-ingress
+      containers:
+      - name: external-dns-automation
+        image: cloudadc/external_dns:1.0
+        env:
+          - name: BIGIP_URL
+            valueFrom:
+              configMapKeyRef:
+                name: external-dns-config
+                key: url
+          - name: BIGIP_USERNAME
+            valueFrom:
+              secretKeyRef:
+                name: bigip-login
+                key: username
+          - name: BIGIP_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: bigip-login
+                key: password
+

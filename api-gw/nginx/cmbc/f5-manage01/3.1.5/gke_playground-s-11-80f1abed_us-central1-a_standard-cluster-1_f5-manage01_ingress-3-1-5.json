@@ -1,0 +1,104 @@
+{
+    "api_version": null,
+    "kind": null,
+    "metadata": {
+        "annotations": null,
+        "creation_timestamp": "2023-10-06T14:16:23+00:00",
+        "deletion_grace_period_seconds": null,
+        "deletion_timestamp": null,
+        "finalizers": null,
+        "generate_name": null,
+        "generation": 1,
+        "labels": null,
+        "managed_fields": [
+            {
+                "api_version": "networking.k8s.io/v1",
+                "fields_type": "FieldsV1",
+                "fields_v1": {
+                    "f:spec": {
+                        "f:ingressClassName": {},
+                        "f:rules": {}
+                    }
+                },
+                "manager": "OpenAPI-Generator",
+                "operation": "Update",
+                "subresource": null,
+                "time": "2023-10-06T14:16:23+00:00"
+            },
+            {
+                "api_version": "networking.k8s.io/v1",
+                "fields_type": "FieldsV1",
+                "fields_v1": {
+                    "f:status": {
+                        "f:loadBalancer": {
+                            "f:ingress": {}
+                        }
+                    }
+                },
+                "manager": "nginx-ingress",
+                "operation": "Update",
+                "subresource": "status",
+                "time": "2023-10-06T14:16:24+00:00"
+            }
+        ],
+        "name": "ingress-3-1-5",
+        "namespace": "f5-manage01",
+        "owner_references": null,
+        "resource_version": "154092",
+        "self_link": null,
+        "uid": "fc88cf17-52b4-4486-805e-73aee37ec832"
+    },
+    "spec": {
+        "default_backend": null,
+        "ingress_class_name": "nginx",
+        "rules": [
+            {
+                "host": "auto.f5manage01.example.com",
+                "http": {
+                    "paths": [
+                        {
+                            "backend": {
+                                "resource": null,
+                                "service": {
+                                    "name": "tea-svc",
+                                    "port": {
+                                        "name": null,
+                                        "number": 80
+                                    }
+                                }
+                            },
+                            "path": "/tea",
+                            "path_type": "Prefix"
+                        },
+                        {
+                            "backend": {
+                                "resource": null,
+                                "service": {
+                                    "name": "coffee-svc",
+                                    "port": {
+                                        "name": null,
+                                        "number": 80
+                                    }
+                                }
+                            },
+                            "path": "/coffee",
+                            "path_type": "Prefix"
+                        }
+                    ]
+                }
+            }
+        ],
+        "tls": null
+    },
+    "status": {
+        "load_balancer": {
+            "ingress": [
+                {
+                    "hostname": null,
+                    "ip": "34.42.166.88",
+                    "ports": null
+                }
+            ]
+        }
+    }
+}
