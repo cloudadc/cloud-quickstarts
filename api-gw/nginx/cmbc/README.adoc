@@ -3,7 +3,7 @@
 
 == 3.1.1
 
-=== NGINX Deploy
+*NGINX Deploy*
 
 [source, bash]
 .*1. Global Resource*
@@ -26,7 +26,7 @@ kubectl apply -f tenant/nginx-plus-ingress.yaml
 NS=f5-manage01 && IC_POD=$(kubectl get pods -n $NS --no-headers -l app=nginx-ingress | head -n 1 | awk '{print $1}') && kubectl logs -f $IC_POD -n $NS
 ----
 
-=== App Deploy
+*App Deploy*
 
 [source, bash]
 .*APP*
@@ -346,7 +346,131 @@ $ NS=f5-manage01 && IC_POD=$(kubectl get pods -n $NS -l app=external-dns-automat
 2023-10-06 13:31:51,532 - INFO -   f5manage01.example.com 34.42.166.88 MODIFIED
 ----
 
-== TODO
+== 3.2.1
+
+[source, bash]
+.*NGINX*
+----
+kubectl apply -f tenant/ns-sa-cm.yaml
+kubectl apply -f tenant/nginx-plus-ingress.yam
+----
+
+[source, bash]
+.*APP*
+----
+kubectl apply -f tenant/app.yaml
+----
+
+[source, bash]
+.*Ingress*
+----
+kubectl apply -f 3.2.1/ingress.yaml
+----
+
+[source, bash]
+.*通过 IPVS  访问*
+----
+curl -s -H "Host: f5manage02.test.cmbc.com" http://$IPVS_EP/coffee -v
+> GET /coffee HTTP/1.1
+> Host: f5manage02.test.cmbc.com
+> User-Agent: curl/7.88.1
+> Accept: */*
+>
+< HTTP/1.1 200 OK
+< Server: nginx/1.23.2
+< Date: Sat, 07 Oct 2023 02:53:55 GMT
+< Content-Type: text/plain
+< Content-Length: 425
+< Connection: keep-alive
+< Set-Cookie: srv_id=57fc0e701258c85487fff7011a693f73; expires=Sat, 07-Oct-23 03:53:55 GMT; max-age=3600; path=/coffee
+<
+
+            request: GET /coffee HTTP/1.1
+                uri: /coffee
+         request id: 5df4b067aba0bc316167111a35b92cd9
+               host: f5manage02.test.cmbc.com
+               date: 07/Oct/2023:02:53:55 +0000
+
+        server name: coffee-6f9b66c984-rb9v4
+        client addr: 197.21.7.77:39704
+        server addr: 197.21.4.171:8080
+----
+
+[source, bash]
+.*通过 IPVS  访问会话保持*
+----
+$ for i in {1..5}; do curl -s -H "Host: f5manage02.test.cmbc.com" --cookie "srv_id=57fc0e701258c85487fff7011a693f73; expires=Sat, 07-Oct-23 03:53:55 GMT; max-age=3600; path=/coffee" http://$IPVS_EP/coffee | grep addr ; echo ; done
+        client addr: 197.21.7.77:54508
+        server addr: 197.21.4.171:8080
+
+        client addr: 197.21.7.77:54518
+        server addr: 197.21.4.171:8080
+
+        client addr: 197.21.4.130:55884
+        server addr: 197.21.4.171:8080
+
+        client addr: 197.21.7.77:54528
+        server addr: 197.21.4.171:8080
+
+        client addr: 197.21.4.130:55898
+        server addr: 197.21.4.171:8080
+----
+
+[source, bash]
+.*通过 F5 VS 访问*
+----
+curl -s -H "Host: f5manage02.test.cmbc.com" http://$F5_IP/coffee -v         
+> GET /coffee HTTP/1.1
+> Host: f5manage02.test.cmbc.com
+> User-Agent: curl/7.88.1
+> Accept: */*
+> 
+< HTTP/1.1 200 OK
+< Server: nginx/1.23.2
+< Date: Sat, 07 Oct 2023 03:41:16 GMT
+< Content-Type: text/plain
+< Content-Length: 424
+< Connection: keep-alive
+< Set-Cookie: srv_id=1adf9057398ae82fbd7692ca684c39ca; expires=Sat, 07-Oct-23 04:41:16 GMT; max-age=3600; path=/coffee
+< 
+
+            request: GET /coffee HTTP/1.1
+                uri: /coffee
+         request id: 1d292b375c273bf8541836d237dd69f7
+               host: f5manage02.test.cmbc.com
+               date: 07/Oct/2023:03:41:16 +0000
+
+        server name: coffee-6f9b66c984-g2bt6
+        client addr: 197.21.7.77:59130
+        server addr: 197.21.4.144:8080
+
+----
+
+[source, bash]
+.*通过 F5 VS 访问会话保持*
+----
+$ for i in {1..5}; do curl -s -H "Host: f5manage02.test.cmbc.com" --cookie " srv_id=1adf9057398ae82fbd7692ca684c39ca; expires=Sat, 07-Oct-23 04:41:16 GMT; max-age=3600; path=/coffee " http://$IPVS_EP/coffee | grep addr ; echo ; done
+        client addr: 197.21.7.77:34507
+        server addr: 197.21.4.144:8080
+
+        client addr: 197.21.4.130:54517
+        server addr: 197.21.4.144:8080
+
+        client addr: 197.21.4.130:55184
+        server addr: 197.21.4.144:8080
+
+        client addr: 197.21.7.77:34528
+        server addr: 197.21.4.144:8080
+
+        client addr: 197.21.4.130:51898
+        server addr: 197.21.4.144:8080
+----
+
+[source, bash]
+.**
+----
+
+----
 
 [source, bash]
 .**
