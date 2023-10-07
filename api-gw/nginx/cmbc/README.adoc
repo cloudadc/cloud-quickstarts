@@ -466,6 +466,125 @@ $ for i in {1..5}; do curl -s -H "Host: f5manage02.test.cmbc.com" --cookie " srv
         server addr: 197.21.4.144:8080
 ----
 
+== 3.2.2
+
+[source, bash]
+.*Ingress*
+----
+kubectl apply -f 3.2.2/ingress.yaml
+----
+
+== 3.2.3
+
+[source, bash]
+.*Ingress*
+----
+kubectl apply -f 3.2.3/ingress.yaml
+----
+
+== 3.2.4
+
+[source, bash]
+.*Create HTTPD Configuration*
+----
+// a) review the NGINX Port
+$ kubectl get svc nginx-ingress-svc -n f5-manage02 --no-headers
+nginx-ingress-svc   NodePort   10.12.2.140   <none>   80:32127/TCP   9m51s
+
+// b) review the K8S Node IP
+$ kubectl get nodes -o wide --no-headers
+gke-standard-cluster-1-default-pool-d5754ed3-461z   Ready   <none>   5h9m   v1.24.16-gke.500   10.128.0.3   34.134.8.20    Container-Optimized OS from Google   5.10.176+   containerd://1.6.20
+gke-standard-cluster-1-default-pool-d5754ed3-s0xl   Ready   <none>   5h9m   v1.24.16-gke.500   10.128.0.4   34.28.232.95   Container-Optimized OS from Google   5.10.176+   containerd://1.6.20
+
+// c) modify the httpd configuration, change the proxy ip and port
+$ grep ProxyPass 3.2.4/httpd.conf
+ProxyPass "/"  "http://10.128.0.3:32127/"
+ProxyPassReverse "/"  "http://10.128.0.3:32127/"
+
+// d) Create HTTPD Configuration
+kubectl create cm httpd-reverse-proxy-config --from-file=3.2.4/httpd.conf -n test-1
+----
+
+[source, bash]
+.*Deploy Apache Httpd*
+----
+kubectl apply -f 3.2.4/httpd.yaml
+----
+
+== 3.2.5
+
+[source, bash]
+.**
+----
+
+----
+
+[source, bash]
+.**
+----
+
+----
+
+[source, bash]
+.**
+----
+
+----
+
+[source, bash]
+.**
+----
+
+----
+
+[source, bash]
+.**
+----
+
+----
+
+[source, bash]
+.**
+----
+
+----
+
+[source, bash]
+.**
+----
+
+----
+
+[source, bash]
+.**
+----
+
+----
+
+[source, bash]
+.**
+----
+
+----
+
+[source, bash]
+.**
+----
+
+----
+
+[source, bash]
+.**
+----
+
+----
+
+[source, bash]
+.**
+----
+
+----
+
 [source, bash]
 .**
 ----

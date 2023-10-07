@@ -1,7 +1,7 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: cafe-ingress
+  name: ingress-3-2-1
   namespace: f5-manage02
   annotations:
     nginx.com/sticky-cookie-services: "serviceName=coffee-svc srv_id expires=1h path=/coffee"
