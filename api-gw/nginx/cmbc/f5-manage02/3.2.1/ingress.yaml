@@ -1,0 +1,20 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: cafe-ingress
+  namespace: f5-manage02
+  annotations:
+    nginx.com/sticky-cookie-services: "serviceName=coffee-svc srv_id expires=1h path=/coffee"
+spec:
+  ingressClassName: nginx
+  rules:
+  - host: f5manage02.test.cmbc.com
+    http:
+      paths:
+      - path: /coffee
+        pathType: Prefix
+        backend:
+          service:
+            name: coffee-svc
+            port:
+              number: 80

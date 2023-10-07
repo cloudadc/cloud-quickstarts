@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: nginx-ingress 
+  namespace: f5-manage02
+---
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: nginx-config
+  namespace: f5-manage02
+data:
+---
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: nginx-config-gw
+  namespace: f5-manage02
+data:

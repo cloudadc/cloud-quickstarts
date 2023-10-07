@@ -1,0 +1,50 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: httpd-gw
+  namespace: f5-manage02
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: httpd-gw
+  template:
+    metadata:
+      labels:
+        app: httpd-gw
+    spec:
+      containers:
+      - name: httpd
+        image: artifactory.dev.cmbc.cn:31345/cmbc-docker-local/public/kylin_aarch64_v10_apache2.4.54:20230317001
+        ports:
+        - containerPort: 10010
+        volumeMounts:
+        - name: httpd-config
+          mountPath: /apache/apache_apache_10010/httpd.conf
+          subPath: httpd.conf
+        resources:
+          requests:
+            cpu: "100m"
+            memory: "128Mi"
+          limits:
+            cpu: "1"
+            memory: "1Gi"
+      volumes:
+        - name: httpd-config
+          configMap:
+            name: httpd-reverse-proxy-config-gw
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: httpd-gw-svc
+  namespace: f5-manage02
+spec:
+  ports:
+  - port: 80
+    targetPort: 10010
+    protocol: TCP
+    name: http
+  selector:
+    app: httpd-gw
+  type: NodePort

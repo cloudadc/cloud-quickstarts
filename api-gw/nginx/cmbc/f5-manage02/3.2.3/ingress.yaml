@@ -1,0 +1,20 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: coffee-keepalive-ingress
+  namespace: f5-manage02
+  annotations:
+    nginx.org/keepalive: "30"
+spec:
+  ingressClassName: nginx
+  rules:
+  - host: keepalive.f5manage02.test.cmbc.com
+    http:
+      paths:
+      - path: /coffee
+        pathType: Prefix
+        backend:
+          service:
+            name: coffee-svc
+            port:
+              number: 80

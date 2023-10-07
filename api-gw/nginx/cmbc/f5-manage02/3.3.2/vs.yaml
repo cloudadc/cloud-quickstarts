@@ -1,0 +1,19 @@
+apiVersion: k8s.nginx.org/v1
+kind: VirtualServer
+metadata:
+  name: vs-3-3-2
+  namespace: f5-manage02
+spec:
+  host: gw.session.f5manage02.test.cmbc.com
+  ingressClassName: nginx-gw
+  upstreams:
+  - name: coffee-app
+    service: coffee-svc
+    port: 80
+    sessionCookie:
+      enable: true
+      name: coffee_svc_cookie
+  routes:
+  - path: /coffee
+    action:
+      pass: coffee-app
