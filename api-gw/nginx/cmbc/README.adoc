@@ -633,7 +633,46 @@ Refer to 3.2.4.
 == 3.3.5
 
 [source, bash]
-.**
+.*NGINX*
 ----
+kubectl apply -f tenant/ns-sa-cm.yaml
+kubectl apply -f tenant/nginx-plus-gateway.yaml
+----
+
+[source, bash]
+.*App*
+----    
+kubectl apply -f tenant/app-tea.yaml
+----
+
+[source, bash]
+.*VS*
+----    
+kubectl apply -f 3.3.5/vs.yaml
+----
+
+== 3.3.6
+
+[source, bash]
+.*VS*
+----    
+kubectl apply -f 3.3.6/vs.yaml
+----
+
+[source, bash]
+.**
+----    
+
+----
+
+[source, bash]
+.**
+----    
+
+----
+
+[source, bash]
+.**
+----    
 
 ----
