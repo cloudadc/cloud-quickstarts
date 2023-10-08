@@ -502,7 +502,7 @@ ProxyPass "/"  "http://10.128.0.3:32127/"
 ProxyPassReverse "/"  "http://10.128.0.3:32127/"
 
 // d) Create HTTPD Configuration
-kubectl create cm httpd-reverse-proxy-config --from-file=3.2.4/httpd.conf -n test-1
+kubectl create cm httpd-reverse-proxy-config --from-file=3.2.4/httpd.conf -n f5-manage02
 ----
 
 [source, bash]
@@ -514,9 +514,31 @@ kubectl apply -f 3.2.4/httpd.yaml
 == 3.2.5
 
 [source, bash]
-.**
+.*NGINX*
+----
+kubectl apply -f tenant/ns-sa-cm.yaml
+kubectl apply -f tenant/nginx-plus-ingress.yaml
 ----
 
+[source, bash]
+.*APP*
+----
+kubectl apply -f tenant/app-coffee.yaml
+----
+
+[source, bash]
+.*Ingress*
+----
+kubectl appy -f 3.2.5/ingress-passive.yaml
+kubectl appy -f 3.2.5/ingress.yaml
+----
+
+== 3.2.6
+
+[source, bash]
+.*Ingress*
+----
+kubectl appy -f 3.2.6/ingress.yaml
 ----
 
 [source, bash]
@@ -573,29 +595,42 @@ kubectl apply -f 3.2.4/httpd.yaml
 
 ----
 
-[source, bash]
-.**
-----
-
-----
+== 3.3.1
 
 [source, bash]
-.**
+.*NGINX*
 ----
-
+kubectl apply -f tenant/ns-sa-cm.yaml
+kubectl apply -f tenant/nginx-plus-gateway.yaml
 ----
 
 [source, bash]
-.**
+.*VS*
+----
+kubectl apply -f 3.3.1/vs.yaml
 ----
 
-----
+== 3.3.2
 
 [source, bash]
-.**
+.*VS*
+----
+kubectl apply -f 3.3.2/vs.yaml
 ----
 
+== 3.3.3
+
+[source, bash]
+.*VS*
 ----
+kubectl apply -f 3.3.3/vs.yaml
+----
+
+== 3.3.4
+
+Refer to 3.2.4.
+
+== 3.3.5
 
 [source, bash]
 .**

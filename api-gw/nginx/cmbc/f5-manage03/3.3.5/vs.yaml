@@ -1,0 +1,31 @@
+apiVersion: k8s.nginx.org/v1
+kind: VirtualServer
+metadata:
+  name: vs-3-3-5
+  namespace: f5-manage03
+spec:
+  host: gw.f5manage03.test.cmbc.com
+  ingressClassName: nginx-gw
+  upstreams:
+  - name: tea-app
+    service: tea-svc
+    port: 80
+    healthCheck:
+      enable: true
+      path: /health
+      interval: 20s
+      jitter: 3s
+      fails: 5
+      passes: 5
+      port: 8080
+      connect-timeout: 10s
+      read-timeout: 10s
+      send-timeout: 10s
+      headers:
+      - name: Host
+        value: test.nginx.com
+      statusMatch: "! 500" 
+  routes:
+  - path: /tea
+    action:
+      pass: tea-app

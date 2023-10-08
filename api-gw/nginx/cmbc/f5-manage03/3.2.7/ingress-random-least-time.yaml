@@ -1,0 +1,20 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: ingress-3-2-7-monitor-random-least-time
+  namespace: f5-manage03
+  annotations:
+     nginx.org/lb-method: "random two least_time=last_byte"
+spec:
+  ingressClassName: nginx
+  rules:
+  - host: monitor.randomf5manage03.test.cmbc.com
+    http:
+      paths:
+      - path: /coffee
+        pathType: Prefix
+        backend:
+          service:
+            name: coffee-svc
+            port:
+              number: 80

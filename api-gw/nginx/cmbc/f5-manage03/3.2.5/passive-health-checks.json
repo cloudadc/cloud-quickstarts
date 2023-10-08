@@ -1,0 +1,75 @@
+  {
+    "peers": [
+      {
+        "id": 0,
+        "server": "197.21.4.132:8080",
+        "name": "197.21.4.132:8080",
+        "backup": false,
+        "weight": 1,
+        "state": "up",
+        "active": 0,
+        "requests": 16,
+        "header_time": 4,
+        "response_time": 4,
+        "responses": {
+          "1xx": 0,
+          "2xx": 13,
+          "3xx": 0,
+          "4xx": 0,
+          "5xx": 0,
+          "codes": {
+            "200": 13
+          },
+          "total": 13
+        },
+        "sent": 2990,
+        "received": 7137,
+        "fails": 3,
+        "unavail": 1,
+        "health_checks": {
+          "checks": 27,
+          "fails": 3,
+          "unhealthy": 1
+        },
+        "downtime": 48931,
+        "selected": "2023-10-08T02:43:38Z"
+      },
+      {
+        "id": 1,
+        "server": "197.21.4.137:8080",
+        "name": "197.21.4.137:8080",
+        "backup": false,
+        "weight": 1,
+        "state": "up",
+        "active": 0,
+        "requests": 37,
+        "header_time": 3,
+        "response_time": 3,
+        "responses": {
+          "1xx": 0,
+          "2xx": 37,
+          "3xx": 0,
+          "4xx": 0,
+          "5xx": 0,
+          "codes": {
+            "200": 37
+          },
+          "total": 37
+        },
+        "sent": 8510,
+        "received": 20313,
+        "fails": 0,
+        "unavail": 0,
+        "health_checks": {
+          "checks": 27,
+          "fails": 0,
+          "unhealthy": 0
+        },
+        "downtime": 0,
+        "selected": "2023-10-08T02:43:44Z"
+      }
+    ],
+    "keepalive": 0,
+    "zombies": 0,
+    "zone": "f5-manage03-ingress-3-2-5-f5manage03.test.cmbc.com-coffee-svc-80"
+  }

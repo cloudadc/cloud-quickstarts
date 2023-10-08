@@ -1,0 +1,17 @@
+apiVersion: k8s.nginx.org/v1
+kind: VirtualServer
+metadata:
+  name: vs-3-3-7-random-least-time
+  namespace: f5-manage03
+spec:
+  host: gw.monitor.randomleasttime.f5manage03.test.cmbc.com
+  ingressClassName: nginx-gw
+  upstreams:
+  - name: foo
+    service: tea-svc
+    port: 80
+    lb-method: random two least_time=last_byte
+  routes:
+  - path: /tea
+    action:
+      pass: foo

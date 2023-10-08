@@ -1,0 +1,68 @@
+{
+  "peers": [
+    {
+      "id": 0,
+      "server": "197.21.4.132:8080",
+      "name": "197.21.4.132:8080",
+      "backup": false,
+      "weight": 1,
+      "state": "up",
+      "active": 0,
+      "requests": 0,
+      "responses": {
+        "1xx": 0,
+        "2xx": 0,
+        "3xx": 0,
+        "4xx": 0,
+        "5xx": 0,
+        "codes": {},
+        "total": 0
+      },
+      "sent": 0,
+      "received": 0,
+      "fails": 0,
+      "unavail": 0,
+      "health_checks": {
+        "checks": 27,
+        "fails": 0,
+        "unhealthy": 0,
+        "last_passed": true
+      },
+      "downtime": 0
+    },
+    {
+      "id": 1,
+      "server": "197.21.4.137:8080",
+      "name": "197.21.4.137:8080",
+      "backup": false,
+      "weight": 1,
+      "state": "up",
+      "active": 0,
+      "requests": 0,
+      "responses": {
+        "1xx": 0,
+        "2xx": 0,
+        "3xx": 0,
+        "4xx": 0,
+        "5xx": 0,
+        "codes": {},
+        "total": 0
+      },
+      "sent": 0,
+      "received": 0,
+      "fails": 0,
+      "unavail": 0,
+      "health_checks": {
+        "checks": 27,
+        "fails": 0,
+        "unhealthy": 0,
+        "last_passed": true
+      },
+      "downtime": 0
+    }
+  ],
+  "keepalive": 0,
+  "zombies": 0,
+  "zone": "f5-manage03-ingress-3-2-5-f5manage03.test.cmbc.com-coffee-svc-80"
+}
+

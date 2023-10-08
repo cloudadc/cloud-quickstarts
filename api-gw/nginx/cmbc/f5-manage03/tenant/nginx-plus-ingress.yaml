@@ -1,17 +1,17 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: nginx-gateway
-  namespace: f5-manage02
+  name: nginx-ingress
+  namespace: f5-manage03
 spec:
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
-      app: nginx-gateway
+      app: nginx-ingress
   template:
     metadata:
       labels:
-        app: nginx-gateway
+        app: nginx-ingress
      #annotations:
        #prometheus.io/scrape: "true"
        #prometheus.io/port: "9113"
@@ -26,8 +26,6 @@ spec:
         ports:
         - name: http
           containerPort: 80
-        - name: https
-          containerPort: 443
         - name: readiness-port
           containerPort: 8081
         - name: prometheus
@@ -64,11 +62,12 @@ spec:
               fieldPath: metadata.name
         args:
           - -nginx-plus
-          - -nginx-configmaps=$(POD_NAMESPACE)/nginx-config-gw
-          - -watch-namespace=f5-manage02
-          - -enable-custom-resources=true
-          - -ingress-class=nginx-gw
-          - -leader-election-lock-name=nginx-gateway-leader-election
+          - -nginx-configmaps=$(POD_NAMESPACE)/nginx-config
+          - -watch-namespace=f5-manage03
+          - -nginx-status=true
+          - -nginx-status-allow-cidrs=0.0.0.0/0
+          - -enable-snippets
+          - -enable-prometheus-metrics
          # - -default-server-tls-secret=$(POD_NAMESPACE)/default-server-secret
          #- -include-year
          #- -enable-cert-manager
@@ -84,15 +83,31 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: nginx-gateway-svc
-  namespace: f5-manage02
-#  annotations:
-#    cloud.google.com/l4-rbs: "enabled"
+  name: nginx-ingress-svc
+  namespace: f5-manage03
+  annotations:
+    cloud.google.com/l4-rbs: "enabled"
 spec:
   ports:
   - port: 80
     protocol: TCP
     targetPort: 80
   selector:
-    app: nginx-gateway
+    app: nginx-ingress
+  type: NodePort
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: nginx-ingress-api-svc
+  namespace: f5-manage03
+  annotations:
+    cloud.google.com/l4-rbs: "enabled"
+spec:
+  ports:
+  - port: 8080
+    protocol: TCP
+    targetPort: 8080
+  selector:
+    app: nginx-ingress
   type: NodePort

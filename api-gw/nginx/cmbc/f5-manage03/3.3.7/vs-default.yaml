@@ -1,0 +1,16 @@
+apiVersion: k8s.nginx.org/v1
+kind: VirtualServer
+metadata:
+  name: vs-3-3-7-default
+  namespace: f5-manage03
+spec:
+  host: gw.monitor.default.f5manage03.test.cmbc.com
+  ingressClassName: nginx-gw
+  upstreams:
+  - name: foo
+    service: tea-svc
+    port: 80
+  routes:
+  - path: /tea
+    action:
+      pass: foo
