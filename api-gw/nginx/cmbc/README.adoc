@@ -541,40 +541,56 @@ kubectl appy -f 3.2.5/ingress.yaml
 kubectl appy -f 3.2.6/ingress.yaml
 ----
 
-[source, bash]
-.**
-----
-
-----
+== 3.2.7
 
 [source, bash]
-.**
+.*Ingress*
+----
+kubectl apply -f 3.2.7/ingress-default.yaml
+kubectl apply -f 3.2.7/ingress-random-least-time.yaml
+kubectl apply -f 3.2.7/ingress-least-time.yaml
+kubectl apply -f 3.2.7/ingress-least-conn.yaml
+kubectl apply -f 3.2.7/ingress-round_robin.yaml
+kubectl apply -f 3.2.7/ingress-ip-hash.yaml
+kubectl apply -f 3.2.7/ingress-ip-hash.yaml
 ----
 
-----
-
-[source, bash]
-.**
-----
-
-----
-
-[source, bash]
-.**
-----
-
-----
+== 3.2.8
 
 [source, bash]
-.**
+.*NGINX*
 ----
-
+kubectl apply -f tenant/ns-sa-cm.yaml
+kubectl apply -f tenant/nginx-plus-ingress.yaml
 ----
 
 [source, bash]
-.**
+.*APP*
+----
+kubectl apply -f tenant/app-a.yaml
+kubectl apply -f tenant/app-b.yaml
+kubectl apply -f tenant/app-c.yaml
+kubectl apply -f tenant/app-d.yaml
 ----
 
+[source, bash]
+.*Ingress*
+----
+kubectl apply -f 3.2.8/ingress.yaml
+----
+
+== 3.2.9
+
+[source, bash]
+.*NGINX*
+----
+kubectl apply -f tenant/ns-sa-cm.yaml
+----
+
+[source, bash]
+.*Ingress*
+----
+kubectl apply -f 3.2.9/ingress.yaml
 ----
 
 [source, bash]
@@ -659,10 +675,41 @@ kubectl apply -f 3.3.5/vs.yaml
 kubectl apply -f 3.3.6/vs.yaml
 ----
 
-[source, bash]
-.**
-----    
+== 3.3.7
 
+[source, bash]
+.*VS*
+----    
+kubectl apply -f vs-default.yaml
+kubectl apply -f vs-random-least-time.yaml
+kubectl apply -f vs-least-time.yaml
+kubectl apply -f vs-least-conn.yaml
+kubectl apply -f vs-rr.yaml
+kubectl apply -f vs-ip-hash.yaml
+kubectl apply -f vs-hash.yaml
+----
+
+== 3.3.8
+
+[source, bash]
+.*NGINX*
+----    
+kubectl apply -f tenant/cm-gateway.yaml
+kubectl apply -f tenant/nginx-plus-gateway.yaml
+----
+
+[source, bash]
+.*VS*
+----    
+kubectl apply -f 3.3.8/vs.yaml
+----
+
+== 3.3.9
+
+[source, bash]
+.*VS*
+----    
+kubectl apply -f 3.3.9/vs.yaml
 ----
 
 [source, bash]

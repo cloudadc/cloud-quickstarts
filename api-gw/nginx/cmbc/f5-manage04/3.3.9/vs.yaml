@@ -1,0 +1,18 @@
+apiVersion: k8s.nginx.org/v1
+kind: VirtualServer
+metadata:
+  name: vs-3-3-9
+  namespace: f5-manage04
+spec:
+  host: gw.limit.f5manage04.example.com
+  policies:
+  - name: rate-limit-source-addr
+  ingressClassName: nginx-gw
+  upstreams:
+  - name: app-d
+    service: app-d-svc
+    port: 80
+  routes:
+  - path: /d
+    action:
+      pass: app-d

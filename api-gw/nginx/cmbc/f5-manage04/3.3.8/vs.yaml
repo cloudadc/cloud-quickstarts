@@ -1,0 +1,28 @@
+apiVersion: k8s.nginx.org/v1
+kind: VirtualServer
+metadata:
+  name: vs-3-3-8
+  namespace: f5-manage04
+spec:
+  host: gw.f5manage04.example.com
+  ingressClassName: nginx-gw
+  upstreams:
+  - name: app-a
+    service: app-a-svc
+    port: 80
+  - name: app-b
+    service: app-b-svc
+    port: 80
+  - name: app-c
+    service: app-c-svc
+    port: 80
+  routes:
+  - path: /a
+    action:
+      pass: app-a
+  - path: /b
+    action:
+      pass: app-b
+  - path: /c
+    action:
+      pass: app-c
