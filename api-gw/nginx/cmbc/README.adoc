@@ -784,7 +784,7 @@ kubectl apply -f f5-manage07/tenant/app-cart.yaml
 ----
 
 [source, bash]
-.*Route(Ops)*
+.*VS(Ops)*
 ----
 kubectl apply -f f5-manage05/3.3.10/vs.yaml
 ----
