@@ -1,0 +1,25 @@
+apiVersion: k8s.nginx.org/v1
+kind: VirtualServer
+metadata:
+  name: vs-3-3-11
+  namespace: f5-manage06
+spec:
+  host: f5manage06.example.com
+  upstreams:
+  - name: user
+    service: user-svc
+    port: 80
+  - name: order
+    service: order-svc
+    port: 80
+  routes:
+  - path: /user
+    action:
+      proxy:
+        upstream: user
+        rewritePath: /
+  - path: /order
+    action:
+      proxy:
+        upstream: order
+        rewritePath: /transaction

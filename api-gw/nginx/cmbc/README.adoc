@@ -633,6 +633,22 @@ kubectl apply -f f5-manage06/3.2.10/ingress-order.yaml
 kubectl apply -f f5-manage07/3.2.10/ingress-cart.yaml
 ----
 
+== 3.2.11
+
+[source, bash]
+.*Ingress*
+----
+kubectl apply -f 3.2.11/ingress.yaml
+----
+
+== 3.2.12
+
+[source, bash]
+.*Ingress*
+----    
+kubectl apply -f 3.2.12/ingress.yaml
+----
+
 [source, bash]
 .**
 ----
@@ -785,11 +801,15 @@ kubectl apply -f f5-manage06/3.3.10/user-order-route.yaml
 kubectl apply -f f5-manage07/3.3.10/cart-route.yaml 
 ----
 
-[source, bash]
-.**
-----    
+== 3.3.11
 
+[source, bash]
+.*VS*
+----    
+kubectl apply -f 3.2.11/ingress.yaml
 ----
+
+== 3.3.12
 
 [source, bash]
 .**
