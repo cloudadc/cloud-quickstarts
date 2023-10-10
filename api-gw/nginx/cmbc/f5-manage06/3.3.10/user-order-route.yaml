@@ -1,0 +1,21 @@
+apiVersion: k8s.nginx.org/v1
+kind: VirtualServerRoute
+metadata:
+  name: user-order-route
+  namespace: f5-manage06
+spec:
+  host: f5manage05.example.com
+  upstreams:
+  - name: user
+    service: user-svc
+    port: 80
+  - name: order
+    service: order-svc
+    port: 80
+  subroutes:
+  - path: /
+    action:
+      pass: user
+  - path: /order
+    action:
+      pass: order

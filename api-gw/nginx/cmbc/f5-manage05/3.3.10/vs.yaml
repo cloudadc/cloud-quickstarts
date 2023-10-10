@@ -1,0 +1,12 @@
+apiVersion: k8s.nginx.org/v1
+kind: VirtualServer
+metadata:
+  name: vs-main
+  namespace: f5-manage05
+spec:
+  host: f5manage05.example.com
+  routes:
+  - path: /
+    route: f5-manage06/user-order-route
+  - path: /cart
+    route: f5-manage07/cart-route

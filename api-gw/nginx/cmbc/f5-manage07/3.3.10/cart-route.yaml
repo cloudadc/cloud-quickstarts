@@ -1,0 +1,15 @@
+apiVersion: k8s.nginx.org/v1
+kind: VirtualServerRoute
+metadata:
+  name: cart-route
+  namespace: f5-manage07
+spec:
+  host: f5manage05.example.com
+  upstreams:
+  - name: cart
+    service: cart-svc
+    port: 80
+  subroutes:
+  - path: /cart
+    action:
+      pass: cart

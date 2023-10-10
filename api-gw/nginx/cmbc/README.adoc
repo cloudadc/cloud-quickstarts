@@ -593,10 +593,44 @@ kubectl apply -f tenant/ns-sa-cm.yaml
 kubectl apply -f 3.2.9/ingress.yaml
 ----
 
+== 3.2.10
+
 [source, bash]
-.**
+.*NGINX(Ops)*
+----
+kubectl apply -f f5-manage05/tenant/ns-sa-cm.yaml
+kubectl apply -f f5-manage05/tenant/nginx-plus-ingress.yaml
 ----
 
+[source, bash]
+.*APP(Dev Group 1)*
+----
+kubectl apply -f f5-manage06/tenant/app-user-order.yaml
+----
+
+[source, bash]
+.*APP(Dev Group 2)*
+----
+kubectl apply -f f5-manage07/tenant/app-cart.yaml
+----
+
+[source, bash]
+.*Ingress(Ops)*
+----
+kubectl apply -f f5-manage05/3.2.10/ingress-main.yaml
+----
+
+[source, bash]
+.*Ingress(Dev Group 1)*
+----
+kubectl apply -f f5-manage06/3.2.10/ingress-user.yaml
+kubectl apply -f f5-manage06/3.2.10/ingress-order.yaml
+----
+
+[source, bash]
+.*Ingress(Dev Group 2)*
+----
+kubectl apply -f f5-manage07/3.2.10/ingress-cart.yaml
 ----
 
 [source, bash]
@@ -712,6 +746,45 @@ kubectl apply -f 3.3.8/vs.yaml
 kubectl apply -f 3.3.9/vs.yaml
 ----
 
+== 3.3.10
+
+[source, bash]
+.*NGINX(Ops)*
+----
+kubectl apply -f f5-manage05/tenant/ns-sa-cm.yaml
+kubectl apply -f f5-manage05/tenant/nginx-plus-gateway.yaml
+----
+
+[source, bash]
+.*APP(Dev Group 1)*
+----
+kubectl apply -f f5-manage06/tenant/app-user-order.yaml
+----
+
+[source, bash]
+.*APP(Dev Group 2)*
+----
+kubectl apply -f f5-manage07/tenant/app-cart.yaml
+----
+
+[source, bash]
+.*Route(Ops)*
+----
+kubectl apply -f f5-manage05/3.3.10/vs.yaml
+----
+
+[source, bash]
+.*Route(Dev Group 1)*
+----
+kubectl apply -f f5-manage06/3.3.10/user-order-route.yaml
+----
+
+[source, bash]
+.*Route(Dev Group 2)*
+----
+kubectl apply -f f5-manage07/3.3.10/cart-route.yaml 
+----
+
 [source, bash]
 .**
 ----    
@@ -721,5 +794,44 @@ kubectl apply -f 3.3.9/vs.yaml
 [source, bash]
 .**
 ----    
+
+----
+
+
+[source, bash]
+.**
+----
+
+----
+
+[source, bash]
+.**
+----
+
+----
+
+
+[source, bash]
+.**
+----
+
+----
+
+[source, bash]
+.**
+----
+
+----
+
+
+[source, bash]
+.**
+----
+
+----
+
+[source, bash]
+.**
+----
 
 ----
