@@ -1,0 +1,22 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: ingress-3-2-9
+  namespace: f5-manage04
+  annotations:
+     cmbc.com.cn/rate-limiting: "on"
+     cmbc.com.cn/rate-limiting-rate: "1r/s"
+     cmbc.com.cn/rate-limiting-burst: "1"
+spec:
+  ingressClassName: nginx
+  rules:
+  - host: limit.f5manage04.example.com
+    http:
+      paths:
+      - path: /d
+        pathType: Prefix
+        backend:
+          service:
+            name: app-d-svc
+            port:
+              number: 80

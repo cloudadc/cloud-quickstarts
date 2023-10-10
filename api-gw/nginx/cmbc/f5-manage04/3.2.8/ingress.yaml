@@ -1,0 +1,32 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: ingress-3-2-8
+  namespace: f5-manage04
+spec:
+  ingressClassName: nginx
+  rules:
+  - host: f5manage04.example.com
+    http:
+      paths:
+      - path: /a
+        pathType: Prefix
+        backend:
+          service:
+            name: app-a-svc
+            port:
+              number: 80
+      - path: /b
+        pathType: Prefix
+        backend:
+          service:
+            name: app-b-svc
+            port:
+              number: 80
+      - path: /c
+        pathType: Prefix
+        backend:
+          service:
+            name: app-c-svc
+            port:
+              number: 80
