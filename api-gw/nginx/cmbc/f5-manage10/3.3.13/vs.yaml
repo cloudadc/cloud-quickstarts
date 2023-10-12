@@ -1,0 +1,16 @@
+apiVersion: k8s.nginx.org/v1
+kind: VirtualServer
+metadata:
+  name: vs-3-3-13
+  namespace: f5-manage10
+spec:
+  host: f5manage10.cmbc.cn
+  ingressClassName: nginx-gw
+  upstreams:
+  - name: app-external
+    service: external-service
+    port: 31782
+  routes:
+  - path: /order
+    action:
+      pass: app-external

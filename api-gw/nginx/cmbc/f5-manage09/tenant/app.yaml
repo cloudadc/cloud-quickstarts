@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: ws-app
+  name: ws-app
+  namespace: f5-manage09
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ws-app
+  template:
+    metadata:
+      labels:
+        app: ws-app
+    spec:
+      containers:
+      - image: artifactory.dev.cmbc.cn:31345/net-docker-ver-local/nginx/backend:0.1.6
+        name: backend
+        ports:
+        - containerPort: 8080
+        resources:
+          requests:
+            cpu: "1"
+            memory: "1Gi"
+          limits:
+            cpu: "2"
+            memory: "2Gi"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ws-app-svc
+  namespace: f5-manage09
+spec:
+  ports:
+  - port: 80
+    protocol: TCP
+    targetPort: 8080
+  selector:
+    app: ws-app
+  type: ClusterIP

@@ -1,0 +1,20 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: externa-app-order-ingress
+  namespace: f5-manage10
+spec:
+  ingressClassName: nginx-a
+  rules:
+  - host: f5manage10.cmbc.cn
+    http:
+      paths:
+      - path: /order
+        pathType: Prefix
+        backend:
+          service:
+            name: external-service
+            port:
+              number: 31782
+
+

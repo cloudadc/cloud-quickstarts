@@ -1,0 +1,8 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: external-service
+  namespace: f5-manage10
+spec:
+  type: ExternalName
+  externalName: f5nginx.dev.cmbc.cn
