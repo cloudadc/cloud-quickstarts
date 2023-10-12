@@ -1,0 +1,31 @@
+apiVersion: k8s.nginx.org/v1
+kind: VirtualServer
+metadata:
+  name: vs-tm-blue-green
+  namespace: f5-manage07
+spec:
+  http-snippets: |
+    keyval_zone zone=abswitchzone:64k ;
+    keyval abswitch $abswitchvalue zone=abswitchzone;
+  host: tm.bg.f5manage07.example.com
+  server-snippets: |
+    add_header abswitch $abswitchvalue ;
+  upstreams:
+  - name: blue
+    service: blue-svc
+    port: 80
+  - name: green
+    service: green-svc
+    port: 80
+  routes:
+  - path: /
+    matches:
+    - conditions:
+      - header: abswitch
+        value: "yes"
+      action:
+        pass: green
+    action:
+      pass: blue
+
+

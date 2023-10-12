@@ -1,0 +1,25 @@
+apiVersion: k8s.nginx.org/v1
+kind: VirtualServer
+metadata:
+  name: vs-tm-shadow
+  namespace: f5-manage07
+spec:
+  host: tm.shadow.f5manage07.example.com
+  upstreams:
+  - name: user-v1
+    service: user-v1-svc
+    port: 80
+  - name: user-v2
+    service: user-v2-svc
+    port: 80
+  routes:
+  - path: /
+    location-snippets: "mirror /mirror;"
+    action:
+      pass: user-v1
+  - path: /mirror
+    location-snippets: "internal;"
+    action:
+      pass: user-v2
+
+

@@ -812,29 +812,45 @@ kubectl apply -f 3.2.11/ingress.yaml
 == 3.3.12
 
 [source, bash]
-.**
+.*APP*
+----
+kubectl apply -f tenant/app-user.yaml
+----
+
+[source, bash]
+.*基于权重的API请求路由*
 ----    
+kubectl apply -f 3.3.12/vs-weight.yaml
 
+curl -H "Host: tm.weight.f5manage07.example.com" http://$IP/user
 ----
 
 
 [source, bash]
-.**
+.*基于HTTP头属性的API请求路由*
 ----
+kubectl apply -f 3.3.12/vs-header.yaml
 
+curl -H "X-TM-Header: v2" -H "Host: tm.header.f5manage07.example.com" http://$IP/user
 ----
 
 [source, bash]
-.**
+.*API请求蓝绿路由*
 ----
+kubectl apply -f 3.3.12/vs-blue-green.yaml
 
+curl -H "Host: tm.bg.f5manage07.example.com" http://$IP/user
+curl -X POST http://$IP:8080/api/8/http/keyvals/abswitchzone -H "Content-Type: application/json" -d '{"abswitch": "yes"}'
+curl -H "Host: tm.bg.f5manage07.example.com" http://$IP/user
 ----
 
 
 [source, bash]
-.**
+.*API请求影子路由*
 ----
+kubectl apply -f 3.3.12/vs-shadow.yaml
 
+curl -H "Host: tm.shadow.f5manage07.example.com" http://$IP/user
 ----
 
 [source, bash]

@@ -1,0 +1,78 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: f5-manage07
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: user-v1
+  name: user-v1
+  namespace: f5-manage07
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: user-v1
+  template:
+    metadata:
+      labels:
+        app: user-v1
+    spec:
+      containers:
+      - image: cloudadc/cafe:1.5
+        name: backend
+        ports:
+        - containerPort: 8080
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: user-v1-svc
+  namespace: f5-manage07
+spec:
+  ports:
+  - port: 80
+    protocol: TCP
+    targetPort: 8080
+  selector:
+    app: user-v1
+  type: ClusterIP
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: user-v2
+  name: user-v2
+  namespace: f5-manage07
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: user-v2
+  template:
+    metadata:
+      labels:
+        app: user-v2
+    spec:
+      containers:
+      - image: cloudadc/cafe:1.5
+        name: backend
+        ports:
+        - containerPort: 8080
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: user-v2-svc
+  namespace: f5-manage07
+spec:
+  ports:
+  - port: 80
+    protocol: TCP
+    targetPort: 8080
+  selector:
+    app: user-v2
+  type: ClusterIP

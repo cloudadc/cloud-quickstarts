@@ -1,0 +1,25 @@
+apiVersion: k8s.nginx.org/v1
+kind: VirtualServer
+metadata:
+  name: vs-tm-header
+  namespace: f5-manage07
+spec:
+  host: tm.header.f5manage07.example.com
+  upstreams:
+  - name: user-v1
+    service: user-v1-svc
+    port: 80
+  - name: user-v2
+    service: user-v2-svc
+    port: 80
+  routes:
+  - path: /user
+    matches:
+    - conditions:
+      - header: X-TM-Header
+        value: v2
+      action:
+        pass: user-v2
+    action:
+      pass: user-v1
+
