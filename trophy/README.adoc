@@ -15,9 +15,14 @@
 |link:https://google.accredible.com/20fbbc6d-e73e-4c38-928c-279f21656d0b?key=b689c512a4442d5f70a65f2d838ae92bbd4fb6fb675394b2aaeb8c1c3ea04680&record_view=true[link]
 |2023-05-16
 
+|03
+|Google Cloud Certified - Professional Cloud Developer
+|link:https://google.accredible.com/bd10cf5f-c597-4567-acd6-da3f5644b293[link]
+|2023-11-11
+
 |===
 
-== Course
+== Coursera
 
 |===
 |ID |NAME |DATE 
@@ -74,3 +79,7 @@
 |link:https://www.coursera.org/learn/getting-started-app-development/home/week/1[Getting Started With Application Development]
 |Apr 2, 2023
 |===
+
+== Cloud Skills Boost
+
+https://www.cloudskillsboost.google/public_profiles/2327d464-3692-4d35-8913-797bb7534409
