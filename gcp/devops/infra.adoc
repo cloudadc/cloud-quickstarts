@@ -1,0 +1,21 @@
+= DevOps & SRE & Infra
+:toc: manual
+
+== Foundational Infrastructure
+
+=== Cloud Storage
+
+[source, bash]
+----
+gcloud config set compute/region europe-west
+gsutil mb gs://$PROJECT_ID
+gsutil cp ada.jpg gs://$PROJECT_ID
+gsutil cp -r gs://$PROJECT_ID/ada.jpg .
+gsutil cp gs://$PROJECT_ID/ada.jpg gs://$PROJECT_ID/image-folder/
+gsutil ls gs://$PROJECT_ID
+gsutil ls -l gs://$PROJECT_ID/ada.jpg
+gsutil acl ch -u AllUsers:R gs://$PROJECT_ID/ada.jpg
+gsutil acl ch -d AllUsers gs://$PROJECT_ID/ada.jpg
+gsutil rm gs://$PROJECT_ID/ada.jpg
+----
+
