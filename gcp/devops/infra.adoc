@@ -19,3 +19,17 @@ gsutil acl ch -d AllUsers gs://$PROJECT_ID/ada.jpg
 gsutil rm gs://$PROJECT_ID/ada.jpg
 ----
 
+=== Cloud Functions
+
+[source, bash]
+----
+gcloud config set compute/region us-west1
+mkdir gcf_hello_world && cd gcf_hello_world
+vim index.js
+gsutil mb -p $PROJECT_ID gs://$BUCKET_NAME
+gcloud functions deploy helloWorld --stage-bucket=$BUCKET_NAME --trigger-topic hello_world --runtime nodejs20
+gcloud functions describe helloWorld
+DATA=$(printf 'Hello World!'|base64) && gcloud functions call helloWorld --data '{"data":"'$DATA'"}'
+gcloud functions logs read helloWorld
+----
+

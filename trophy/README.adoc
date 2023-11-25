@@ -22,6 +22,11 @@
 
 |===
 
+
+== Cloud Skills Boost
+
+https://www.cloudskillsboost.google/public_profiles/2327d464-3692-4d35-8913-797bb7534409
+
 == Coursera
 
 |===
@@ -80,6 +85,3 @@
 |Apr 2, 2023
 |===
 
-== Cloud Skills Boost
-
-https://www.cloudskillsboost.google/public_profiles/2327d464-3692-4d35-8913-797bb7534409
