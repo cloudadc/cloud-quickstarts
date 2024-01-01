@@ -111,3 +111,7 @@ Another subtle point is that the decoder generates at each step only the probabi
 === The Serving Phase
 
 After training at serving time, when you want to, say generate a new translation or a new response to a prompt, you’ll start by feeding the encoder representation of the prompt to the decoder along with a special token like go, this will prompt the decoder to generate the first word. Let’s see in more details what happens during the generation stage. First of all, the start token needs to be represented by a vector using an embedding layer, to be represented by a vector using an embedding layer. Then the recurrent layer will update the previous state produced by the encoder into a new state. This state will be passed to a dense softmax layer to produce the word probabilities. Finally the word is generating by taking the highest probability word with Greddy Search or the highest probability chunk with Beam Search. At this point you repeat this procedure for the second word to be generated, and for the third one, until you’re done.
+
+== Attention Mechanism
+
+
