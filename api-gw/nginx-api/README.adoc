@@ -306,20 +306,123 @@ base64 api.conf
 
 [source, bash]
 ----
-# cat /etc/nginx/conf.d/ap
-api.conf  app.conf  
-[root@server-c ~]# cat /etc/nginx/conf.d/api.conf 
-server {
-    listen 8001;
-    root /usr/share/nginx/html;
-    access_log off;
-    location  = /dashboard.html {
-    }
-    allow 0.0.0.0/0;
-    deny all;
-    location /api {
-        api write=on;
-    }
+# curl -k -s -u "admin:admin" -X GET https://10.1.10.12/api/platform/v1/instance-groups/deployments/09aa57d6-bff8-437e-9796-4f5308c454b0 -H "accept: application/json"
+{
+  "createTime": "2024-01-31T07:35:05.667073378Z",
+  "details": {
+    "failure": [],
+    "pending": [],
+    "success": [
+      {
+        "name": "server-c.com"
+      },
+      {
+        "name": "server-d.com"
+      }
+    ]
+  },
+  "id": "f68f185c-04ea-46d7-9025-b293a06fe961",
+  "message": "Instance Group config successfully published to ",
+  "status": "successful",
+  "updateTime": "2024-01-31T07:35:05.667073378Z"
 }
-###
+----
+
+== Post config to Instance group with rollback process
+
+=== Extract config from Instance group
+
+[source, bash]
+----
+curl -k -s -u "admin:admin" -X GET https://10.1.10.12/api/platform/v1/instance-groups/c78208d2-f017-4a48-bab9-f2dc2432b8c9/config -H "accept: application/json" | jq 'del(.auxFiles, .directoryMap, .createTime, .instances, .externalIdType, .updateTime) | . += { "configName": "cicd-test-v0.1", "externalId": "1001001"}'  > stage-config.json 
+----
+
+=== Save the Config as Stage Config
+
+[source, bash]
+----
+# curl -k -s -u "admin:admin" -X POST https://10.1.10.12/api/platform/v1/configs -H "accept: application/json" -H 'Content-Type: application/json' -d "@stage-config.json" 
+{
+  "configName": "cicd-test-v0.1",
+  "createTime": "2024-01-31T08:00:45.028665204Z",
+  "externalId": "1001001",
+  "externalIdType": "",
+  "uid": "c01f7c4f-1ecb-44bf-a03f-4d7fd63ead0b",
+  "updateTime": "2024-01-31T08:00:45.028665204Z",
+  "configUploadResult": {
+    "filesAdded": 4,
+    "filesDeleted": 0,
+    "filesUpdated": 0
+  },
+  "auxUploadResult": {
+    "filesAdded": 0,
+    "filesDeleted": 0,
+    "filesUpdated": 0
+  }
+}
+----
+
+=== Get the specific version config from Stage Config
+
+[source, bash]
+----
+curl -k -s -u "admin:admin" -X GET https://10.1.10.12/api/platform/v1/configs/c01f7c4f-1ecb-44bf-a03f-4d7fd63ead0b -H "accept: application/json" | jq 'del(.auxFiles, .configName, .createTime, .externalId, .uid) | . += { "externalIdType": "other", "ignoreConflict": true, "validateConfig": true }' > config.json 
+----
+
+=== Do some change
+
+[source, bash]
+----
+      {
+        "contents": "c2VydmVyIHsNCiAgICBsaXN0ZW4gODAwMTsNCiAgICByb290IC91c3Ivc2hhcmUvbmdpbngvaHRtbDsNCiAgICBhY2Nlc3NfbG9nIG9mZjsNCiAgICBsb2NhdGlvbiAgPSAvZGFzaGJvYXJkLmh0bWwgew0KICAgIH0NCiAgICBhbGxvdyAwLjAuMC4wLzA7DQogICAgZGVueSBhbGw7DQogICAgbG9jYXRpb24gL2FwaSB7DQogICAgICAgIGFwaSB3cml0ZT1vbjsNCiAgICB9DQp9",
+        "name": "/etc/nginx/conf.d/api.conf"
+      }
+----
+
+=== Post config to Instance group
+
+[source, bash]
+----
+# curl -k -s -u "admin:admin" -X POST https://10.1.10.12/api/platform/v1/instance-groups/c78208d2-f017-4a48-bab9-f2dc2432b8c9/config -H "accept: application/json"  -H 'Content-Type: application/json' -d "@config.json" 
+{
+  "deploymentUID": "9f74d625-769c-43b8-a169-8377313be613",
+  "links": {
+    "rel": "/api/platform/v1/instance-groups/deployments/9f74d625-769c-43b8-a169-8377313be613"
+  },
+  "result": "Publish group configuration request Accepted"
+}
+----
+
+=== Verify the udpates
+
+[source, bash]
+----
+# curl -k -s -u "admin:admin" -X GET https://10.1.10.12/api/platform/v1/instance-groups/deployments/9f74d625-769c-43b8-a169-8377313be613 -H "accept: application/json"
+{
+  "createTime": "2024-01-31T16:27:34.267008894+08:00",
+  "details": {
+    "failure": [],
+    "pending": [],
+    "success": [
+      {
+        "name": "server-d.com"
+      },
+      {
+        "name": "server-c.com"
+      }
+    ]
+  },
+  "id": "9f74d625-769c-43b8-a169-8377313be613",
+  "message": "Instance Group config successfully published to qywy",
+  "status": "successful",
+  "updateTime": "2024-01-31T16:27:35.65990901+08:00"
+}
+----
+
+=== Process rollback
+
+[source, bash]
+----
+curl -k -s -u "admin:admin" -X GET https://10.1.10.12/api/platform/v1/configs/c01f7c4f-1ecb-44bf-a03f-4d7fd63ead0b -H "accept: application/json" | jq 'del(.auxFiles, .configName, .createTime, .externalId, .uid) | . += { "externalIdType": "other", "ignoreConflict": true, "validateConfig": true }' > config.json
+curl -k -s -u "admin:admin" -X POST https://10.1.10.12/api/platform/v1/instance-groups/c78208d2-f017-4a48-bab9-f2dc2432b8c9/config -H "accept: application/json"  -H 'Content-Type: application/json' -d "@config.json"
 ----
