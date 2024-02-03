@@ -24,6 +24,11 @@
 |Google Cloud Certified - Professional Cloud DevOps Engineer
 |link:https://google.accredible.com/4f59e8f9-3d3c-4f0c-a8c6-2a97585db63b#gs.386cwe[link]
 |2024-01-05
+
+|05
+|Google Cloud Certified - Professional Cloud Architect
+|link:https://google.accredible.com/525f077a-cea8-4cad-984f-c7894f7e3760[link]
+|2024-02-02
 |===
 
 
