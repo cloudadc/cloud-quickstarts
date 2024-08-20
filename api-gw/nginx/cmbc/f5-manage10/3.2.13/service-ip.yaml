@@ -2,7 +2,7 @@ kind: Service
 apiVersion: v1
 metadata:
   name: external-service-ip
-  namespace: f5-manage10
+  namespace: manage10
 spec:
   externalIPs:
   - 197.20.31.6  # VM IP
