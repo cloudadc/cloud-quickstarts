@@ -96,6 +96,8 @@ Note that, there are routes in the Route Table, one for local traffic routing, t
 
 image:img/aws-vpc-route-subnet-associations.jpg[Image,870,240]
 
+== Security Control
+
 === Use Security Group to control Internal Access
 
 Skip this section till the *VPC Testing* hints to do.
