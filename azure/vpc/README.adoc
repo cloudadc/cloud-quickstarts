@@ -1,0 +1,30 @@
+= Virtual Private Cloud (VPC)
+:toc: manual
+
+== Create Virtual network
+
+In a Resource Group, Create a Virtual network:
+
+image:img/azure-create-vnet-subnet.jpg[Image,600,600]
+
+[source, bash]
+----
+az network vnet create --name vnet1 --resource-group 329-cd2a1f77 --address-prefixes "192.168.0.0/20" --subnet-name subnet-a --subnet-prefixes "192.168.1.0/24"
+----
+
+== Create Subnet
+
+In Virtual network Setting section create subnet: 
+
+image:img/azure-create-subnet.jpg[Image,830,450]
+
+[source, bash]
+----
+az network vnet subnet create --name subnet-b --vnet-name vnet1 --address-prefixes "192.168.2.0/24" --resource-group 329-cd2a1f77
+----
+
+== Create Security Group
+
+image:img/azure-create-security-group.jpg[Image,600,370]
+
+image:img/azure-security-group-rules.jpg[Image,1300,290]

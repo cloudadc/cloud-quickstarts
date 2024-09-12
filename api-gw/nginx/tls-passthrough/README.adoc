@@ -1,0 +1,227 @@
+= HOST Based HTTPS Routing
+:toc: manual
+
+== NGINX Open Source Subscription
+
+=== Key Configuration
+
+[source, bash]
+----
+stream {
+
+    map $ssl_preread_server_name $name {
+        www.baidu.com            www_baidu_com;
+        www.tencent.com          www_tencent_com;
+        www.alibaba.com          www_alibaba_com;
+        default                  deny_access;
+    }
+
+    upstream www_baidu_com {
+        server www.baidu.com:443;
+    }
+
+    upstream www_tencent_com {
+        server www.tencent.com:443;
+    }
+
+    upstream www_alibaba_com {
+        server www.alibaba.com:443;
+    }
+
+    upstream deny_access {
+        server 0.0.0.1:1;
+    }
+
+    server {
+        listen      8443;
+        proxy_pass  $name;
+        ssl_preread on;
+    }
+}
+----
+
+=== Start NGINX
+
+[source, bash]
+----
+docker run -it --rm --name test -p 8443:8443 -v /Users/k.song/src/cloud-quickstarts/api-gw/nginx/tls-passthrough/nginx-oss.conf:/etc/nginx/nginx.conf:ro nginx:1.27.1
+----
+
+=== Test
+
+[source, bash]
+.*Test 1*
+----
+% curl --resolve www.baidu.com:8443:127.0.0.1 https://www.baidu.com:8443 --insecure -I
+HTTP/1.1 302 Found
+Connection: keep-alive
+Content-Length: 17931
+Content-Type: text/html
+Date: Thu, 12 Sep 2024 07:33:32 GMT
+Etag: "54d9748e-460b"
+Server: bfe/1.0.8.18
+----
+
+[source, bash]
+.*Test 2*
+----
+% curl --resolve www.alibaba.com:8443:127.0.0.1 https://www.alibaba.com:8443 --insecure -I     
+HTTP/2 200 
+content-type: text/html;charset=UTF-8
+link: <https://s.alicdn.com>; rel=preconnect;
+x-content-type-options: nosniff
+x-xss-protection: 1; mode=block
+cache-control: no-cache, no-store, max-age=0, must-revalidate
+pragma: no-cache
+expires: 0
+x-frame-options: DENY
+strict-transport-security: max-age=31536000
+timing-allow-origin: *
+eagleid: 21016fbf17261264286085361e18e6
+server-timing: rt;dur=0.010,eagleid;desc=21016fbf17261264286085361e18e6
+access-control-allow-headers: Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With
+access-control-allow-methods: POST, GET, OPTIONS, DELETE
+access-control-allow-credentials: true
+date: Thu, 12 Sep 2024 07:33:48 GMT
+set-cookie: ali_apache_id=33.1.111.191.1726126428612.407172.6; path=/; domain=.alibaba.com; expires=Wed, 30-Nov-2084 01:01:01 GMT
+set-cookie: JSESSIONID=5E58EBE275E8C7E843F6A71CEC8E3DDF; Path=/; HttpOnly
+set-cookie: cna=XIdpH/buC18CAS/2pJHJqPLe; Domain=.alibaba.com; Path=/; Expires=Tue, 30-Sep-2092 10:47:55 GMT; Secure; SameSite=None
+set-cookie: ug_se_c=organic_1726126428617; Domain=.alibaba.com; Expires=Sun, 21-May-2056 09:20:27 GMT; Path=/; Secure
+alt-svc: h3=":443"; ma=2592000
+server-timing: akamai;dur=24;desc=cache-miss
+object-status: ttl=-1,age=0
+edge-type: akamai
+----
+
+[source, bash]
+.*Test 3*
+----
+% curl --resolve www.tencent.com:8443:127.0.0.1 https://www.tencent.com:8443 --insecure -I     
+HTTP/1.1 200 OK
+Content-Type: application/octet-stream
+Server: nginx
+X-XSS-Protection: 0
+Content-Length: 0
+Connection: keep-alive
+Date: Thu, 12 Sep 2024 07:34:13 GMT
+EO-LOG-UUID: 868728983423577587
+EO-Cache-Status: MISS
+----
+
+== NGINX Plus
+
+=== Key Configuration
+
+[source, bash]
+----
+stream {
+
+    resolver 114.114.114.114 valid=30s;
+
+    map $ssl_preread_server_name $name {
+        www.baidu.com            www_baidu_com;
+        www.tencent.com          www_tencent_com;
+        www.alibaba.com          www_alibaba_com;
+        default                  deny_access;
+    }
+
+    upstream www_baidu_com {
+        zone www_baidu_com 64k;
+        server www.baidu.com:443 resolve;
+    }
+
+    upstream www_tencent_com {
+        zone www_tencent_com 64k;
+        server www.tencent.com:443 resolve;
+    }
+
+    upstream www_alibaba_com {
+        zone www_alibaba_com 64k;
+        server www.alibaba.com:443 resolve;
+    }
+
+    upstream deny_access {
+        server 0.0.0.1:1;
+    }
+
+    server {
+        listen      8443;
+        status_zone tcp_server;
+        proxy_pass  $name;
+        ssl_preread on;
+    }
+
+}
+----
+
+=== Start NGINX
+
+[source, bash]
+----
+docker run -it --rm --name test -p 8443:8443 -p 8001:8001 -v /Users/k.song/src/cloud-quickstarts/api-gw/nginx/tls-passthrough/nginx-plus.conf:/etc/nginx/nginx.conf:ro private-registry.nginx.com/nginx-plus/base:r32-ubi-9
+----
+
+=== Test Access Service
+
+[source, bash]
+.*Test 1*
+----
+% curl --resolve www.baidu.com:8443:127.0.0.1 https://www.baidu.com:8443 --insecure -I
+HTTP/1.1 302 Found
+Connection: keep-alive
+Content-Length: 17931
+Content-Type: text/html
+Date: Thu, 12 Sep 2024 08:21:42 GMT
+Etag: "54d9748e-460b"
+Server: bfe/1.0.8.18
+----
+
+[source, bash]
+.*Test 2*
+----
+% curl --resolve www.alibaba.com:8443:127.0.0.1 https://www.alibaba.com:8443 --insecure -I
+HTTP/2 200 
+content-type: text/html;charset=UTF-8
+link: <https://s.alicdn.com>; rel=preconnect;
+x-content-type-options: nosniff
+x-xss-protection: 1; mode=block
+cache-control: no-cache, no-store, max-age=0, must-revalidate
+pragma: no-cache
+expires: 0
+x-frame-options: DENY
+strict-transport-security: max-age=31536000
+timing-allow-origin: *
+eagleid: 2102f5be17261293406908550edd9a
+server-timing: rt;dur=0.010,eagleid;desc=2102f5be17261293406908550edd9a
+access-control-allow-headers: Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With
+access-control-allow-methods: POST, GET, OPTIONS, DELETE
+access-control-allow-credentials: true
+date: Thu, 12 Sep 2024 08:22:20 GMT
+set-cookie: ali_apache_id=33.2.245.190.1726129340689.622147.9; path=/; domain=.alibaba.com; expires=Wed, 30-Nov-2084 01:01:01 GMT
+set-cookie: JSESSIONID=B04CD0BB55B12C881CDFBC40A3BE6944; Path=/; HttpOnly
+set-cookie: cna=vJJpH60Qkh4CAS/2pJVE83XA; Domain=.alibaba.com; Path=/; Expires=Tue, 30-Sep-2092 11:36:27 GMT; Secure; SameSite=None
+set-cookie: ug_se_c=organic_1726129340700; Domain=.alibaba.com; Expires=Sun, 21-May-2056 10:08:59 GMT; Path=/; Secure
+alt-svc: h3=":443"; ma=2592000
+server-timing: akamai;dur=32;desc=cache-miss
+object-status: ttl=-1,age=0
+edge-type: akamai
+----
+
+[source, bash]
+.*Test 3*
+----
+% curl --resolve www.tencent.com:8443:127.0.0.1 https://www.tencent.com:8443 --insecure -I
+HTTP/1.1 200 OK
+Content-Type: application/octet-stream
+Server: nginx
+X-XSS-Protection: 0
+Content-Length: 0
+Connection: keep-alive
+Date: Thu, 12 Sep 2024 08:22:54 GMT
+EO-LOG-UUID: 18172828094686237771
+EO-Cache-Status: MISS
+----
+
+=== NGINX Observability
+
+image:img/nginx-plus-dashboard.jpg[]
