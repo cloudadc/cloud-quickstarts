@@ -1,0 +1,16 @@
+apiVersion: k8s.nginx.org/v1
+kind: TransportServer
+metadata:
+  name: baidu
+  namespace: cmbc
+spec:
+  listener:
+    name: tls-passthrough
+    protocol: TLS_PASSTHROUGH
+  host: www.baidu.com
+  upstreams:
+    - name: external-baidu
+      service: external-service-baidu
+      port: 443
+  action:
+    pass: external-baidu

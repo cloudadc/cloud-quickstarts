@@ -1,0 +1,8 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: external-service-alibaba
+  namespace: cmbc
+spec:
+  type: ExternalName
+  externalName: www.alibaba.com

@@ -1,0 +1,8 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: external-service-tencent
+  namespace: cmbc
+spec:
+  type: ExternalName
+  externalName: www.tencent.com

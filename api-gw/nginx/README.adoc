@@ -29,7 +29,7 @@ export my_cluster=standard-cluster-1
 [source, bash]
 .*3. Create cluster*
 ----
-gcloud container clusters create $my_cluster --num-nodes=2 --zone=$my_zone --cluster-version=1.24.16-gke.500 --enable-ip-alias
+gcloud container clusters create $my_cluster --num-nodes=2 --zone=$my_zone --cluster-version=1.30.2-gke.1587003 --enable-ip-alias
 ----
 
 [source, bash]
@@ -120,6 +120,17 @@ NS=test-02 && IC_POD=$(kubectl get pods -n $NS --no-headers | head -n 1 | awk '{
 ----
 
 [source, bash]
+.*Dump configuration - nic in nginx-ingress*
+----
+NS=nginx-ingress
+IC_POD=$(kubectl get pods -n $NS -l app=nginx-ingress --no-headers | head -n 1 | awk '{print $1}')
+kubectl exec $IC_POD -n $NS -- nginx -T 2>&1 | grep -v '^[[:space:]]*$'
+kubectl exec $IC_POD -n $NS -- nginx -T 2>&1 | grep -v '^[[:space:]]*$' > ~/nginx-origin.conf
+kubectl exec $IC_POD -n $NS -- nginx -T 2>&1 | grep -v '^[[:space:]]*$' > ~/nginx-test-ts.conf
+kubectl exec $IC_POD -n $NS -- nginx -T 2>&1 | grep -v '^[[:space:]]*$' > ~/nginx-ts.conf
+----
+
+[source, bash]
 .*Dump configuration*
 ----
 NS=test-02
@@ -138,7 +149,7 @@ NS=test-02 && IC_POD=$(kubectl get pods -n $NS -l app=nginx-ingress --no-headers
 [source, bash]
 .*1. Get Code*
 ----
-git clone https://github.com/nginxinc/kubernetes-ingress.git --branch v2.4.2
+git clone https://github.com/nginxinc/kubernetes-ingress.git --branch v3.6.2
 cd kubernetes-ingress/
 ----
 
@@ -171,6 +182,26 @@ docker tag us-central1-docker.pkg.dev/$PROJECT/nginx/nginx-plus-ingress:2.4.2-SN
 docker push us-central1-docker.pkg.dev/$PROJECT/nginx/nginx-plus-ingress:2.4.2
 ----
 
+=== Pull NGINX Plus From Private NGINX Registory
+
+*1. Download JWT*
+
+* Download `Connectivity Stack for Kubernetes` JSON Web Token from https://my.f5.com
+
+[source, bash]
+.*2. Download NGINX Plus Image*
+----
+docker login private-registry.nginx.com --username=<output_of_jwt_token> --password=none
+docker pull private-registry.nginx.com/nginx-ic/nginx-plus-ingress:3.6.2-ubi
+----
+
+[source, bash]
+.*3. Push Image to Artifact Registry*
+----
+docker tag private-registry.nginx.com/nginx-ic/nginx-plus-ingress:3.6.2-ubi us-central1-docker.pkg.dev/$PROJECT/nginx/nginx-plus-ingress:3.6.2-ubi
+docker push us-central1-docker.pkg.dev/$PROJECT/nginx/nginx-plus-ingress:3.6.2-ubi
+----
+
 === Installation
 
 NOTE: The installation scripts are under `kubernetes-ingress/deployments`.
@@ -178,34 +209,34 @@ NOTE: The installation scripts are under `kubernetes-ingress/deployments`.
 [source, bash]
 .*1. Configure RBAC*
 ----
-kubectl apply -f common/ns-and-sa.yaml
-kubectl apply -f rbac/rbac.yaml
+kubectl apply -f deployments/common/ns-and-sa.yaml
+kubectl apply -f deployments/rbac/rbac.yaml
 ----
 
 [source, bash]
 .*2. Create Common Resources*
 ----
-kubectl apply -f common/nginx-config.yaml
-kubectl apply -f common/ingress-class.yaml
+kubectl apply -f examples/shared-examples/default-server-secret/default-server-secret.yaml
+kubectl apply -f deployments/common/nginx-config.yaml
+kubectl apply -f deployments/common/ingress-class.yaml
 ----
 
 [source, bash]
 .*3. Create Custom Resources*
 ----
-kubectl apply -f common/crds/k8s.nginx.org_virtualservers.yaml
-kubectl apply -f common/crds/k8s.nginx.org_virtualserverroutes.yaml
-kubectl apply -f common/crds/k8s.nginx.org_transportservers.yaml
-kubectl apply -f common/crds/k8s.nginx.org_policies.yaml
-kubectl apply -f common/crds/k8s.nginx.org_globalconfigurations.yaml
+kubectl apply -f config/crd/bases/k8s.nginx.org_virtualservers.yaml
+kubectl apply -f config/crd/bases/k8s.nginx.org_virtualserverroutes.yaml
+kubectl apply -f config/crd/bases/k8s.nginx.org_transportservers.yaml
+kubectl apply -f config/crd/bases/k8s.nginx.org_policies.yaml
+kubectl apply -f config/crd/bases/k8s.nginx.org_globalconfigurations.yaml
 ----
 
 [source, bash]
 .*4. Deploy the Ingress Controller*
 ----
-kubectl apply -f daemon-set/nginx-plus-ingress.yaml 
+kubectl apply -f deployments/deployment/nginx-plus-ingress.yaml
 ----
 
-NOTE: Replace the default `nginx-plus-ingress:2.4.2` to `us-central1-docker.pkg.dev/playground-s-11-74402444/nginx/nginx-plus-ingress:2.4.2`, and comment out `-default-server-tls-secret`.
 
 === Verify Installation
 

@@ -1,0 +1,15 @@
+apiVersion: gateway.networking.k8s.io/v1alpha2
+kind: TLSRoute
+metadata:
+  name: external-alibaba
+  namespace: cmbc
+spec:
+  parentRefs:
+  - name: gateway
+    namespace: cmbc
+  hostnames:
+  - "www.alibaba.com"
+  rules:
+  - backendRefs:
+    - name: external-service-alibaba
+      port: 443

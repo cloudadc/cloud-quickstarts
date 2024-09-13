@@ -1,0 +1,16 @@
+apiVersion: k8s.nginx.org/v1
+kind: TransportServer
+metadata:
+  name: alibaba
+  namespace: cmbc
+spec:
+  listener:
+    name: tls-passthrough
+    protocol: TLS_PASSTHROUGH
+  host: www.alibaba.com
+  upstreams:
+    - name: external-alibaba
+      service: external-service-alibaba
+      port: 443
+  action:
+    pass: external-alibaba
