@@ -5,30 +5,35 @@
 |===
 |ID |TITLE |CERTIFICATION |DATE
 
-|01
-|Google Cloud Certified - Associate Cloud Engineer
-|link:https://google.accredible.com/ec71e3a4-055d-492d-935f-52f144935daf#gs.386itl[link]
-|2023-02-13
+|06
+|Microsoft Certified: Azure AI Fundamentals
+|link:https://learn.microsoft.com/en-us/users/kylinsong-8877/credentials/b5793701a9f0f943[link]
+|2024-09-21
 
-|02
-|Google Cloud Certified - Professional Cloud Network Engineer
-|link:https://google.accredible.com/20fbbc6d-e73e-4c38-928c-279f21656d0b#gs.386gve[link]
-|2023-05-16
-
-|03
-|Google Cloud Certified - Professional Cloud Developer
-|link:https://google.accredible.com/bd10cf5f-c597-4567-acd6-da3f5644b293#gs.386fmv[link]
-|2023-11-11
+|05
+|Google Cloud Certified - Professional Cloud Architect
+|link:https://google.accredible.com/525f077a-cea8-4cad-984f-c7894f7e3760[link]
+|2024-02-02
 
 |04
 |Google Cloud Certified - Professional Cloud DevOps Engineer
 |link:https://google.accredible.com/4f59e8f9-3d3c-4f0c-a8c6-2a97585db63b#gs.386cwe[link]
 |2024-01-05
 
-|05
-|Google Cloud Certified - Professional Cloud Architect
-|link:https://google.accredible.com/525f077a-cea8-4cad-984f-c7894f7e3760[link]
-|2024-02-02
+|03
+|Google Cloud Certified - Professional Cloud Developer
+|link:https://google.accredible.com/bd10cf5f-c597-4567-acd6-da3f5644b293#gs.386fmv[link]
+|2023-11-11
+
+|02
+|Google Cloud Certified - Professional Cloud Network Engineer
+|link:https://google.accredible.com/20fbbc6d-e73e-4c38-928c-279f21656d0b#gs.386gve[link]
+|2023-05-16
+
+|01
+|Google Cloud Certified - Associate Cloud Engineer
+|link:https://google.accredible.com/ec71e3a4-055d-492d-935f-52f144935daf#gs.386itl[link]
+|2023-02-13
 |===
 
 
